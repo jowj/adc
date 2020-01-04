@@ -1,0 +1,8 @@
+* adc: agares deployment core
+this was spun out of agares (which has sense been deprecated) to keep my machine setup bullshit separate from deploys and small docker-compose files not deserving of their own repo.
+
+** ansible
+houses ansible roles
+
+** docker
+houses small dockerfiles / dockercompose stuff.
