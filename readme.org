@@ -6,3 +6,6 @@ houses ansible roles
 
 ** docker
 houses small dockerfiles / dockercompose stuff.
+
+** scripts
+houses small scripts that i used to use before i moved to ansible for most things. these should probably all get rewritten.
