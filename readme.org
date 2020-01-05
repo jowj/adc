@@ -4,8 +4,68 @@ this was spun out of agares (which has sense been deprecated) to keep my machine
 ** ansible
 houses ansible roles
 
+*** arke
+    - deploys monitoring script
+    - its mostly broken.
+    - relies on droplet config
+
+*** mojobot
+    - deploy mojobot
+    - two portions; web and rtm client.
+    - relies on droplet config
+
+*** znc
+    - deploys znc bouncer
+    - relies on external drive attached to droplet
+    - relies on droplet config
+
+*** awfulAll
+    - deploy mojobot
+    - deploy znc
+    - deploy arke
+    - relies on droplet config
+
+*** droplets
+    - add regular user, sudo group, add user to group
+    - use local droplet key
+    - disable pw auth for root
+    - update apt and install req packages
+    - restart sshd service.
+
+*** onprem
+    - configure aptitude
+    - add docker key, repo
+    - install req packages
+    - add my user to docker group.
+
+*** splunk_servers
+    - remnent of a past job
+    - i don't believe ever worked
+    - here for historical purposes.
+
+*** wg_vpn
 ** docker
 houses small dockerfiles / dockercompose stuff.
-
+*** mediaserver
+    - docker compose file
+    - sonarr (tv)
+    - radarr (movie)
+    - lidarr (music)
+    - sabnzb (dl manager)
+    - lazylibrarian (this sucks and doesn't really work)
 ** scripts
-houses small scripts that i used to use before i moved to ansible for most things. these should probably all get rewritten.
+houses small scripts that i used to use before i moved to ansible for most things. these should probably all get deleted or converted to ansible roles.
+
+*** mac-client
+    - set up brew
+    - install req packages
+
+*** win-client
+    - install packages through chocolatey
+    - disable a bunch of default shit.
+
+*** nix
+    - add repos
+    - download key to install pscore
+    - update apt and install packages
+    - automatically create userchrome.css file/dir for ff
