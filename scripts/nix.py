@@ -1,8 +1,4 @@
-import os
-import sys
-import argparse
 import subprocess
-import pdb
 
 add_Repos_Args = [
     "sudo",
@@ -49,7 +45,7 @@ snapProgramsToAdd = [
 ]
 
 print("adding repos")
-subprocess.run(add_Repos_Args,shell=True)
+subprocess.run(add_Repos_Args, shell=True)
 
 print("download powershell key")
 subprocess.run(download_Powershell_Keys)
@@ -63,8 +59,8 @@ subprocess.run(update_Apt_Repos)
 print("installing apt packages")
 subprocess.run(add_Apt_Programs)
 
-#print("installing snap packages")
-#subprocess.run('sudo snap install ' + snapProgramsToAdd)
+# print("installing snap packages")
+# subprocess.run('sudo snap install ' + snapProgramsToAdd)
 
 # post processing for firefox userChrome.css
 # cp userChrome.css to the profile directory > chrome > userChrome.css
