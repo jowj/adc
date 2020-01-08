@@ -1,0 +1,14 @@
+---
+- name: on prem base server config
+  hosts: onprem_servers
+  tasks:
+    - debug: msg="deploying base server config."  
+  roles:
+    - { name: home-net }
+
+- name: on prem wg config
+  hosts: onprem_servers
+  tasks:
+    - debug: msg="Deploying wg."
+  roles:
+    - { name: wg_vpn }
