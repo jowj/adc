@@ -5,3 +5,31 @@ gather_facts: True
 source_os: arch
 become: yes
 create_user: josiah
+
+
+# all of this is stolen from mrled, because fuck this is way better than what i was doing.
+# Wireguard docs
+# TODO: lookup plugin to generate the pubkey from the privkey
+# TODO: set all these as hostvars, use hostvars['HOSTNAME'].wireguard_privkey etc
+#       (should be ok even for e.g. glitch, which doesn't get provisioned from Ansible)
+# To generate the keys:
+# - wg genkey | tee privatekey | wg pubkey > publickey
+# - save the privkey in the vault and the pubkey here
+# - Delete the privatekey and publickey files
+wireguard_vpn_network: 10.200.219.0/24
+wireguard_server_privkey: "{{ vault_wireguard_server_privkey }}"
+wireguard_server_pubkey: e49UyNg/kqPETyT9K6nqIYjtTwlR8hY8Brm/P66xnmo=
+wireguard_server_offset: 1
+wireguard_clients:
+  - name: matrix
+    offset: 10
+    privkey: "{{ vault_wireguard_client_privkey_matrix }}"
+    pubkey: lNoFqmeHfSDb/VB0mutpFzb4cZELOjSVOYQCLEfQIRU=
+  - name: pvl
+    offset: 11
+    privkey: "{{ vault_wireguard_client_privkey_pvl }}"
+    pubkey: l/j+UXtrxTqqTTjxjgheQ3B2QppZWs07na4GypZw9GM=
+  - name: ling8
+    offset: 12
+    privkey: "{{ vault_wireguard_client_privkey_ling8 }}"
+    pubkey: YqGQE6yUz6rjBFRWgZyj5mPEaGavxrmO/cclO5o+VBQ=
