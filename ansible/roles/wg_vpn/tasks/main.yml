@@ -1,11 +1,7 @@
 ---
 # tasks file for wg_vpn
 # playbook to go from a "base configured" server to a wg vpn peer
-- hosts: onprem
-  remote_user: josiah
-  gather_facts: True
-  vars:
-    source_os: arch
+
 
   tasks:
     - name: "generating config on relay server"
