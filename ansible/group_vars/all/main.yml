@@ -1,0 +1,7 @@
+---
+
+remote_user: josiah
+gather_facts: True
+source_os: arch
+become: yes
+create_user: josiah
