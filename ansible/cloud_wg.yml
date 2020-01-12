@@ -1,0 +1,8 @@
+---
+
+- name: cloud wg config
+  hosts: vpn
+  tasks:
+    - debug: msg="Deploying wg to cloud server"
+  roles:
+    - { name: wg_vpn }
