@@ -9,12 +9,10 @@
 
 - name: install wireguard
   apt:
-    # hardcoded header here is for digital oceans :(
     name:
       - wireguard
       - build-essential
       - dkms
-      - linux-headers-4.19.0-6-cloud-amd64
     update_cache: yes
     state: latest
 
