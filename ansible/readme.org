@@ -1,3 +1,9 @@
 * setup from scratch:
 ~ansible-playbook -i hosts.yml all.yml --ask-vault-pass --ask-become-pass~
 
+
+* wg
+
+** clients
+you probably want to deploy clients individually most of the time. to do that, provide a tag, like:
+~ansible-playbook -i hosts.yml client_matrix.yml --ask-vault-pass --ask-become-pass --tags matrix_client~
