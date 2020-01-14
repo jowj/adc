@@ -32,3 +32,9 @@
 
 - name: Start wireguard
   service: name=wg-quick@wg0.service enabled=yes state=started
+
+- name: Create matrix.conf file in ~/wireguard/.
+  template: src=ios.conf dest=/etc/wireguard/ owner=root mode=0600
+  tags:
+    - clients
+    - client_matrix
