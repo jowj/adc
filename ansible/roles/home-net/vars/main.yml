@@ -1,1 +1,1 @@
-sys_packages: [ 'curl', 'vim', 'git', '', 'emacs', 'build-essential' ]
+sys_packages: [ 'curl', 'vim', 'git', '', 'emacs', 'build-essential', 'mosh' ]

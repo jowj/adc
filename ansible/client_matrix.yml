@@ -1,0 +1,8 @@
+---
+
+- name: generate ios client config
+  hosts: dev #localhost
+  tasks:
+    - debug: msg="generate phone config"
+  roles:
+    - { name: wg_vpn }

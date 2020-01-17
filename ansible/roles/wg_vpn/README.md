@@ -15,19 +15,15 @@ A description of the settable variables for this role should go here, including 
 
 
 shit i'm still fixing
-----------------
+----------------------
 - its not actually working yet
   - mobile device seems like it connects
   - but i can't browse around.
 - arch tasks suck because ansible + pacman is bad.
+- 
 
-
-Example Playbook
-----------------
-
-I don't know what to put here because i don't understand how roles work lmao
-	`ansible-playbook -i ../hosts.yml tasks/main.yml -v`
-		 
+misc
+----
 useful for generating mobile device configs: qrencode -t ansiutf8 < /etc/wireguard/mobile.conf
 
 License
