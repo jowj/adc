@@ -1,7 +1,6 @@
 * setup from scratch:
 ~ansible-playbook -i hosts.yml all.yml --ask-vault-pass --ask-become-pass~
 
-
 * wg
 
 ** clients

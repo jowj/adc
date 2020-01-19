@@ -13,14 +13,9 @@ Role Variables
 
 A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
-
-shit i'm still fixing
-----------------------
-- its not actually working yet
-  - mobile device seems like it connects
-  - but i can't browse around.
-- arch tasks suck because ansible + pacman is bad.
-- 
+usage
+-----
+~ansible-playbook -i hosts.yml playbook.yml --tags=deploy_these_things --ask-vault-pass -ask-become-pass~
 
 misc
 ----
