@@ -85,14 +85,7 @@
 - name: run the container (assumes the volume is already set up)
   command: docker run --restart "always" -d -p 5000:5000 --mount type="bind",source="/mnt/volume_sfo2_znc/",target=/znc-data znc
 
-tags:
-  - mojo
-  - arke
 
-- name: Get hostname for troubleshooting
-  command: hostname
-  register: hostname
-  debug: msg="{{ hostname.stdout }}"
 - name: update the directory, or log to register if dir doesn't exist
   shell: cd /home/josiah/arke/ && git pull
   register: result
