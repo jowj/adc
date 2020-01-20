@@ -1,8 +1,0 @@
----
-
-- name: generate ling8 client config
-  hosts: dev #localhost
-  tasks:
-    - debug: msg="generate remote laptop config"
-  roles:
-    - { name: wg_vpn }
