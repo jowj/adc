@@ -39,8 +39,15 @@
     - clients
     - client_matrix
 
-- name: Create .conf file in /etc/wireguard/.
+- name: Create ling8.conf file in /etc/wireguard/.
   template: src=ling8.conf dest=/etc/wireguard/ owner=root mode=0600
   tags:
     - clients
     - client_ling8  
+
+- name: Create pvl.conf file in /etc/wireguard/.
+  template: src=pvl.conf dest=/etc/wireguard/ owner=root mode=0600
+  tags:
+    - clients
+    - client_pvl
+    
