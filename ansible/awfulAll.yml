@@ -1,0 +1,10 @@
+---
+
+- name: deploy the awful stack
+  hosts: dockerhosts
+  remote_user: "{{ remote_user }}"
+  tasks:
+    - debug: msg="Deploying awful stack to cloud server"
+  roles:
+    - { name: awfulAll }
+
