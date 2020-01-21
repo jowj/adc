@@ -97,7 +97,7 @@
     - mojo-rtm
 
 - name: If last step failed, clone the repo.
-  shell: cd /home/josiah/ && git clone https://github.com/jowj/arke.git
+  shell: cd /home/josiah/ && git clone https://git.awful.club/hosted/arke.git
   when: result is failed
   tags:
     - arke
