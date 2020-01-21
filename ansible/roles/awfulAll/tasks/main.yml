@@ -67,7 +67,7 @@
 - shell: cd /home/josiah && git clone https://github.com/jowj/znc-docker.git
   when: result is failed
 - name: build from latest version
-  shell: cd ~/znc-docker/full && docker build -t znc -f Dockerfile .
+  shell: cd /home/josiah/znc-docker/full && docker build -t znc -f Dockerfile .
 - name: Check if there are any existing ZNC containers running and kill it
   shell: docker ps | grep 'znc' | awk '{print $1}'
   register: result
@@ -86,26 +86,66 @@
   command: docker run --restart "always" -d -p 5000:5000 --mount type="bind",source="/mnt/volume_sfo2_znc/",target=/znc-data znc
 
 
-- name: update the directory, or log to register if dir doesn't exist
+- name: update arke repo
   shell: cd /home/josiah/arke/ && git pull
   register: result
   ignore_errors: True
+  tags:
+    - arke
+    - mojo
+    - mojo-web
+    - mojo-rtm
+
 - name: If last step failed, clone the repo.
   shell: cd /home/josiah/ && git clone https://github.com/jowj/arke.git
   when: result is failed
+  tags:
+    - arke
+    - mojo
+    - mojo-web
+    - mojo-rtm
+    
 - name: Build from the latest version
-  shell: cd ~/arke/ && docker build -t arke -f dockerfile .
+  shell: cd /home/josiah/arke/ && docker build -t arke -f dockerfile .
+  tags:
+    - arke
+    - mojo
+    - mojo-web
+    - mojo-rtm  
   
 - name: Check if there are any existing arke containers running
   shell: docker ps | grep 'arke' | awk '{print $1}'
   register: result
+  tags:
+    - arke
+    - mojo
+    - mojo-web
+    - mojo-rtm
+    
 - name: and kill it
   # this has to be a shell because command: isn't interactive
   shell: docker ps | grep 'arke' | awk '{print $1}' | xargs docker kill
   when: result.stdout != ""
+  tags:
+    - arke
+    - mojo
+    - mojo-web
+    - mojo-rtm
+    
 - name: Remove any existing containers using the arke name, its mine and i must have it
   # this has to be a shell because command: isn't interactive
   shell: docker container rm arke
   ignore_errors: True
+  tags:
+    - arke
+    - mojo
+    - mojo-web
+    - mojo-rtm
+
 - name: Run the newly built docker container
   command: docker run -d --name arke --mount type="bind",source="/mnt/volume_sfo2_znc",target=/shared/ arke:latest
+  tags:
+    - arke
+    - mojo
+    - mojo-web
+    - mojo-rtm
