@@ -51,3 +51,8 @@
     - clients
     - client_pvl
     
+- name: Create hatchery file in /etc/wireguard/.
+  template: src=wg0-hatchery.conf dest=/etc/wireguard/ owner=root mode=0600
+  tags:
+    - clients
+    - client_hatchery
