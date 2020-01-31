@@ -37,6 +37,9 @@ wireguard_clients:
     offset: 13
     privkey: "{{ vault_wireguard_client_privkey_hatchery }}"
     pubkey: kguQg0CvB7N1fJDO8i0Nj4C1cUKUsawfHyArwiaGxis=
-
+  - name: frisket
+    offset: 14
+    privkey: "{{ vault_wireguard_client_privkey_frisket }}"
+    pubkey: z5ogJTRX4K5evGOntpkIVopZFUVeTzAOaBtRS0K71TU=
 # mojos
 slack_bot_token: "{{ VAULT_SLACK_BOT_TOKEN }}"

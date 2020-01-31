@@ -38,6 +38,12 @@
   tags:
     - clients
     - client_matrix
+    
+- name: Create frisket.conf file in ~/wireguard/.
+  template: src=ios.conf dest=/etc/wireguard/ owner=root mode=0600
+  tags:
+    - clients
+    - client_frisket
 
 - name: Create ling8.conf file in /etc/wireguard/.
   template: src=ling8.conf dest=/etc/wireguard/ owner=root mode=0600
