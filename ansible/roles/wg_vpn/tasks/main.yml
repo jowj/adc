@@ -40,7 +40,7 @@
     - client_matrix
     
 - name: Create frisket.conf file in ~/wireguard/.
-  template: src=ios.conf dest=/etc/wireguard/ owner=root mode=0600
+  template: src=frisket.conf dest=/etc/wireguard/ owner=root mode=0600
   tags:
     - clients
     - client_frisket
