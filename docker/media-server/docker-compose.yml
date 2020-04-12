@@ -5,15 +5,22 @@ services:
     # The official v2 Traefik docker image
     image: traefik:v2.2
     # Enables the web UI and tells Traefik to listen to docker
-    command: --api.insecure=true --providers.docker
-    ports:
-      # The HTTP port
-      - "80:80"
-      # The Web UI (enabled by --api.insecure=true)
-      - "10219:10219"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
+    command: --web --docker --docker.swarmmode --docker.watch --docker.domain=home.jowj.net --logLevel=DEBUG
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8080
+        protocol: tcp
   sonarr:
     image: "linuxserver/sonarr"
     ports:
@@ -131,3 +138,5 @@ services:
     ports:
       - 5076:5076
     restart: unless-stopped
+    labels:
+      - "traefik.http.routers.hatchery-hydra2.rule=Host(`hatchery.home.jowj.net/hydra2`)"
