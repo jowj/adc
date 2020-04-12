@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:alpine
+    command: |-
+      --entryPoints="Name:http Address::80 Redirect.EntryPoint:https"
+      --entryPoints="Name:https Address::443 TLS"
+      --defaultentrypoints="http,https"
+      --accesslogsfile="/var/log/access.log"
+      --acme 
+      --acme.acmelogging="true"
+      # Change this to an actual email address
+      --acme.email="me@jowj.net"
+      --acme.entrypoint="https"
+      --acme.storage="/acme/acme.json"
+      --acme.onhostrule="true"
+      --docker
+      --docker.swarmmode
+      # Change this to your primary domain
+      --docker.domain="home.jowj.net"
+      --docker.watch
+      --web
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    networks:
+      - traefik_public
+    volumes:
+      - traefik_acme:/acme/
+      - traefik_logs:/var/log/access.log
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+volumes:
+  traefik_acme:
+  traefik_logs:
+
+networks:
+  traefik_public:
+    external: true

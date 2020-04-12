@@ -1,0 +1,75 @@
+---
+# deploy a media server from scratch.
+
+# boot strap server
+- name: Install aptitude using apt
+  apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+- name: Install required system packages for docker install
+  apt: name={{ item }} state=latest update_cache=yes
+  loop: [ 'apt-transport-https', 'ca-certificates', 'software-properties-common' ]
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Update apt
+  apt: update_cache=yes
+
+- name: Install required system packages
+  apt: name={{ sys_packages }} state=latest
+
+- name: add 'josiah' to docker group
+  user:
+    name='josiah'
+    groups=docker
+    append=yes
+
+
+# set up mediaserver specific bullshit.
+- name: ensure traefik config directory exists
+  file: state=directory path=/home/josiah/apps/traefik/ owner=josiah group=josiah mode=0700
+
+- name: ensure traefik.log exists
+  file: state=file path=/home/josiah/apps/traefik/traefik.log owner=josiah group=josiah mode=0700  
+
+- name: allow for pretty json errors
+  pip:
+    name: jsondiff
+    
+- name: Create deploy configs dir if it does not exist
+  file:
+    path: /home/josiah/deploys/mediaserver
+    state: directory
+    mode: '0755'
+
+- name: copy over mediaserver config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0777
+  with_items:
+    - {src: 'traefik-compose.yml', dest: '/home/josiah/apps/traefik/traefik-compose.yml'}
+    - {src: 'traefik.toml', dest: '/home/josiah/apps/traefik/traefik.toml'}
+    - {src: 'traefik.yml', dest: '/home/josiah/apps/traefik/traefik.yml'}  
+
+- name: Deploy network
+  docker_stack:
+    state: present
+    name: traefik
+    compose:
+      - /home/josiah/apps/traefik/traefik.yml
+
+
+- name: Deploy traefik service
+  docker_stack:
+    state: present
+    name: traefik-app
+    compose:
+      - /home/josiah/apps/traefik/traefik-compose.yml
