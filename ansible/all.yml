@@ -1,28 +1,20 @@
 ---
-- name: on prem base server config
-  hosts: onprem_servers
-  tasks:
-    - debug: msg="deploying base server config."  
-  roles:
-    - { name: home-net }
-
-- name: on prem wg config
-  hosts: onprem_servers
-  tasks:
-    - debug: msg="Deploying wg."
-  roles:
-    - { name: wg_vpn }
-
 - name: cloud wg config
   hosts: vpn
   tasks:
     - debug: msg="Deploying wg to cloud server"
   roles:
-    - { name: wg_vpn }
+    - { name: wg_vpn, tags: ['wg_vpn'] }
 
 - name: deploy the awful stack
   hosts: prod
   tasks:
     - debug: msg="Deploying awful stack to cloud server"
   roles:
-    - { name: awfulAll }
+    - { name: awfulAll, tags: ['awfulAll'] }
+
+
+- name: Deploy mediaserver
+  hosts: mediaserver
+  roles:
+    - { name: mediaserver, tags: ['mediaserver'] }    
