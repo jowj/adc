@@ -5,7 +5,7 @@ gather_facts: True
 source_os: arch
 become: yes
 create_user: josiah
-
+ansible_become_pass: "{{ vault_ansible_become_pass }}"
 
 # all of this is stolen from mrled, because fuck this is way better than what i was doing.
 # Wireguard docs
