@@ -70,6 +70,6 @@
 - name: Deploy traefik service
   docker_stack:
     state: present
-    name: traefik-app
+    name: mediaserver
     compose:
       - /home/josiah/apps/traefik/traefik-compose.yml

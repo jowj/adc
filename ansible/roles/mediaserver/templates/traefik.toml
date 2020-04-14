@@ -1,36 +1,34 @@
-checkNewVersion = true
+# defaultEntryPoints must be at the top
+# because it should not be in any table below
+
 defaultEntryPoints = ["http", "https"]
 
-# This section enable LetsEncrypt automatic certificate generation / renewal
-[acme]
-email = "me@jowj.net"
-storage = "acme.json" # or "traefik/acme/account" if using KV store
-entryPoint = "https"
-acmeLogging = true
-onDemand = true
-OnHostRule = true
+[log]
+  level = "DEBUG"
 
-# Request wildcard certificates per https://docs.traefik.io/configuration/acme/#wildcard-domains
-[[acme.domains]]
-  main = "hatchery.jowj.net"
-  sans = ["jowj.net"]
+[api]
+  dashboard = true
 
-# Redirect all HTTP to HTTPS (why wouldn't you?)
 [entryPoints]
   [entryPoints.http]
-  address = ":80"
-    [entryPoints.http.redirect]
-      entryPoint = "https"
+    address = ":80"
   [entryPoints.https]
-  address = ":443"
-    [entryPoints.https.tls]
+    address = ":443"
 
-[web]
-address = ":8080"
-watch = true
+[http.middlewares]
+  [http.middlewares.mediaserver-https-redir.redirectScheme]
+    scheme = "https"
+    permanent = true
+
+[certificatesResolvers.mediaserver-resolver.acme]
+  storage = "/acme.json"
+  email = "<me@jowj.net>"
+
+
+[providers.docker]
 
 [docker]
-endpoint = "tcp://127.0.0.1:2375"
-domain = "home.jowj.net"
-watch = true
-swarmmode = true
+  endpoint = "unix:///var/run/docker.sock"
+  domain = "hatchery.home.jowj.net"
+  watch = true
+  exposedbydefault = false

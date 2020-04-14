@@ -1,45 +1,62 @@
+---
 version: '3'
-
 services:
   traefik:
-    image: traefik:alpine
-    command: |-
-      --entryPoints="Name:http Address::80 Redirect.EntryPoint:https"
-      --entryPoints="Name:https Address::443 TLS"
-      --defaultentrypoints="http,https"
-      --accesslogsfile="/var/log/access.log"
-      --acme 
-      --acme.acmelogging="true"
-      # Change this to an actual email address
-      --acme.email="me@jowj.net"
-      --acme.entrypoint="https"
-      --acme.storage="/acme/acme.json"
-      --acme.onhostrule="true"
-      --docker
-      --docker.swarmmode
-      # Change this to your primary domain
-      --docker.domain="home.jowj.net"
-      --docker.watch
-      --web
+    image: traefik:v2.0
+    command: --web --docker --docker.swarmmode --docker.watch --docker.domain="hatchery.home.jowj.net" --logLevel=DEBUG
+    container_name: traefik
     ports:
+      - 8080:8080
       - 80:80
       - 443:443
-      - 8080:8080
-    networks:
-      - traefik_public
     volumes:
       - traefik_acme:/acme/
       - traefik_logs:/var/log/access.log
       - /var/run/docker.sock:/var/run/docker.sock
+      - /home/josiah/apps/traefik/traefik.toml:/etc/traefik/traefik.toml
+    networks:
+      - pubnet
+      - privnet      
     deploy:
       placement:
         constraints:
-          - node.role == manager
-
+          - node.role == manager      
+      labels:
+        - "traefik.enable=true"    
+        - "traefik.http.routers.mediaserver-traefik-api.rule=Host(`hatchery.home.jowj.net`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
+        - "traefik.http.routers.mediaserver-traefik-api.service=api@internal"
+        - "traefik.http.routers.mediaserver-traefik-api.entrypoints=http"
+      
+  hydra2:
+    image: linuxserver/hydra2:latest
+    container_name: hydra2
+    hostname: hydra2
+    volumes:
+      - /home/josiah/apps/hydra2/:/config
+      - /home/josiah/Downloads/usenet-complete/:/downloads
+    environment:
+      PGID: 1000
+      PUID: 1000
+      TZ: American/Chicago
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.hydra2.service=hydra2"
+        - "traefik.http.routers.hydra2.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/hydra2`))"
+        - "traefik.http.routers.hydra2.entrypoints=http"
+        - "traefik.http.services.hydra2.loadbalancer.server.port=5076"
+    networks:
+      - privnet
+    
 volumes:
   traefik_acme:
   traefik_logs:
 
 networks:
-  traefik_public:
+  pubnet:
     external: true
+networks:
+  pubnet:
+    driver: overlay
+  privnet:
+    driver: overlay
