@@ -1,0 +1,138 @@
+---
+version: '3.7'
+services:
+  traefik:
+    image: traefik
+    networks:
+      - pubnet    
+    command: --web --docker --docker.swarmmode --docker.watch --docker.domain="hatchery.home.jowj.net" --logLevel=DEBUG
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - traefik_acme:/acme/
+      - traefik_logs:/var/log/access.log
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/josiah/apps/traefik/traefik.toml:/traefik.toml
+    deploy:
+      mode: global      
+      placement:
+        constraints:
+          - node.role == manager
+    labels:
+      - "traefik.enable=true"    
+      - "traefik.http.routers.mediaserver-traefik-api.rule=Host(`hatchery.home.jowj.net`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
+      - "traefik.http.routers.mediaserver-traefik-api.service=api@internal"
+      - "traefik.http.routers.mediaserver-traefik-api.entrypoints=http"
+
+  hydra2:
+    image: linuxserver/hydra2:latest
+    networks:
+      - pubnet
+    volumes:
+      - /home/josiah/apps/hydra2/:/config
+      - /home/josiah/Downloads/usenet-complete/:/downloads
+    environment:
+      PGID: 1000
+      PUID: 1000
+      TZ: American/Chicago
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-hydra2.loadbalancer.server.port=5076"
+      - "traefik.http.routers.mediaserver-hydra2.service=mediaserver-hydra2"
+      - "traefik.http.routers.mediaserver-hydra2.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/hydra2`)"
+
+  sabnzb:
+    image: "linuxserver/sabnzbd"
+    networks:
+      - pubnet    
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/sabnzbd:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/downloads"
+      - "/home/josiah/Downloads/usenet-incomplete/:/incomplete-downloads"
+      - "/home/josiah/Downloads/usenet-watched/:/watched-folder"      
+      - "/media/usenet/tv:/tv"
+      - "/media/usenet/audio/:/music"
+      - "/media/usenet/movies/:/movies"
+      - "/media/usenet/itunes-synology/iTunes Media/Automatically Add to iTunes.localized/:/itunes"
+      - "/media/usenet/book-library/books/:/books"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-sabnzbd.loadbalancer.server.port=8080"
+      - "traefik.http.routers.mediaserver-sabnzbd.service=mediaserver-sabnzbd"
+      - "traefik.http.routers.mediaserver-sabnzbd.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/sabnzbd`)"
+  sonarr:
+    image: "linuxserver/sonarr"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/sonarr:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/downloads"
+      - "/media/usenet/tv/:/tv"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-sonarr.loadbalancer.server.port=8989"
+      - "traefik.http.routers.mediaserver-sonarr.service=mediaserver-sonarr"
+      - "traefik.http.routers.mediaserver-sonarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/sonarr`)"
+    networks:
+      - pubnet
+      
+  lidarr:
+    image: "linuxserver/lidarr"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/lidarr:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/downloads"
+      - "/media/usenet/audio/:/music"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-lidarr.loadbalancer.server.port=8686"
+      - "traefik.http.routers.mediaserver-lidarr.service=mediaserver-lidarr"
+      - "traefik.http.routers.mediaserver-lidarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/lidarr`)"
+    networks:
+      - pubnet
+
+  radarr:
+    image: "linuxserver/radarr"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/radarr:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/downloads"
+      - "/media/usenet/movies/:/movies"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-radarr.loadbalancer.server.port=7878"
+      - "traefik.http.routers.mediaserver-radarr.service=mediaserver-radarr"
+      - "traefik.http.routers.mediaserver-radarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/radarr`)"
+    networks:
+      - pubnet
+
+  whoami:
+    image: containous/whoami:latest
+    networks:
+      - pubnet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mediaserver-whoami.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/whoami`)"
+      - "traefik.http.routers.mediaserver-whoami.service=mediaserver-whoami"
+      - "traefik.http.services.mediaserver-whoami.loadbalancer.server.port=80"
+      
+volumes:
+  traefik_acme:
+  traefik_logs:
+
+networks:
+  pubnet:
+    driver: overlay    
