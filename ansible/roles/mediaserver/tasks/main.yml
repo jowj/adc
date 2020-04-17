@@ -31,6 +31,9 @@
     groups=docker
     append=yes
 
+- name: Init a new swarm with default parameters
+  docker_swarm:
+    state: present    
 
 # set up mediaserver specific bullshit.
 - name: ensure traefik config directory exists
