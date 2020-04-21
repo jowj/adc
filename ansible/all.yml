@@ -21,3 +21,10 @@
   gather_facts: no
   roles:
     - { name: mediaserver, tags: ['mediaserver'] }    
+
+
+- name: Deploy gitea
+  hosts: dockerhosts
+  gather_facts: no
+  roles:
+    - { name: gitea, tags: ['gitea'] }

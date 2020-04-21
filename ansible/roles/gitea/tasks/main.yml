@@ -1,0 +1,19 @@
+---
+
+- name: Ensure the apps/gitea directory exists
+  file: state=directory path=/home/josiah/apps/gitea/ owner=josiah group=josiah mode=0700
+
+- name: copy over mediaserver config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0777
+  with_items:
+    - {src: 'gitea-compose.yml', dest: '/home/josiah/apps/gitea/docker-compose.yml'}
+
+- name: Deploy gitea stack
+  docker_compose:
+    state: present
+    # name: gitea
+    project_src: "/home/josiah/apps/gitea/"
+ 
