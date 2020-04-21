@@ -1,5 +1,4 @@
 ---
-
 - name: try to update mojo directory
   shell: cd /home/josiah/mojojojo-bot && git pull
   register: result
