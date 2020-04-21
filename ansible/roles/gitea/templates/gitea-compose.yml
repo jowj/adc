@@ -30,9 +30,9 @@ services:
     image: postgres:9.6
     restart: always
     environment:
-      - POSTGRES_USER=gitea
-      - POSTGRES_PASSWORD=gitea
-      - POSTGRES_DB=gitea
+      - POSTGRES_USER={{ GITEA_POSTGRES_USER }}
+      - POSTGRES_PASSWORD={{ GITEA_POSTGRES_USER }}
+      - POSTGRES_DB={{ GITEA_POSTGRES_USER }}
     networks:
       - gitea
     volumes:
