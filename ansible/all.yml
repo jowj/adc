@@ -28,3 +28,10 @@
   gather_facts: no
   roles:
     - { name: gitea, tags: ['gitea'] }
+
+- name: Deploy nextcloud
+  hosts: dockerhosts
+  gather_facts: no
+  roles:
+    - { name: nextcloud, tags: ['nextcloud'] }
+    
