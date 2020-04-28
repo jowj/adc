@@ -9,10 +9,20 @@
     dest: "{{ item.dest }}"
     mode: 0777
   with_items:
-    - {src: 'nextcloud-compose.yml', dest: '/home/josiah/apps/gitea/docker-compose.yml'}
+    - {src: 'nextcloud-compose.yml', dest: '/home/josiah/apps/nextcloud/docker-compose.yml'}
 
-- name: Deploy nextcloud stack
+- name: Deploy nextcloud db only
+  docker_compose:
+    state: present
+    services: db
+    project_src: "/home/josiah/apps/nextcloud/"
+
+- name: Wait for the fucking idiot DB to actually initialize. 
+  pause:
+    seconds: 60
+
+- name: Deploy the rest of nextcloud.
   docker_compose:
     state: present
     project_src: "/home/josiah/apps/nextcloud/"
- 
+    
