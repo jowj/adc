@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  mojo-web:
+    build: 
+      context: /home/josiah/apps/mojo/mojo-web/
+      dockerfile: Dockerfile      
+    image: mojo-web
+
+    environment:
+      SLACK_BOT_TOKEN: {{ slack_bot_token }}
+    volumes:
+      - /mnt/volume_sfo2_znc/:/shared/
+
+  mojo-rtm:
+    build: 
+      context: /home/josiah/apps/mojo/mojo-rtm/ 
+      dockerfile: Dockerfile
+    image: mojo-rtm      
+    environment:
+      SLACK_BOT_TOKEN: {{ slack_bot_token }}
+    volumes:
+      - /mnt/volume_sfo2_znc/:/shared/
+
+  arke:
+    build: 
+      context: /home/josiah/apps/arke/
+      dockerfile: Dockerfile
+    image: arke
+    volumes:
+      - /mnt/volume_sfo2_znc/:/shared/
+
+  znc:
+    build: 
+      context: /home/josiah/apps/znc/
+      dockerfile: Dockerfile
+    image: znc      
+    ports:
+      - 5000:5000
+    volumes:
+      - /mnt/volume_sfo2_znc/:/znc-data

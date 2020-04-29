@@ -9,7 +9,7 @@
 
 - name: deploy the awful stack
   gather_facts: no  
-  hosts: prod
+  hosts: dockerhosts
   tasks:
     - debug: msg="Deploying awful stack to cloud server"
   roles:
