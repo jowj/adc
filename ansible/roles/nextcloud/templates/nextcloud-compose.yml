@@ -6,13 +6,15 @@ volumes:
 
 services:
   db:
-    image: postgres:12.2
+    image: postgres:9.6
     ports:
       - 5432:5432
     restart: always
     volumes:
       - /mnt/shared_document_store/nextcloud/sql:/var/lib/postgresql
     environment:
+      - USER_UID=1000
+      - USER_GID=1000
       - POSTGRES_ROOT_PASSWORD={{ NEXTCLOUD_POSTGRES_ROOT_PASSWORD }}
       - POSTGRES_PASSWORD={{ NEXTCLOUD_POSTGRES_PASSWORD }}
       - POSTGRES_DB={{ NEXTCLOUD_POSTGRES_DATABASE }}
@@ -30,8 +32,10 @@ services:
     volumes:
       - /mnt/shared_document_store/nextcloud/html/:/var/www/html/
     depends_on:
-      - db      
+      - db
     environment:
+      - USER_UID=1000
+      - USER_GID=1000      
       - POSTGRES_ROOT_PASSWORD={{ NEXTCLOUD_POSTGRES_ROOT_PASSWORD }}
       - POSTGRES_PASSWORD={{ NEXTCLOUD_POSTGRES_PASSWORD }}
       - POSTGRES_DB={{ NEXTCLOUD_POSTGRES_DATABASE }}
