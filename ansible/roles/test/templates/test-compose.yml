@@ -1,0 +1,46 @@
+version: '3'
+
+networks:
+  gitea:
+    external: false
+  pubnet:
+
+volumes:
+  traefik_acme:
+  traefik_logs:    
+    
+services:
+  traefik:
+    image: traefik:v2.2
+    networks:
+      - pubnet    
+    command: --web --docker --docker.swarmmode --docker.watch --logLevel=DEBUG
+    ports:
+      - 80:80
+      - 443:443
+      - 5000:5000
+    volumes:
+      - traefik_acme:/acme/
+      - traefik_logs:/var/log/access.log
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/josiah/apps/traefik/traefik.toml:/traefik.toml
+    deploy:
+      mode: global      
+      placement:
+        constraints:
+          - node.role == manager
+    labels:
+      - "traefik.enable=true"    
+      - "traefik.http.routers.awfulAll-traefik-api.rule=Host(`awful-1.awful.club`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
+      - "traefik.http.routers.awfulAll-traefik-api.service=api@internal"
+      - "traefik.http.routers.awfulAll-traefik-api.entrypoints=http"
+
+  whoami:
+    image: containous/whoami:latest
+    networks:
+      - pubnet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.awfulAll-whoami.rule=Host(`whoami.awful.club`)"
+      - "traefik.http.routers.awfulAll-whoami.service=awfulAll-whoami"
+      - "traefik.http.services.awfulAll-whoami.loadbalancer.server.port=80"      

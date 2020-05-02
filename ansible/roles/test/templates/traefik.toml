@@ -1,0 +1,33 @@
+# defaultEntryPoints must be at the top
+# because it should not be in any table below
+
+defaultEntryPoints = ["http", "https"]
+
+[log]
+  level = "DEBUG"
+
+[api]
+  dashboard = true
+
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
+  [entryPoints.https]
+    address = ":443"
+
+[http.middlewares]
+  [http.middlewares.mediaserver-https-redir.redirectScheme]
+    scheme = "https"
+    permanent = true
+
+[certificatesResolvers.mediaserver-resolver.acme]
+  storage = "/acme.json"
+  email = "<me@jowj.net>"
+
+
+[providers.docker]
+
+[docker]
+  endpoint = "unix:///var/run/docker.sock"
+  watch = true
+  exposedbydefault = false
