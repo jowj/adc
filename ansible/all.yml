@@ -35,3 +35,10 @@
   roles:
     - { name: nextcloud, tags: ['nextcloud'] }
     
+- name: deploy the dev stack
+  gather_facts: no  
+  hosts: dockerhosts
+  tasks:
+    - debug: msg="Deploying awful stack to cloud server"
+  roles:
+    - { name: test, tags: ['test'] }    
