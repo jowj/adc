@@ -1,27 +1,66 @@
 ---
+# deploy a awful-n host from scratch.
 
-# Update the mojo git repo
-- name: ensure the app folders exist
-  file: state=directory path={{ item }} owner=josiah group=josiah mode=0700
-  loop: [ '/home/josiah/apps/mojo/', '/home/josiah/apps/arke/', '/home/josiah/apps/znc/', '/home/josiah/apps/awful/' ]
-  
-- name: update the mojo git repo
-  git:
-    repo: 'https://git.awful.club/hosted/mojojojo-bot.git'
-    dest: /home/josiah/apps/mojo/
-    version: master
+# boot strap server
+# - name: Install aptitude using apt
+#   apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
 
-- name: update the arke git repo
-  git:
-    repo: 'https://git.awful.club/hosted/arke.git'
-    dest: /home/josiah/apps/arke/
-    version: master
+# - name: Install required system packages for docker install
+#   apt: name={{ item }} state=latest update_cache=yes
+#   loop: [ 'apt-transport-https', 'ca-certificates', 'software-properties-common' ]
 
-- name: update the znc git repo
-  git:
-    repo: 'https://git.awful.club/hosted/znc-docker.git'
-    dest: /home/josiah/apps/znc/
-    version: master
+# - name: Add Docker GPG apt Key
+#   apt_key:
+#     url: https://download.docker.com/linux/debian/gpg
+#     state: present
+
+# - name: Add Docker Repository
+#   apt_repository:
+#     repo: deb https://download.docker.com/linux/ubuntu bionic stable
+#     state: present
+
+# - name: Update apt
+#   apt: update_cache=yes
+
+# - name: Install required system packages
+#   apt: name={{ sys_packages }} state=latest
+
+# - name: add 'josiah' to docker group
+#   user:
+#     name='josiah'
+#     groups=docker
+#     append=yes
+
+# - name: Init a new swarm with default parameters
+#   docker_swarm:
+#     state: present    
+
+# - name: ensure the app folders exist
+#   file: state=directory path={{ item }} owner=josiah group=josiah mode=0700
+#   loop: [ '/home/josiah/apps/mojo/', '/home/josiah/apps/arke/', '/home/josiah/apps/znc/', '/home/josiah/apps/awful/' ]
+
+# - name: allow for pretty json errors
+#   pip:
+#     name: jsondiff
+
+# Update the app git repos
+# - name: update the mojo git repo
+#   git:
+#     repo: 'https://git.awful.club/hosted/mojojojo-bot.git'
+#     dest: /home/josiah/apps/mojo/
+#     version: master
+
+# - name: update the arke git repo
+#   git:
+#     repo: 'https://git.awful.club/hosted/arke.git'
+#     dest: /home/josiah/apps/arke/
+#     version: master
+
+# - name: update the znc git repo
+#   git:
+#     repo: 'https://git.awful.club/hosted/znc-docker.git'
+#     dest: /home/josiah/apps/znc/
+#     version: master
 
 - name: copy over awful-All compose file
   template:
@@ -32,6 +71,8 @@
     - {src: 'awful-compose.yml', dest: '/home/josiah/apps/awful/docker-compose.yml'}
 
 - name: Deploy awful stack
-  docker_compose:
+  docker_stack:
     state: present
-    project_src: "/home/josiah/apps/awful/"
+    name: awfulAll
+    compose:
+      - /home/josiah/apps/awful/docker-compose.yml

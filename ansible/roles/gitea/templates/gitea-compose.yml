@@ -5,7 +5,7 @@ networks:
     external: false
 
 services:
-  server:
+  gitea-server:
     image: gitea/gitea:latest
     environment:
       - USER_UID=1000
@@ -26,7 +26,7 @@ services:
     depends_on:
       - db
 
-  db:
+  gitea-db:
     image: postgres:9.6
     restart: always
     environment:

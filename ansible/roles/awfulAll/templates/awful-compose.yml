@@ -1,12 +1,56 @@
 version: '3'
 
+networks:
+  gitea:
+    external: false
+
+volumes:
+  nextcloud:
+  db:
+  traefik_acme:
+  traefik_logs:    
+    
 services:
+  traefik:
+    image: traefik
+    networks:
+      - pubnet    
+    command: --web --docker --docker.swarmmode --docker.watch --logLevel=DEBUG
+    ports:
+      - 80:80
+      - 443:443
+      - 5000:5000
+    volumes:
+      - traefik_acme:/acme/
+      - traefik_logs:/var/log/access.log
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/josiah/apps/traefik/traefik.toml:/traefik.toml
+    deploy:
+      mode: global      
+      placement:
+        constraints:
+          - node.role == manager
+    labels:
+      - "traefik.enable=true"    
+      - "traefik.http.routers.awfulAll-traefik-api.rule=Host(`awful-1.awful.club`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
+      - "traefik.http.routers.awfulAll-traefik-api.service=api@internal"
+      - "traefik.http.routers.awfulAll-traefik-api.entrypoints=http"
+
+  whoami:
+    image: containous/whoami:latest
+    networks:
+      - pubnet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.awfulAll-whoami.rule=Host(`awful-1.awful.club`) && PathPrefix(`/whoami`)"
+      - "traefik.http.routers.awfulAll-whoami.service=awfulAll-whoami"
+      - "traefik.http.services.awfulAll-whoami.loadbalancer.server.port=80"      
+      
   mojo-web:
     build: 
       context: /home/josiah/apps/mojo/mojo-web/
       dockerfile: Dockerfile      
     image: mojo-web
-
     environment:
       SLACK_BOT_TOKEN: {{ slack_bot_token }}
     volumes:
@@ -21,7 +65,12 @@ services:
       SLACK_BOT_TOKEN: {{ slack_bot_token }}
     volumes:
       - /mnt/volume_sfo2_znc/:/shared/
-
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.awfulAll-mojo-rtm.loadbalancer.server.port=443"
+      - "traefik.http.routers.awfulAll-mojo-rtm.service=awfulAll-mojo-rtm"
+      - "traefik.http.routers.awfulAll-mojo-rtm.rule=Host(`slack.awful.club`)"
+      
   arke:
     build: 
       context: /home/josiah/apps/arke/
@@ -39,3 +88,87 @@ services:
       - 5000:5000
     volumes:
       - /mnt/volume_sfo2_znc/:/znc-data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.awfulAll-mojo-rtm.loadbalancer.server.port=5000"
+      - "traefik.http.routers.awfulAll-mojo-rtm.service=awfulAll-znc"
+      - "traefik.http.routers.awfulAll-mojo-rtm.rule=Host(`bouncer.awful.club`)"
+
+  gitea-server:
+    image: gitea/gitea:latest
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - DB_TYPE=postgres
+      - DB_HOST=db:5432
+      - DB_NAME={{ GITEA_DB_NAME }}
+      - DB_USER={{ GITEA_DB_USER }}
+      - DB_PASSWD={{ GITEA_DB_PASSWD }}
+    restart: always
+    networks:
+      - gitea
+    volumes:
+      - /mnt/volume_sfo2_01/gitea:/data
+    ports:
+      - "3000:3000"
+      - "222:22"
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.services.awfulAll-gitea.port=222"
+      - "traefik.http.services.awfulAll-gitea.loadbalancer.server.port=3000"
+      - "traefik.http.routers.awfulAll-gitea.service=awfulAll-znc"
+      - "traefik.http.routers.awfulAll-gitea.rule=Host(`git.awful.club`)"      
+
+  gitea-db:
+    image: postgres:9.6
+    restart: always
+    environment:
+      - POSTGRES_USER={{ GITEA_POSTGRES_USER }}
+      - POSTGRES_PASSWORD={{ GITEA_POSTGRES_USER }}
+      - POSTGRES_DB={{ GITEA_POSTGRES_USER }}
+    networks:
+      - gitea
+    volumes:
+      - /mnt/volume_sfo2_01/psql:/var/lib/postgresql/data
+
+  nextcloud-db:
+    image: postgres:9.6
+    ports:
+      - 5432:5432
+    restart: always
+    volumes:
+      - /mnt/shared_document_store/nextcloud/sql:/var/lib/postgresql
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - POSTGRES_ROOT_PASSWORD={{ NEXTCLOUD_POSTGRES_ROOT_PASSWORD }}
+      - POSTGRES_PASSWORD={{ NEXTCLOUD_POSTGRES_PASSWORD }}
+      - POSTGRES_DB={{ NEXTCLOUD_POSTGRES_DATABASE }}
+      - POSTGRES_USER={{ NEXTCLOUD_POSTGRES_USER }}
+      - POSTGRES_HOST={{ NEXTCLOUD_POSTGRES_HOST }}
+      - NEXTCLOUD_ADMIN_USER={{ NEXTCLOUD_ADMIN_USER }}
+      - NEXTCLOUD_ADMIN_PASSWORD={{ NEXTCLOUD_ADMIN_PASSWORD }}
+
+  nextcloud-app:
+    image: nextcloud:18
+    ports:
+      - 8080:80
+    links:
+      - nextcloud-db
+    volumes:
+      - /mnt/shared_document_store/nextcloud/html/:/var/www/html/
+    depends_on:
+      - nextcloud-db
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000      
+      - POSTGRES_ROOT_PASSWORD={{ NEXTCLOUD_POSTGRES_ROOT_PASSWORD }}
+      - POSTGRES_PASSWORD={{ NEXTCLOUD_POSTGRES_PASSWORD }}
+      - POSTGRES_DB={{ NEXTCLOUD_POSTGRES_DATABASE }}
+      - POSTGRES_USER={{ NEXTCLOUD_POSTGRES_USER }}
+      - POSTGRES_HOST={{ NEXTCLOUD_POSTGRES_HOST }}
+      - NEXTCLOUD_ADMIN_USER={{ NEXTCLOUD_ADMIN_USER }}
+      - NEXTCLOUD_ADMIN_PASSWORD={{ NEXTCLOUD_ADMIN_PASSWORD }}
+      
