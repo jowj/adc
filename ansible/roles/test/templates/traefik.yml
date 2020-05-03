@@ -1,0 +1,39 @@
+# defaultEntryPoints must be at the top
+# because it should not be in any table below
+defaultEntryPoints: ["http", "https"]
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+api:
+  dashboard: true
+  debug: true
+  insecure: false
+entryPoints:
+  ssh:
+    address: ":22"
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+providers:
+  docker:
+    watch: true
+    swarmMode: true
+    endpoint: "unix:///var/run/docker.sock"
+    exposedbydefault: false
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "me@jowj.net"
+      storage: "/acme/acme.json"
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: "digitalocean"
+log:
+  # filePath: "/log/traefik.log"
+  level: DEBUG
+# accessLog:
+#   filePath: "/log/access.log"
+#   bufferingSize: 100

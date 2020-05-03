@@ -5,12 +5,13 @@
     dest: "{{ item.dest }}"
     mode: 0777
   with_items:
-    - {src: 'test-compose.yml', dest: '/home/josiah/apps/traefik/docker-compose.yml'}
-    - {src: 'traefik.toml', dest: '/home/josiah/apps/traefik/traefik.toml'}    
+    - {src: 'test-compose.yml', dest: '/home/josiah/apps/test/docker-compose.yml'}
+    - {src: 'traefik.yml', dest: '/home/josiah/apps/test/traefik.yml'}
+    - {src: 'traefik.toml', dest: '/home/josiah/apps/test/traefik.toml'}
 
 - name: Deploy awful stack
   docker_stack:
     state: present
     name: test
     compose:
-      - /home/josiah/apps/awful/docker-compose.yml
+      - /home/josiah/apps/test/docker-compose.yml

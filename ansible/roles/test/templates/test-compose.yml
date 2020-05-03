@@ -1,9 +1,8 @@
-version: '3'
+version: '3.3'
 
 networks:
   gitea:
     external: false
-  pubnet:
 
 volumes:
   traefik_acme:
@@ -12,35 +11,51 @@ volumes:
 services:
   traefik:
     image: traefik:v2.2
-    networks:
-      - pubnet    
-    command: --web --docker --docker.swarmmode --docker.watch --logLevel=DEBUG
+    environment:
+      DO_AUTH_TOKEN: "{{ DO_AUTH_TOKEN }}"
     ports:
-      - 80:80
-      - 443:443
-      - 5000:5000
+      - 80:80/tcp
+      - 443:443/tcp
+      - 8080:8080/tcp
     volumes:
-      - traefik_acme:/acme/
-      - traefik_logs:/var/log/access.log
+      - traefik_acme:/acme
+      - traefik_logs:/log
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/josiah/apps/traefik/traefik.toml:/traefik.toml
+      - /home/josiah/apps/test/traefik.toml:/etc/traefik/traefik.toml
     deploy:
       mode: global      
       placement:
         constraints:
           - node.role == manager
     labels:
-      - "traefik.enable=true"    
-      - "traefik.http.routers.awfulAll-traefik-api.rule=Host(`awful-1.awful.club`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
-      - "traefik.http.routers.awfulAll-traefik-api.service=api@internal"
-      - "traefik.http.routers.awfulAll-traefik-api.entrypoints=http"
+      - "traefik.enable=true"
 
-  whoami:
+      # Dashboard      
+      - "traefik.http.routers.awfulAll-traefik-api.rule=Host(`awful-1.awful.club`)&&(PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.awfulAll-traefik-api.service=api@internal"
+      - "traefik.http.routers.awfulAll-traefik-api.entryPoint=https"
+      - "traefik.http.routers.awfulAll-traefik-api.tls.certresolver=awfulAll-resolver"
+      - "traefik.http.routers.awfulAll-traefik-api.tls=true"
+
+  awfulAll-whoami:
     image: containous/whoami:latest
-    networks:
-      - pubnet
+    
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.awfulAll-whoami.rule=Host(`whoami.awful.club`)"
       - "traefik.http.routers.awfulAll-whoami.service=awfulAll-whoami"
-      - "traefik.http.services.awfulAll-whoami.loadbalancer.server.port=80"      
+      - "traefik.http.routers.awfulAll-whoami.entryPoint=https"
+      - "traefik.http.routers.awfulAll-whoami.tls.certresolver=awfulAll-resolver"
+      - "traefik.http.routers.awfulAll-whoami.tls=true"            
+
+  # root-handlers:
+  #   image: nginx:1.18
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.awfulAll-whoami.rule=Host(`whoami.awful.club`)"
+  #     - "traefik.http.routers.awfulAll-whoami.service=awfulAll-whoami"
+  #     - "traefik.http.routers.awfulAll-whoami.entryPoints=https"
+  #     - "traefik.http.routers.awfulAll-whoami.tls.certresolver=awfulAll-resolver"
+  #     # - "traefik.http.services.awfulAll-whoami.loadbalancer.server.port=443"      
+  #   volumes:
+  #     - /home/josiah/apps/nginx:/etc/nginx/conf.d

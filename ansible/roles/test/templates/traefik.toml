@@ -8,6 +8,7 @@ defaultEntryPoints = ["http", "https"]
 
 [api]
   dashboard = true
+  insecure = false
 
 [entryPoints]
   [entryPoints.http]
@@ -16,13 +17,17 @@ defaultEntryPoints = ["http", "https"]
     address = ":443"
 
 [http.middlewares]
-  [http.middlewares.mediaserver-https-redir.redirectScheme]
+  [http.middlewares.awfulAll-https-redir.redirectScheme]
     scheme = "https"
     permanent = true
 
-[certificatesResolvers.mediaserver-resolver.acme]
-  storage = "/acme.json"
-  email = "<me@jowj.net>"
+[certificatesResolvers.awfulAll-resolver.acme]
+  storage = "/acme/acme.json"
+  email = "me@jowj.net"
+  caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  
+  [certificatesResolvers.awfulAll-resolver.acme.dnsChallenge]
+    provider = "digitalocean"
 
 
 [providers.docker]
@@ -31,3 +36,5 @@ defaultEntryPoints = ["http", "https"]
   endpoint = "unix:///var/run/docker.sock"
   watch = true
   exposedbydefault = false
+
+
