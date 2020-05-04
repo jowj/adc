@@ -7,7 +7,7 @@
   with_items:
     - {src: 'test-compose.yml', dest: '/home/josiah/apps/test/docker-compose.yml'}
     - {src: 'traefik.yml', dest: '/home/josiah/apps/test/traefik.yml'}
-    - {src: 'traefik.toml', dest: '/home/josiah/apps/test/traefik.toml'}
+    # - {src: 'traefik.toml', dest: '/home/josiah/apps/test/traefik.toml'}
 
 - name: Deploy awful stack
   docker_stack:
