@@ -62,13 +62,15 @@
 #     dest: /home/josiah/apps/znc/
 #     version: master
 
-- name: copy over awful-All compose file
+- name: copy over awful-All config files
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: 0777
   with_items:
     - {src: 'awful-compose.yml', dest: '/home/josiah/apps/awful/docker-compose.yml'}
+    - {src: 'traefik.yml', dest: '/home/josiah/apps/awful/traefik.yml'}
+    - {src: 'awful.club.html', dest: '/home/josiah/apps/awful/awful.club.html'}        
 
 - name: Deploy awful stack
   docker_stack:
