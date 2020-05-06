@@ -11,7 +11,9 @@ api:
   insecure: false
 entryPoints:
   ssh: 
-    address: ":22"
+    address: ":222"
+  gitea-web: 
+    address: ":3000"    
   web:
     address: ":80"
   websecure:
