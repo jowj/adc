@@ -3,6 +3,8 @@ version: '3'
 networks:
   gitea:
     external: false
+  pubnet:
+    external: false
 
 volumes:
   nextcloud:
@@ -23,6 +25,7 @@ services:
     environment:
       DO_AUTH_TOKEN: "{{ DO_AUTH_TOKEN }}"
     networks:
+      pubnet:
       gitea:      
     volumes:
       - "/home/josiah/apps/awful/letsencrypt/:/letsencrypt"
@@ -44,6 +47,8 @@ services:
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=awful-letsencrypt"
       - "traefik.http.routers.whoami.tls=true"
+    networks:
+      pubnet:      
       
   nginx: 
     image: nginx:1.17.10
@@ -57,6 +62,8 @@ services:
       - "traefik.http.routers.nginx.rule=Host(`awful.club`)||Host(`jowj.net`)"
       - "traefik.http.routers.nginx.entrypoints=websecure"
       - "traefik.http.routers.nginx.tls.certresolver=awful-letsencrypt"
+    networks:
+      pubnet:      
 
   gitea-server:
     image: gitea/gitea:latest
