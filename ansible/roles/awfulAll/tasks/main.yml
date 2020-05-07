@@ -44,23 +44,23 @@
 #     name: jsondiff
 
 # Update the app git repos
-# - name: update the mojo git repo
-#   git:
-#     repo: 'https://git.awful.club/hosted/mojojojo-bot.git'
-#     dest: /home/josiah/apps/mojo/
-#     version: master
+- name: update the mojo git repo
+  git:
+    repo: 'https://git.awful.club/hosted/mojojojo-bot.git'
+    dest: /home/josiah/apps/mojo/
+    version: master
 
-# - name: update the arke git repo
-#   git:
-#     repo: 'https://git.awful.club/hosted/arke.git'
-#     dest: /home/josiah/apps/arke/
-#     version: master
+- name: update the arke git repo
+  git:
+    repo: 'https://git.awful.club/hosted/arke.git'
+    dest: /home/josiah/apps/arke/
+    version: master
 
-# - name: update the znc git repo
-#   git:
-#     repo: 'https://git.awful.club/hosted/znc-docker.git'
-#     dest: /home/josiah/apps/znc/
-#     version: master
+- name: update the znc git repo
+  git:
+    repo: 'https://git.awful.club/hosted/znc-docker.git'
+    dest: /home/josiah/apps/znc/
+    version: master
 
 - name: copy over awful-All config files
   template:

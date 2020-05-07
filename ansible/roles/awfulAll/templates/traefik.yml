@@ -12,6 +12,8 @@ api:
 entryPoints:
   ssh: 
     address: ":222"
+  irc: 
+    address: ":5000"    
   gitea-web: 
     address: ":3000"    
   web:
