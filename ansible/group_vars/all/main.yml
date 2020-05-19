@@ -1,5 +1,10 @@
 ---
 
+global_syslog_host: syslog.home.jowj.net
+global_syslog_netsys_port: "514"
+global_syslog_netcons_port: "5514"
+global_syslog_nettemp_port: "5515"
+
 remote_user: josiah
 gather_facts: True
 source_os: arch
@@ -70,3 +75,11 @@ NEXTCLOUD_ADMIN_PASSWORD: "{{ VAULT_NEXTCLOUD_ADMIN_PASSWORD }}"
 
 # DO shit
 DO_AUTH_TOKEN: "{{ VAULT_DO_AUTH_TOKEN }}"
+
+# Syslog shit
+
+sysloghost_share_mountpoint: /syslog/
+
+sysloghost_netsys_port: "{{ global_syslog_netsys_port }}"
+sysloghost_netcons_port: "{{ global_syslog_netcons_port }}"
+sysloghost_nettemp_port: "{{ global_syslog_nettemp_port }}"

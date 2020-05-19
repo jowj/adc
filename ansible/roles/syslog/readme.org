@@ -1,0 +1,6 @@
+* syslog role
+skeleton build out right now.
+
+** shit to fix
+- [ ] move away from NFS, but that's a wider problem
+- [ ] mount the synology as part of the play.

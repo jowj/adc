@@ -1,0 +1,35 @@
+---
+- name: Install syslog-ng etc
+  apt:
+    name:
+      - logrotate
+      - syslog-ng
+      - nsf-common # required for mounting the idiot nfs thing over idiot nfs, the worst fs.
+    state: latest
+
+
+- name: Configure firewall (Ubuntu)
+  block:
+  - name: Configure syslog UDP ports (Ubuntu)
+    ufw: port={{ item }} proto=udp rule=allow
+    with_items: "{{ sysloghost_all_ports }}"
+  - name: Configure syslog TCP ports (Ubuntu)
+    ufw: port={{ item }} proto=tcp rule=allow
+    with_items: "{{ sysloghost_all_ports }}"
+  when: ansible_distribution == "Ubuntu"
+
+- name: Apply syslog-ng configuration
+  template:
+    src: syslog-ng.conf.j2
+    dest: /etc/syslog-ng/syslog-ng.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart syslog-ng
+
+  
+
+- name: Start syslog-ng
+  service:
+    name: syslog-ng
+    state: started

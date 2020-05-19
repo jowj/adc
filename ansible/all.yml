@@ -16,6 +16,12 @@
     - { name: awfulAll, tags: ['awfulAll'] }
 
 
+- name: Configure home-net base packages
+  hosts: home
+  roles:
+    - { name: home-net, tags: ['base'] }
+
+
 - name: Deploy mediaserver
   hosts: mediaserver
   gather_facts: no
@@ -42,3 +48,11 @@
     - debug: msg="Deploying awful stack to cloud server"
   roles:
     - { name: test, tags: ['test'] }    
+
+- name: deploy syslog server
+  gather_facts: no  
+  hosts: syslog
+  tasks:
+    - debug: msg="Deploy syslog server to larva."
+  roles:
+    - { name: syslog, tags: ['syslog'] }      
