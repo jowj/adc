@@ -18,6 +18,7 @@
 
 - name: Configure home-net base packages
   hosts: home
+  gather_facts: no
   roles:
     - { name: home-net, tags: ['base'] }
 

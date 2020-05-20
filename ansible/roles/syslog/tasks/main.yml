@@ -4,7 +4,7 @@
     name:
       - logrotate
       - syslog-ng
-      - nsf-common # required for mounting the idiot nfs thing over idiot nfs, the worst fs.
+      - nfs-common # required for mounting the idiot nfs thing over idiot nfs, the worst fs.
     state: latest
 
 
@@ -16,7 +16,6 @@
   - name: Configure syslog TCP ports (Ubuntu)
     ufw: port={{ item }} proto=tcp rule=allow
     with_items: "{{ sysloghost_all_ports }}"
-  when: ansible_distribution == "Ubuntu"
 
 - name: Apply syslog-ng configuration
   template:
