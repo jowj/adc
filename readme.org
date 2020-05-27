@@ -1,58 +1,31 @@
 * adc: agares deployment core
 this was spun out of agares (which has sense been deprecated) to keep my machine setup bullshit separate from deploys and small docker-compose files not deserving of their own repo.
 
-** ansible
-houses ansible roles
+** goals:
+- [ ] use docker for as much as possible (still WIP; pleroma is a notable non-docker core service I gotta figure out)
+- [ ] use ansible for deployment (still WIP; mostly done, pleroma hasn't been moved over to ansible but I think that's the last thing)
+- [X] use ansible-vault for secrets management.
+  - when I was a small baby in running my own infrastructure i used real bad default passwords because I didn't know how to do secrets management and just, like, thought I was clever for opting out? oops.
+- [ ] be able to bootstrap my infrastructure from nothing (recovery scenario in case of house fire, robbery, whatever) with a single command.
 
-*** arke
-    - deploys monitoring script
-    - its mostly broken.
-    - relies on droplet config
+** ansible specific things
+*** for when you inevitably forget how to deploy stuff:
+i mostly run commands using the ~all.yml~ file, like:
+~ansible-playbook -i hosts.yml all.yml --tags=mytag~
 
-*** mojobot
-    - deploy mojobot
-    - two portions; web and rtm client.
-    - relies on droplet config
+*** how to handle working with ansible-vault and not want to kill yourself
+i rely heavily on ~ansible-vault~ for secrets management, and to make deployments faster i use a gpg + ansible-vault contraption:
 
-*** znc
-    - deploys znc bouncer
-    - relies on external drive attached to droplet
-    - relies on droplet config
+- ~open_the_vault.sh~ is a 1liner that just has this inside ~gpg --batch --use-agent --decrypt vault_passphrase.gpg~
+  - this script is called every time ansible tries to decrypt ~ansible-vault~ encrypted files
+- ~vault_passphrase.gpg~ is a gpg encrypted file that contains the key to my ansible-vault files.
+- ~vault_passphrase.gpg~ can be decrypted by my gpg agent locally, automatically. 
 
-*** awfulAll
-    - deploy mojobot
-    - deploy znc
-    - deploy arke
-    - relies on droplet config
+running ~ansible-vault edit~ opens a file in my $EDITOR transparently, without prompting me for a passphrase ever. same for deploying; you don't have to pass ~--ask-vault-pass~ ever again!! fuck that's so useful.
 
-*** droplets
-    - add regular user, sudo group, add user to group
-    - use local droplet key
-    - disable pw auth for root
-    - update apt and install req packages
-    - restart sshd service.
+** riot/matrix deploys
+this is included as a submod and I had to reimplement some of my secrets management / group vars and stuff in the submodule's ansible setup. kind of a pain, frankly, but i'm using a tracking mirror to follow ~ansible-docker-matrix~'s github repo, so there's a lot of work i /don't/ have to do with my setup. 
 
-*** onprem
-    - configure aptitude
-    - add docker key, repo
-    - install req packages
-    - add my user to docker group.
-
-*** splunk_servers
-    - remnent of a past job
-    - i don't believe ever worked
-    - here for historical purposes.
-
-*** wg_vpn
-** docker
-houses small dockerfiles / dockercompose stuff.
-*** mediaserver
-    - docker compose file
-    - sonarr (tv)
-    - radarr (movie)
-    - lidarr (music)
-    - sabnzb (dl manager)
-    - lazylibrarian (this sucks and doesn't really work)
 ** scripts
 houses small scripts that i used to use before i moved to ansible for most things. these should probably all get deleted or converted to ansible roles.
 
