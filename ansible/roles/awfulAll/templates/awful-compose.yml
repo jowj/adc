@@ -140,6 +140,26 @@ services:
       - "traefik.tcp.routers.bouncer-irc.service=bouncer-irc-svc"
       - "traefik.tcp.services.bouncer-irc-svc.loadbalancer.server.port=5000"
 
+  freshrss:
+    image: linuxserver/freshrss
+    container_name: freshrss
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - /mnt/shared_document_store/freshrss:/config
+    restart: unless-stopped
+    labels:
+      # global rules
+      - "traefik.enable=true"
+
+      # the web ui
+      - "traefik.http.routers.freshrss.rule=Host(`rss.awful.club`)"      
+      - "traefik.http.routers.freshrss.entrypoints=websecure"
+      - "traefik.http.routers.freshrss.tls=true"      
+      - "traefik.http.routers.freshrss.tls.certresolver=awful-letsencrypt"
+        
   nextcloud-web:
     image: nextcloud:18
     volumes:
