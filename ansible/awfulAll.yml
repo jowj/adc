@@ -6,5 +6,4 @@
   tasks:
     - debug: msg="Deploying awful stack to cloud server"
   roles:
-    - { name: awfulAll }
-
+    - { name: awfulAll, tags: ['awfulAll'] }

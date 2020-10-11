@@ -17,3 +17,9 @@ you probably want to deploy clients individually most of the time. to do that, p
    - add the privkey to the groupvars/vault.yml
    - add a task referencing the new client
    - add a template with the groupvars embedded.
+
+* instructions on specific roles
+** awfulAll
+awfulAll is a single server that's a catch all for services that don't need a dedicated vm.
+~ansible-playbook -i hosts.yml awfulAll.yml --tags awfulAll
+~
