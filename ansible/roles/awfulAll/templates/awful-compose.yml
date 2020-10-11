@@ -150,6 +150,8 @@ services:
     volumes:
       - /mnt/shared_document_store/freshrss:/config
     restart: unless-stopped
+    networks:
+      pubnet:      
     labels:
       # global rules
       - "traefik.enable=true"
@@ -159,46 +161,3 @@ services:
       - "traefik.http.routers.freshrss.entrypoints=websecure"
       - "traefik.http.routers.freshrss.tls=true"      
       - "traefik.http.routers.freshrss.tls.certresolver=awful-letsencrypt"
-        
-  nextcloud-web:
-    image: nextcloud:18
-    volumes:
-      - /mnt/shared_document_store/nextcloud/html/:/var/www/html/
-    depends_on:
-      - nextcloud-db
-    environment:
-      - USER_UID=1000
-      - USER_GID=1000      
-      - POSTGRES_ROOT_PASSWORD={{ NEXTCLOUD_POSTGRES_ROOT_PASSWORD }}
-      - POSTGRES_PASSWORD={{ NEXTCLOUD_POSTGRES_PASSWORD }}
-      - POSTGRES_DB={{ NEXTCLOUD_POSTGRES_DATABASE }}
-      - POSTGRES_USER={{ NEXTCLOUD_POSTGRES_USER }}
-      - POSTGRES_HOST=nextcloud-db:5432
-      - NEXTCLOUD_ADMIN_USER={{ NEXTCLOUD_ADMIN_USER }}
-      - NEXTCLOUD_ADMIN_PASSWORD={{ NEXTCLOUD_ADMIN_PASSWORD }}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nextcloud-web.rule=Host(`cloud.awful.club`)"
-      - "traefik.http.routers.nextcloud-web.entrypoints=websecure"
-      - "traefik.http.routers.nextcloud-web.tls.certresolver=awful-letsencrypt"
-      - "traefik.http.routers.nextcloud-web.tls=true"
-    networks:
-      pubnet:              
-
-  nextcloud-db:
-    image: postgres:9.6
-    restart: always
-    volumes:
-      - /mnt/shared_document_store/nextcloud/sql:/var/lib/postgresql
-    environment:
-      - USER_UID=1000
-      - USER_GID=1000
-      - POSTGRES_ROOT_PASSWORD={{ NEXTCLOUD_POSTGRES_ROOT_PASSWORD }}
-      - POSTGRES_PASSWORD={{ NEXTCLOUD_POSTGRES_PASSWORD }}
-      - POSTGRES_DB={{ NEXTCLOUD_POSTGRES_DATABASE }}
-      - POSTGRES_USER={{ NEXTCLOUD_POSTGRES_USER }}
-      - POSTGRES_HOST=nextcloud-db:5432
-      - NEXTCLOUD_ADMIN_USER={{ NEXTCLOUD_ADMIN_USER }}
-      - NEXTCLOUD_ADMIN_PASSWORD={{ NEXTCLOUD_ADMIN_PASSWORD }}
-    networks:
-      pubnet:      
