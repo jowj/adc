@@ -1,8 +1,19 @@
 * setup from scratch:
 ~ansible-playbook -i hosts.yml all.yml --ask-vault-pass --ask-become-pass~
 
-* wg
+** preparing open_the_vault
 
+* wg
+  
 ** clients
 you probably want to deploy clients individually most of the time. to do that, provide a tag, like:
 ~ansible-playbook -i hosts.yml client_matrix.yml --ask-vault-pass --ask-become-pass --tags matrix_client~
+
+** adding a client
+   - generate a new public/private keypair
+   - ~umask 077~
+   - ~wg genkey | tee privatekey | wg pubkey > publickey~
+   - add the pubkey to the groupvars/main.yml
+   - add the privkey to the groupvars/vault.yml
+   - add a task referencing the new client
+   - add a template with the groupvars embedded.
