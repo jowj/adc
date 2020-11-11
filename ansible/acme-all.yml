@@ -1,0 +1,19 @@
+---
+
+- name: Setup task server for ACME work.
+  hosts: larva.home.jowj.net
+  remote_user: "{{ remote_user }}"
+  roles:
+    - { name: acmedns_base, tags: ['acmedns_base'] }
+
+- name: Setup synology to allow for remote cert copy
+  hosts: storage.home.jowj.net
+  remote_user: "{{ remote_user }}"
+  roles:
+    - { name: acmedns_remote_host, tags: ['acmedns_remote_host'] }    
+
+- name: Pull LE certs and copy them to Synology
+  hosts: larva.home.jowj.net
+  remote_user: "{{ remote_user }}"
+  roles:
+    - { name: acmedns_syno_updater, tags: ['acmedns_syno_updater'] }    

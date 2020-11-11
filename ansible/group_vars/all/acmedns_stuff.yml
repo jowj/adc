@@ -1,0 +1,24 @@
+---
+acmedns_remote_host_user: "{{ ansible_ssh_user }}"
+acmedns_remote_host_ssh_client_pubkey: "{{ global_acmedns_ssh_client_pubkey }}"
+
+# ACME DNS base updater settings
+acmedns_base_certificate_dir: "/etc/acmedns/certificates"
+acmedns_base_user: acmedns
+acmedns_base_group: acmedns
+acmedns_base_pubkey: "{{ global_acmedns_ssh_client_pubkey }}"
+acmedns_base_privkey: "{{ vault_acmedns_base_privkey }}"
+
+# ACME DNS Synology updater settings
+acmedns_syno_updater_cert_base: "{{ acmedns_base_certificate_dir }}"
+acmedns_syno_updater_user: "{{ acmedns_base_user }}"
+acmedns_syno_updater_group: "{{ acmedns_base_group }}"
+acmedns_syno_updater_job_name: storage
+acmedns_syno_updater_email: admin@jowj.net
+acmedns_syno_updater_domain: storage.home.jowj.net
+
+acmedns_syno_updater_syn_user: josiah
+acmedns_syno_updater_syn_server: "{{ acmedns_syno_updater_domain }}"
+acmedns_syno_updater_syn_server_pubkey: storage.home.jowj.net,192.168.1.221 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNFlSCsoeS1dPFipdZYqr+WY38XRwQLsDds9BuOiRz8k1Palyief8QPxdBNAR28qyJb2QPjqEFlNQ1hHUt/+WTI=
+acmedns_syno_updater_pubkey: "{{ global_acmedns_ssh_client_pubkey }}"
+acmedns_syno_updater_privkey: "{{ acmedns_base_privkey }}"
