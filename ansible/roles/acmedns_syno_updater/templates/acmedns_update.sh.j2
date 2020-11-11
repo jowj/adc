@@ -33,6 +33,7 @@ chown -R root:root "$tmppath"
 mv $tmppath/{{ acmedns_syno_updater_domain }}.crt /usr/syno/etc/certificate/system/default/fullchain.pem
 mv $tmppath/{{ acmedns_syno_updater_domain }}.key /usr/syno/etc/certificate/system/default/privkey.pem
 # fix webdav shit
+mv $tmppath/httpd-ssl.conf-cipher /var/packages/WebDAVServer/target/etc/httpd/conf/extra
 cp /usr/syno/etc/certificate/system/default/fullchain.pem /usr/local/etc/certificate/WebDAVServer/webdav/
 cp /usr/syno/etc/certificate/system/default/privkey.pem /usr/local/etc/certificate/WebDAVServer/webdav/
 # end fixing webdav shit

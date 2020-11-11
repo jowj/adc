@@ -1,0 +1,18 @@
+AddType application/x-x509-ca-cert  .crt
+AddType application/x-pkcs7-crl     .crl
+
+SSLCertificateFile      "/usr/local/etc/certificate/WebDAVServer/webdav/cert.pem"
+SSLCertificateKeyFile   "/usr/local/etc/certificate/WebDAVServer/webdav/privkey.pem"
+
+SSLCertificateChainFile /usr/local/etc/certificate/WebDAVServer/webdav/fullchain.pem
+
+#SSLCACertificatePath "/etc/httpd/conf/ssl.crt"
+#SSLCACertificateFile "/etc/httpd/conf/ssl.crt/ca-bundle.crt"
+
+#SSLCARevocationPath "/etc/httpd/conf/ssl.crl"
+#SSLCARevocationFile "/etc/httpd/conf/ssl.crl/ca-bundle.crl"
+
+
+SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+SSLHonorCipherOrder     off
