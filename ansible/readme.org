@@ -25,5 +25,7 @@ you probably want to deploy clients individually most of the time. to do that, p
 * instructions on specific roles
 ** awfulAll
 awfulAll is a single server that's a catch all for services that don't need a dedicated vm.
-~ansible-playbook -i hosts.yml awfulAll.yml --tags awfulAll
-~
+~ansible-playbook -i hosts.yml awfulAll.yml --tags awfulAll~
+** mediaserver
+~ansible-playbook awfulAll.yml --tags mediaserver~
+

@@ -64,6 +64,15 @@
     - {src: 'mediaserver-compose.yml', dest: '/home/josiah/apps/mediaserver/mediaserver-compose.yml'}
     - {src: 'traefik.toml', dest: '/home/josiah/apps/traefik/traefik.toml'}
 
+- name: Ensure acme.json exists
+  copy:
+    content: ""
+    dest: /home/josiah/apps/traefik/acme.json
+    force: no
+    owner: root
+    group: root
+    state: file
+    mode: '0600'
 
 - name: Deploy mediaserver stack
   docker_stack:

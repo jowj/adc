@@ -9,8 +9,9 @@ services:
     ports:
       - 80:80
       - 443:443
+      - 8080:8080        
     volumes:
-      - traefik_acme:/acme/
+      - /home/josiah/apps/traefik/acme.json:/acme.json        
       - traefik_logs:/var/log/access.log
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/josiah/apps/traefik/traefik.toml:/traefik.toml
@@ -19,11 +20,24 @@ services:
       placement:
         constraints:
           - node.role == manager
+    environment:
+      DO_AUTH_TOKEN: "{{  DO_AUTH_TOKEN  }}"
     labels:
+      # dashboards
       - "traefik.enable=true"    
+      - "traefik.http.routers.mediaserver-traefik-api.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-traefik-api.rule=Host(`hatchery.home.jowj.net`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
       - "traefik.http.routers.mediaserver-traefik-api.service=api@internal"
-      - "traefik.http.routers.mediaserver-traefik-api.entrypoints=http"
+      - "traefik.http.services.mediaserver-traefik-api.loadbalancer.server.port=8080"      
+      # - "traefik.http.routers.mediaserver-traefik-api.entrypoints=http"
+      - "traefik.http.routers.mediaserver-traefik-api.entrypoints=https"      
+      # middleware redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # global redirect to https
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=http"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+        
 
   hydra2:
     image: linuxserver/hydra2:latest
@@ -41,6 +55,8 @@ services:
       - "traefik.http.services.mediaserver-hydra2.loadbalancer.server.port=5076"
       - "traefik.http.routers.mediaserver-hydra2.service=mediaserver-hydra2"
       - "traefik.http.routers.mediaserver-hydra2.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/hydra2`)"
+      - "traefik.http.routers.mediaserver-hydra2.tls.certResolver=mediaserver-resolver"        
+      - "traefik.http.routers.mediaserver-hydra2.tls=true"
 
   sabnzb:
     image: "linuxserver/sabnzbd"
@@ -65,6 +81,9 @@ services:
       - "traefik.http.services.mediaserver-sabnzbd.loadbalancer.server.port=8080"
       - "traefik.http.routers.mediaserver-sabnzbd.service=mediaserver-sabnzbd"
       - "traefik.http.routers.mediaserver-sabnzbd.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/sabnzbd`)"
+      - "traefik.http.routers.mediaserver-sabnzbd.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-sabnzbd.tls=true"
+
   sonarr:
     image: "linuxserver/sonarr"
     environment:
@@ -80,6 +99,8 @@ services:
       - "traefik.http.services.mediaserver-sonarr.loadbalancer.server.port=8989"
       - "traefik.http.routers.mediaserver-sonarr.service=mediaserver-sonarr"
       - "traefik.http.routers.mediaserver-sonarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/sonarr`)"
+      - "traefik.http.routers.mediaserver-sonarr.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-sonarr.tls=true"        
     networks:
       - pubnet
       
@@ -98,6 +119,8 @@ services:
       - "traefik.http.services.mediaserver-lidarr.loadbalancer.server.port=8686"
       - "traefik.http.routers.mediaserver-lidarr.service=mediaserver-lidarr"
       - "traefik.http.routers.mediaserver-lidarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/lidarr`)"
+      - "traefik.http.routers.mediaserver-lidarr.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-lidarr.tls=true"                
     networks:
       - pubnet
 
@@ -116,6 +139,8 @@ services:
       - "traefik.http.services.mediaserver-radarr.loadbalancer.server.port=7878"
       - "traefik.http.routers.mediaserver-radarr.service=mediaserver-radarr"
       - "traefik.http.routers.mediaserver-radarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/radarr`)"
+      - "traefik.http.routers.mediaserver-radarr.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-radarr.tls=true"                        
     networks:
       - pubnet
 
@@ -128,10 +153,54 @@ services:
       - "traefik.http.routers.mediaserver-whoami.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/whoami`)"
       - "traefik.http.routers.mediaserver-whoami.service=mediaserver-whoami"
       - "traefik.http.services.mediaserver-whoami.loadbalancer.server.port=80"
+      - "traefik.http.routers.mediaserver-whoami.tls.certResolver=mediaserver-resolver"        
+      - "traefik.http.routers.mediaserver-whoami.tls=true"        
+  watchtower:
+    # https://hub.docker.com/r/centurylink/watchtower/
+    image: v2tec/watchtower:latest
+    # https://github.com/v2tec/watchtower#options
+    # This schedule applies updates (if available) at midnight.
+    command: --cleanup --schedule "0 0 0 * * *"
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - pubnet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mediaserver-watchtower.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/watchtower`)"
+      - "traefik.http.routers.mediaserver-watchtower.service=mediaserver-watchtower"
+      - "traefik.http.services.mediaserver-watchtower.loadbalancer.server.port=80"
+      - "traefik.http.routers.mediaserver-watchtower.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-watchtower.tls=true"                              
+
+  # The main WebDAV container.
+  webdav:
+    # https://hub.docker.com/r/bytemark/webdav/
+    image: bytemark/webdav
+    restart: always
+    networks:
+      - pubnet
+    volumes:
+      # - /home/josiah/apps/webdav/user.passwd:/user.passwd
+      - /home/josiah/sync/:/var/lib/dav/data
+    environment:
+      SERVER_NAMES: "hatchery.home.jowj.net"
+      LOCATION: "/webdav"
+      USERNAME: josiah
+      PASSWORD: "{{ vault_mediaserver_webdav_password }}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mediaserver-webdav.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/webdav`)"
+      - "traefik.http.routers.mediaserver-webdav.service=mediaserver-webdav"
+      - "traefik.http.services.mediaserver-webdav.loadbalancer.server.port=80"
+      - "traefik.http.routers.mediaserver-webdav.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-webdav.tls=true"        
       
 volumes:
   traefik_acme:
   traefik_logs:
+  vol-webdav:
 
 networks:
   pubnet:
