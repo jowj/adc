@@ -39,6 +39,20 @@
 - name: ensure traefik config directory exists
   file: state=directory path=/home/josiah/apps/traefik/ owner=josiah group=josiah mode=0700
 
+- name: ensure the webdav-docker repo exists
+  git:
+    repo: 'https://git.awful.club/hosted/webdav-docker.git'
+    dest: /home/josiah/apps/webdav-docker/
+    version: master
+
+- name: build jlj-webdav image
+  community.general.docker_image:    
+    name: jlj-webdav
+    build: 
+      path: /home/josiah/apps/webdav-docker/latest
+      dockerfile: Dockerfile
+    source: build
+
 - name: ensure mediaserver config directory exists
   file: state=directory path=/home/josiah/apps/mediaserver/ owner=josiah group=josiah mode=0700  
 

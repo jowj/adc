@@ -161,7 +161,6 @@ services:
     # https://github.com/v2tec/watchtower#options
     # This schedule applies updates (if available) at midnight.
     command: --cleanup --schedule "0 0 0 * * *"
-    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -176,27 +175,26 @@ services:
 
   # The main WebDAV container.
   webdav:
-    # https://hub.docker.com/r/bytemark/webdav/
-    image: bytemark/webdav
-    restart: always
+    # https://hub.docker.com/r/bytemark/webdav/    
+    image: jlj-webdav:latest
     networks:
       - pubnet
     volumes:
       # - /home/josiah/apps/webdav/user.passwd:/user.passwd
-      - /home/josiah/sync/:/var/lib/dav/data
+      - /home/josiah/webdav/:/var/lib/dav/
     environment:
       SERVER_NAMES: "hatchery.home.jowj.net"
       LOCATION: "/webdav"
       USERNAME: josiah
-      PASSWORD: "{{ vault_mediaserver_webdav_password }}"
+      PASSWORD: "{{ vault_mediaserver_webdav_password }}" 
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mediaserver-webdav.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/webdav`)"
       - "traefik.http.routers.mediaserver-webdav.service=mediaserver-webdav"
       - "traefik.http.services.mediaserver-webdav.loadbalancer.server.port=80"
       - "traefik.http.routers.mediaserver-webdav.tls.certResolver=mediaserver-resolver"
-      - "traefik.http.routers.mediaserver-webdav.tls=true"        
-      
+      - "traefik.http.routers.mediaserver-webdav.tls=true"
+        
 volumes:
   traefik_acme:
   traefik_logs:
