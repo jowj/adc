@@ -17,7 +17,7 @@
 
 
 - name: Configure home-net base packages
-  hosts: home
+  hosts: hatchery.home.jowj.net
   gather_facts: no
   roles:
     - { name: home-net, tags: ['base'] }
