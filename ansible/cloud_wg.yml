@@ -5,4 +5,4 @@
   tasks:
     - debug: msg="Deploying wg to cloud server"
   roles:
-    - { name: wg_vpn }
+    - { name: wg_vpn, tags: ['wg_vpn'] }
