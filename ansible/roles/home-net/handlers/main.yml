@@ -1,0 +1,5 @@
+---
+# handlers file for wg_vpn
+
+- name: restart wireguard
+  service: name=wg-quick@wg0.service state=restarted

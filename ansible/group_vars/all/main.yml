@@ -40,7 +40,7 @@ wireguard_clients:
     offset: 12
     privkey: "{{ vault_wireguard_client_privkey_ling8 }}"
     pubkey: YqGQE6yUz6rjBFRWgZyj5mPEaGavxrmO/cclO5o+VBQ=
-  - name: hatchery
+  - name: larva
     offset: 13
     privkey: "{{ vault_wireguard_client_privkey_hatchery }}"
     pubkey: kguQg0CvB7N1fJDO8i0Nj4C1cUKUsawfHyArwiaGxis=

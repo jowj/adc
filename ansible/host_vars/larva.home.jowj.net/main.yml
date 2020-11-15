@@ -1,3 +1,4 @@
 ansible_python_interpreter: /usr/bin/python3
 interactive: yes
 acmedns_base_lego_arch: arm64
+base_rpi: true

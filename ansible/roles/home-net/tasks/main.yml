@@ -1,3 +1,9 @@
+---
+
+- name: Import raspberry pi tasks
+  import_tasks: rpi.yml
+  when: base_rpi  
+
 - name: Make sure we have a 'sudo' group
   group:
     name: sudo
