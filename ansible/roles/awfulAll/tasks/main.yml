@@ -2,46 +2,46 @@
 # deploy a awful-n host from scratch.
 
 # boot strap server
-# - name: Install aptitude using apt
-#   apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+- name: Install aptitude using apt
+  apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
 
-# - name: Install required system packages for docker install
-#   apt: name={{ item }} state=latest update_cache=yes
-#   loop: [ 'apt-transport-https', 'ca-certificates', 'software-properties-common' ]
+- name: Install required system packages for docker install
+  apt: name={{ item }} state=latest update_cache=yes
+  loop: [ 'apt-transport-https', 'ca-certificates', 'software-properties-common' ]
 
-# - name: Add Docker GPG apt Key
-#   apt_key:
-#     url: https://download.docker.com/linux/debian/gpg
-#     state: present
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
 
-# - name: Add Docker Repository
-#   apt_repository:
-#     repo: deb https://download.docker.com/linux/ubuntu bionic stable
-#     state: present
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
 
-# - name: Update apt
-#   apt: update_cache=yes
+- name: Update apt
+  apt: update_cache=yes
 
-# - name: Install required system packages
-#   apt: name={{ sys_packages }} state=latest
+- name: Install required system packages
+  apt: name={{ sys_packages }} state=latest
 
-# - name: add 'josiah' to docker group
-#   user:
-#     name='josiah'
-#     groups=docker
-#     append=yes
+- name: add 'josiah' to docker group
+  user:
+    name='josiah'
+    groups=docker
+    append=yes
 
-# - name: Init a new swarm with default parameters
-#   docker_swarm:
-#     state: present    
+- name: Init a new swarm with default parameters
+  docker_swarm:
+    state: present    
 
-# - name: ensure the app folders exist
-#   file: state=directory path={{ item }} owner=josiah group=josiah mode=0700
-#   loop: [ '/home/josiah/apps/mojo/', '/home/josiah/apps/arke/', '/home/josiah/apps/znc/', '/home/josiah/apps/awful/' ]
+- name: ensure the app folders exist
+  file: state=directory path={{ item }} owner=josiah group=josiah mode=0700
+  loop: [ '/home/josiah/apps/mojo/', '/home/josiah/apps/arke/', '/home/josiah/apps/znc/', '/home/josiah/apps/awful/' ]
 
-# - name: allow for pretty json errors
-#   pip:
-#     name: jsondiff
+- name: allow for pretty json errors
+  pip:
+    name: jsondiff
 
 # Update the app git repos
 - name: update the mojo git repo
