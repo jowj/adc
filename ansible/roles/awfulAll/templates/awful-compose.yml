@@ -7,8 +7,6 @@ networks:
     external: false
 
 volumes:
-  nextcloud-web:
-  nextcloud-db:
   traefik_acme:
   traefik_logs:
   nginx_logs:
