@@ -31,6 +31,10 @@
     groups=docker
     append=yes
 
+- name: install python packages
+  pip:
+    name: ["jsondiff", "docker"]
+
 - name: Init a new swarm with default parameters
   docker_swarm:
     state: present    
@@ -38,10 +42,6 @@
 - name: ensure the app folders exist
   file: state=directory path={{ item }} owner=josiah group=josiah mode=0700
   loop: [ '/home/josiah/apps/mojo/', '/home/josiah/apps/arke/', '/home/josiah/apps/znc/', '/home/josiah/apps/awful/' ]
-
-- name: allow for pretty json errors
-  pip:
-    name: jsondiff
 
 # Update the app git repos
 - name: update the mojo git repo
@@ -70,7 +70,19 @@
   with_items:
     - {src: 'awful-compose.yml', dest: '/home/josiah/apps/awful/docker-compose.yml'}
     - {src: 'traefik.yml', dest: '/home/josiah/apps/awful/traefik.yml'}
-    - {src: 'awful.club.html', dest: '/home/josiah/apps/awful/awful.club.html'}        
+    - {src: 'awful.club.html', dest: '/home/josiah/apps/awful/awful.club.html'}
+
+- name: make sure that my custom gitea shit is there
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - {src: 'favicon.ico', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img'}
+    - {src: 'favicon-16x16.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img'}
+    - {src: 'favicon-32x32.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img'}
+    - {src: 'purple-bat-nobg.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img/gitea-lg.png'}
+    - {src: 'purple-bat-nobg.svg', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img/logo.svg'}
 
 - name: Deploy awful stack
   docker_stack:
