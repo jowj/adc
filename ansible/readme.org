@@ -28,4 +28,9 @@ awfulAll is a single server that's a catch all for services that don't need a de
 ~ansible-playbook -i hosts.yml awfulAll.yml --tags awfulAll~
 ** mediaserver
 ~ansible-playbook awfulAll.yml --tags mediaserver~
+** certs/letsencrypt/acme stuff
+   ~ansible-playbook acme-all.yml -v~
+   - right now for bouncer, syno
+   
+
 
