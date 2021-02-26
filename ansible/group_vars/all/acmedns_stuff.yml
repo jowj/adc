@@ -22,3 +22,18 @@ acmedns_syno_updater_syn_server: "{{ acmedns_syno_updater_domain }}"
 acmedns_syno_updater_syn_server_pubkey: storage.home.jowj.net,192.168.1.221 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNFlSCsoeS1dPFipdZYqr+WY38XRwQLsDds9BuOiRz8k1Palyief8QPxdBNAR28qyJb2QPjqEFlNQ1hHUt/+WTI=
 acmedns_syno_updater_pubkey: "{{ global_acmedns_ssh_client_pubkey }}"
 acmedns_syno_updater_privkey: "{{ acmedns_base_privkey }}"
+
+# ACME DNS bouncer updater stuff
+acmedns_bouncer_updater_cert_base: "{{ acmedns_base_certificate_dir }}"
+acmedns_bouncer_updater_user: "{{ acmedns_base_user }}"
+acmedns_bouncer_updater_group: "{{ acmedns_base_group }}"
+acmedns_bouncer_updater_job_name: bouncer
+acmedns_bouncer_updater_email: admin@awful.club
+acmedns_bouncer_updater_domain: bouncer.awful.club
+
+acmedns_bouncer_updater_bouncer_user: josiah
+acmedns_bouncer_updater_bouncer_server: "{{ acmedns_bouncer_updater_domain }}"
+acmedns_bouncer_updater_bouncer_server_pubkey: bouncer.awful.club,134.209.53.112 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMMIBPq7YdH4ezm3C0ovvdA+ursckOBoG7VCaV9IiRbOryINoDNX6DRLFvwiXM9Uws3C/t5nAK6ApCnc7IBEeP8=
+acmedns_bouncer_updater_pubkey: "{{ global_acmedns_ssh_client_pubkey }}"
+acmedns_bouncer_updater_privkey: "{{ acmedns_base_privkey }}"
+

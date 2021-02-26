@@ -10,10 +10,22 @@
   hosts: storage.home.jowj.net
   remote_user: "{{ remote_user }}"
   roles:
-    - { name: acmedns_remote_host, tags: ['acmedns_remote_host'] }    
+    - { name: acmedns_remote_host, tags: ['acmedns_remote_host'] }
 
-- name: Pull LE certs and copy them to Synology
+- name: Setup awful-1 to allow for remote cert copy
+  hosts: awful-1.awful.club
+  remote_user: "{{ remote_user }}"
+  roles:
+    - { name: acmedns_remote_host, tags: ['acmedns_remote_host'] }          
+
+- name: Pull LE certs and copy them to synology
   hosts: larva.home.jowj.net
   remote_user: "{{ remote_user }}"
   roles:
     - { name: acmedns_syno_updater, tags: ['acmedns_syno_updater'] }    
+
+- name: Pull LE certs and copy them to awful-1
+  hosts: larva.home.jowj.net
+  remote_user: "{{ remote_user }}"
+  roles:
+    - { name: acmedns_bouncer_updater, tags: ['acmedns_bouncer_updater'] }        

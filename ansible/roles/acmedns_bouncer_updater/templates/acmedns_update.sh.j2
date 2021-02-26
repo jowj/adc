@@ -1,0 +1,40 @@
+#!/bin/sh
+set -eu
+
+export DO_AUTH_TOKEN={{ DO_AUTH_TOKEN  }}
+echoexec() { echo "Running: $*"; $*; }
+
+echoexec /usr/local/bin/wraplego.py \
+    --verbose \
+    --legodir "{{ acmedns_bouncer_updater_certificate_dir }}" \
+    --email "{{ acmedns_bouncer_updater_email }}" \
+    --domain "{{ acmedns_bouncer_updater_domain }}" \
+    --authenticator "digitalocean" \
+
+host="{{ acmedns_bouncer_updater_bouncer_user }}@{{ acmedns_bouncer_updater_bouncer_server }}"
+date=$(date +%Y%m%d)
+tmppath=/tmp/${date}-acme-update
+scp -r {{ acmedns_bouncer_updater_certificate_dir }}/certificates $host:$tmppath
+user="josiah"
+zncFolder="/mnt/volume_sfo2_znc"
+#
+# SSH to the remote server and install the certs:
+#
+
+echo "$(cat <<ENDSSH
+
+echo "$(cat <<ENDSUDO
+
+echo 'Copying files...'
+cd /mnt/volume_sfo2_znc/
+chown -R root:root "$tmppath"
+
+mv $tmppath/{{ acmedns_bouncer_updater_domain }}.crt $zncFolder/fullchain.pem
+mv $tmppath/{{ acmedns_bouncer_updater_domain }}.key $zncFolder/privkey.pem
+cat $zncFolder/{privkey,fullchain}.pem > $zncFolder/znc.pem
+chown systemd-timesync:systemd-journal znc.pem
+ENDSUDO
+)" | sudo su -
+
+ENDSSH
+)" | ssh $host
