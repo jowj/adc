@@ -1,0 +1,7 @@
+- name: deploy mediaserver
+  hosts: mediaserver
+  remote_user: "{{ remote_user }}"
+  tasks:
+    - debug: msg="Deploying mediaserver stack to local server"
+  roles:
+    - { name: mediaserver, tags: ['mediaserver'] }

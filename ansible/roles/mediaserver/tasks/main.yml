@@ -32,7 +32,7 @@
     append=yes
 
 - name: Init a new swarm with default parameters
-  docker_swarm:
+  community.general.docker_swarm:
     state: present    
 
 # set up mediaserver specific bullshit.
