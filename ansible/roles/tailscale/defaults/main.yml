@@ -1,0 +1,5 @@
+---
+tailscale_auth_key: "{{ vault_tailscale_auth_key }}"
+# note that ^ expires every 90 days right now, I think
+# far from ideal
+

@@ -1,0 +1,2 @@
+* tailscale ansible role
+  - prior art: https://github.com/mbialon/ansible-role-tailscale
