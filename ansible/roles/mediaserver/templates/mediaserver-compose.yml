@@ -191,7 +191,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-tubesync.loadbalancer.server.port=4848"
-      - "traefik.http.routers.mediaserver-tubesync.service=mediaserver-sabnzbd"
+      - "traefik.http.routers.mediaserver-tubesync.service=mediaserver-tubesync"
       - "traefik.http.routers.mediaserver-tubesync.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/tubesync`)"
       - "traefik.http.routers.mediaserver-tubesync.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-tubesync.tls=true"      
