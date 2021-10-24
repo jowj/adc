@@ -173,27 +173,28 @@ services:
       - "traefik.http.routers.mediaserver-watchtower.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-watchtower.tls=true"                              
 
-  # The main WebDAV container.
-  webdav:
-    # https://hub.docker.com/r/bytemark/webdav/    
-    image: jlj-webdav:latest
+  tubesync:
+    image: ghcr.io/meeb/tubesync:latest
+    container_name: tubesync
+    restart: unless-stopped
+    ports:
+      - 4848:4848
     networks:
-      - pubnet
-    volumes:
-      # - /home/josiah/apps/webdav/user.passwd:/user.passwd
-      - /home/josiah/webdav/:/var/lib/dav/
+      - pubnet    
     environment:
-      SERVER_NAMES: "hatchery.home.jowj.net"
-      LOCATION: "/webdav"
-      USERNAME: josiah
-      PASSWORD: "{{ vault_mediaserver_webdav_password }}" 
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/tubesync-config:/config"
+      - "/home/josiah/Downloads/tubesync-downloads/:/downloads"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mediaserver-webdav.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/webdav`)"
-      - "traefik.http.routers.mediaserver-webdav.service=mediaserver-webdav"
-      - "traefik.http.services.mediaserver-webdav.loadbalancer.server.port=80"
-      - "traefik.http.routers.mediaserver-webdav.tls.certResolver=mediaserver-resolver"
-      - "traefik.http.routers.mediaserver-webdav.tls=true"
+      - "traefik.http.services.mediaserver-tubesync.loadbalancer.server.port=4848"
+      - "traefik.http.routers.mediaserver-tubesync.service=mediaserver-sabnzbd"
+      - "traefik.http.routers.mediaserver-tubesync.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/tubesync`)"
+      - "traefik.http.routers.mediaserver-tubesync.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-tubesync.tls=true"      
         
 volumes:
   traefik_acme:
