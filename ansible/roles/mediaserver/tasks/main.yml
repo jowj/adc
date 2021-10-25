@@ -76,7 +76,7 @@
     mode: 0777
   with_items:
     - {src: 'mediaserver-compose.yml', dest: '/home/josiah/apps/mediaserver/mediaserver-compose.yml'}
-    - {src: 'traefik.toml', dest: '/home/josiah/apps/traefik/traefik.toml'}
+    - {src: 'traefik.yml.j2', dest: '/home/josiah/apps/traefik/traefik.yml'}
 
 - name: Ensure acme.json exists
   copy:
