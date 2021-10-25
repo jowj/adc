@@ -2,19 +2,19 @@
 version: '3.7'
 services:
   traefik:
-    image: traefik
+    image: traefik:2.5    
     networks:
       - pubnet    
-    command: --web --docker --docker.swarmmode --docker.watch --docker.domain="hatchery.home.jowj.net" --logLevel=DEBUG
+    command: --web --docker --docker.swarmmode --docker.watch --docker.domain="services.jowj.net" --logLevel=DEBUG /etc/traefik/
     ports:
-      - 80:80
-      - 443:443
-      - 8080:8080        
+      - 80:80/tcp
+      - 443:443/tcp
+      - 8080:8080/tcp      
     volumes:
       - /home/josiah/apps/traefik/acme.json:/acme.json        
       - traefik_logs:/var/log/access.log
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/josiah/apps/traefik/traefik.toml:/traefik.toml
+      - /home/josiah/apps/traefik/traefik.yml:/traefik.yml
     deploy:
       mode: global      
       placement:
@@ -23,7 +23,9 @@ services:
     environment:
       DO_AUTH_TOKEN: "{{  DO_AUTH_TOKEN  }}"
     labels:
-      # dashboards
+      # Dashboard shit I stole from Micah:
+      # WARNING: A TRAILING SLASH IS MANDATORY IN THE BROWSER
+      # e.g. https://example.com/dashboard/, not merely /dashboard      
       - "traefik.enable=true"    
       - "traefik.http.routers.mediaserver-traefik-api.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-traefik-api.rule=Host(`hatchery.home.jowj.net`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
@@ -154,7 +156,8 @@ services:
       - "traefik.http.routers.mediaserver-whoami.service=mediaserver-whoami"
       - "traefik.http.services.mediaserver-whoami.loadbalancer.server.port=80"
       - "traefik.http.routers.mediaserver-whoami.tls.certResolver=mediaserver-resolver"        
-      - "traefik.http.routers.mediaserver-whoami.tls=true"        
+      - "traefik.http.routers.mediaserver-whoami.tls=true"
+      
   watchtower:
     # https://hub.docker.com/r/centurylink/watchtower/
     image: v2tec/watchtower:latest
@@ -167,18 +170,16 @@ services:
       - pubnet
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mediaserver-watchtower.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/watchtower`)"
+      - "traefik.http.routers.mediaserver-watchtower.rule=Host(`watchtower.services.jowj.net`)"
       - "traefik.http.routers.mediaserver-watchtower.service=mediaserver-watchtower"
       - "traefik.http.services.mediaserver-watchtower.loadbalancer.server.port=80"
       - "traefik.http.routers.mediaserver-watchtower.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-watchtower.tls=true"                              
 
   tubesync:
-    image: ghcr.io/meeb/tubesync:latest
+    image: ghcr.io/meeb/tubesync:v0.9.1
     container_name: tubesync
     restart: unless-stopped
-    ports:
-      - 4848:4848
     networks:
       - pubnet    
     environment:
@@ -190,11 +191,11 @@ services:
       - "/home/josiah/Downloads/tubesync-downloads/:/downloads"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.mediaserver-tubesync.loadbalancer.server.port=4848"
+      - "traefik.http.services.mediaserver-tubesync.loadbalancer.server.port=8080"
       - "traefik.http.routers.mediaserver-tubesync.service=mediaserver-tubesync"
-      - "traefik.http.routers.mediaserver-tubesync.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/tubesync`)"
+      - "traefik.http.routers.mediaserver-tubesync.rule=Host(`tubesync.services.jowj.net`)"
       - "traefik.http.routers.mediaserver-tubesync.tls.certResolver=mediaserver-resolver"
-      - "traefik.http.routers.mediaserver-tubesync.tls=true"      
+      - "traefik.http.routers.mediaserver-tubesync.tls=true"
         
 volumes:
   traefik_acme:
