@@ -1,0 +1,49 @@
+---
+
+# defaultEntryPoints must be at the top
+defaultEntryPoints:
+  - http
+  - https
+
+log:
+  level: DEBUG
+  format: common
+accessLog:
+  format: common
+
+api:
+  dashboard: true
+
+entryPoints:
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+http:
+  middlewares:
+    mediaserver-https-redir:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+certificatesResolvers:
+  mediaserver-resolver:
+    acme:
+      storage: /acme.json
+      email: "admin@home.jowj.net"
+      dnsChallenge:
+        provider: "digitalocean"
+
+providers:
+  docker: {}
+
+docker:
+  endpoint: unix:///var/run/docker.sock
+  domain: "services.jowj.net"
+  watch: true
+  exposedbydefault: false
+
+# smh https://github.com/traefik/traefik/issues/7360
+pilot:
+  dashboard: false
