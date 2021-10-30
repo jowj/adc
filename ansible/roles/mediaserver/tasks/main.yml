@@ -88,9 +88,22 @@
     state: file
     mode: '0600'
 
+- name: Remove the mediaserver stack
+  block:
+    - name: Remove the mediaserver stack
+      docker_stack:
+        state: absent
+        name: mediaserver
+        compose:
+          - /home/josiah/apps/mediaserver/mediaserver-compose.yml
+    - name: Pause so the network gets deleted too
+      pause:
+        seconds: 15
+
 - name: Deploy mediaserver stack
   docker_stack:
     state: present
     name: mediaserver
+    prune: yes
     compose:
       - /home/josiah/apps/mediaserver/mediaserver-compose.yml
