@@ -1,15 +1,16 @@
 ---
 version: '3.7'
+
 services:
   traefik:
     image: traefik:2.5    
     networks:
       - pubnet    
-    command: --web --docker --docker.swarmmode --docker.watch --docker.domain="services.jowj.net" --logLevel=DEBUG /etc/traefik/
+    command: --web --docker --docker.swarmmode --docker.watch --docker.domain="services.jowj.net" --logLevel=DEBUG
     ports:
       - 80:80/tcp
       - 443:443/tcp
-      - 8080:8080/tcp      
+      - 8080:8080/tcp  
     volumes:
       - /home/josiah/apps/traefik/acme.json:/acme.json        
       - traefik_logs:/var/log/access.log
@@ -152,48 +153,31 @@ services:
       - pubnet
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mediaserver-whoami.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/whoami`)"
+      - "traefik.http.routers.mediaserver-whoami.rule=Host(`whoami.services.jowj.net`)"
       - "traefik.http.routers.mediaserver-whoami.service=mediaserver-whoami"
       - "traefik.http.services.mediaserver-whoami.loadbalancer.server.port=80"
       - "traefik.http.routers.mediaserver-whoami.tls.certResolver=mediaserver-resolver"        
       - "traefik.http.routers.mediaserver-whoami.tls=true"
-      
-  watchtower:
-    # https://hub.docker.com/r/centurylink/watchtower/
-    image: v2tec/watchtower:latest
-    # https://github.com/v2tec/watchtower#options
-    # This schedule applies updates (if available) at midnight.
-    command: --cleanup --schedule "0 0 0 * * *"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - pubnet
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mediaserver-watchtower.rule=Host(`watchtower.services.jowj.net`)"
-      - "traefik.http.routers.mediaserver-watchtower.service=mediaserver-watchtower"
-      - "traefik.http.services.mediaserver-watchtower.loadbalancer.server.port=80"
-      - "traefik.http.routers.mediaserver-watchtower.tls.certResolver=mediaserver-resolver"
-      - "traefik.http.routers.mediaserver-watchtower.tls=true"                              
 
   tubesync:
-    image: ghcr.io/meeb/tubesync:v0.9.1
-    container_name: tubesync
-    restart: unless-stopped
+    image: ghcr.io/meeb/tubesync:latest
     networks:
       - pubnet    
     environment:
       PUID: 1000
       PGID: 1000
       TZ: America/Chicago
+      LISTEN_HOST: "0.0.0.0"
+      LISTEN_PORT: '8080'
     volumes:
       - "/home/josiah/apps/tubesync-config:/config"
-      - "/home/josiah/Downloads/tubesync-downloads/:/downloads"
+      - "/media/usenet/youtube:/downloads"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.mediaserver-tubesync.loadbalancer.server.port=8080"
-      - "traefik.http.routers.mediaserver-tubesync.service=mediaserver-tubesync"
+      - "traefik.docker.network=pubnet"
       - "traefik.http.routers.mediaserver-tubesync.rule=Host(`tubesync.services.jowj.net`)"
+      - "traefik.http.services.mediaserver-tubesync.loadbalancer.server.port=4848"
+      - "traefik.http.routers.mediaserver-tubesync.service=mediaserver-tubesync"
       - "traefik.http.routers.mediaserver-tubesync.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-tubesync.tls=true"
         
