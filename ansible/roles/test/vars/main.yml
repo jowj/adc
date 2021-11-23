@@ -1,1 +1,0 @@
-sys_packages: [ 'curl', 'vim', 'git', 'emacs', 'build-essential', 'mosh', 'python', 'python3-pip' ]
