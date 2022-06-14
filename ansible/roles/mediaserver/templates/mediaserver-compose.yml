@@ -180,6 +180,32 @@ services:
       - "traefik.http.routers.mediaserver-tubesync.service=mediaserver-tubesync"
       - "traefik.http.routers.mediaserver-tubesync.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-tubesync.tls=true"
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    networks:
+      - pubnet    
+    environment:
+      PUID: 1000
+      PGID: 1000
+      AUDIOBOOKSHELF_UID: 1000
+      AUDIOBOOKSHELF_GID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/audiobookshelf/config:/config"
+      - "/home/josiah/apps/audiobookshelf/metadata:/metadata"
+      - "/media/usenet/audiobooks:/audiobooks"
+      - "/media/usenet/podcasts:/podcasts"
+    ports:
+      - 13378:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=pubnet"
+      - "traefik.http.routers.mediaserver-audiobookshelf.rule=Host(`audiobookshelf.services.jowj.net`)"
+      - "traefik.http.services.mediaserver-audiobookshelf.loadbalancer.server.port=80"
+      - "traefik.http.routers.mediaserver-audiobookshelf.service=mediaserver-audiobookshelf"
+      - "traefik.http.routers.mediaserver-audiobookshelf.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-audiobookshelf.tls=true"
         
 volumes:
   traefik_acme:
