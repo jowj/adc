@@ -57,7 +57,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-hydra2.loadbalancer.server.port=5076"
       - "traefik.http.routers.mediaserver-hydra2.service=mediaserver-hydra2"
-      - "traefik.http.routers.mediaserver-hydra2.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/hydra2`)"
+      - "traefik.http.routers.mediaserver-hydra2.rule=Host(`hydra.services.jowj.net`)"
       - "traefik.http.routers.mediaserver-hydra2.tls.certResolver=mediaserver-resolver"        
       - "traefik.http.routers.mediaserver-hydra2.tls=true"
 
@@ -83,7 +83,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-sabnzbd.loadbalancer.server.port=8080"
       - "traefik.http.routers.mediaserver-sabnzbd.service=mediaserver-sabnzbd"
-      - "traefik.http.routers.mediaserver-sabnzbd.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/sabnzbd`)"
+      - "traefik.http.routers.mediaserver-sabnzbd.rule=Host(`sab.servicesjowj.net`)"
       - "traefik.http.routers.mediaserver-sabnzbd.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-sabnzbd.tls=true"
 
@@ -101,7 +101,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-sonarr.loadbalancer.server.port=8989"
       - "traefik.http.routers.mediaserver-sonarr.service=mediaserver-sonarr"
-      - "traefik.http.routers.mediaserver-sonarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/sonarr`)"
+      - "traefik.http.routers.mediaserver-sonarr.rule=Host(`sonarr.services.jowj.net`)"
       - "traefik.http.routers.mediaserver-sonarr.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-sonarr.tls=true"        
     networks:
@@ -121,7 +121,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-lidarr.loadbalancer.server.port=8686"
       - "traefik.http.routers.mediaserver-lidarr.service=mediaserver-lidarr"
-      - "traefik.http.routers.mediaserver-lidarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/lidarr`)"
+      - "traefik.http.routers.mediaserver-lidarr.rule=Host(`lidarr.services.jowj.net`)"
       - "traefik.http.routers.mediaserver-lidarr.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-lidarr.tls=true"                
     networks:
@@ -141,7 +141,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-radarr.loadbalancer.server.port=7878"
       - "traefik.http.routers.mediaserver-radarr.service=mediaserver-radarr"
-      - "traefik.http.routers.mediaserver-radarr.rule=Host(`hatchery.home.jowj.net`) && PathPrefix(`/radarr`)"
+      - "traefik.http.routers.mediaserver-radarr.rule=Host(`radarr.services.jowj.net`)"
       - "traefik.http.routers.mediaserver-radarr.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-radarr.tls=true"                        
     networks:
