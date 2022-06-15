@@ -6,7 +6,7 @@ services:
     image: traefik:2.5    
     networks:
       - pubnet    
-    command: --web --docker --docker.swarmmode --docker.watch --docker.domain="services.jowj.net" --logLevel=DEBUG
+    command: --web --docker --docker.swarmmode --docker.watch --docker.domain="services.jowj.net" --providers.docker.network=pubnet --logLevel=DEBUG
     ports:
       - 80:80/tcp
       - 443:443/tcp
@@ -83,7 +83,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-sabnzbd.loadbalancer.server.port=8080"
       - "traefik.http.routers.mediaserver-sabnzbd.service=mediaserver-sabnzbd"
-      - "traefik.http.routers.mediaserver-sabnzbd.rule=Host(`sab.servicesjowj.net`)"
+      - "traefik.http.routers.mediaserver-sabnzbd.rule=Host(`sab.services.jowj.net`)"
       - "traefik.http.routers.mediaserver-sabnzbd.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-sabnzbd.tls=true"
 
@@ -184,7 +184,7 @@ services:
   audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
     networks:
-      - pubnet    
+      - pubnet
     environment:
       PUID: 1000
       PGID: 1000
@@ -196,8 +196,6 @@ services:
       - "/home/josiah/apps/audiobookshelf/metadata:/metadata"
       - "/media/usenet/audiobooks:/audiobooks"
       - "/media/usenet/podcasts:/podcasts"
-    ports:
-      - 13378:80
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=pubnet"
