@@ -48,7 +48,7 @@ services:
       - pubnet
     volumes:
       - /home/josiah/apps/hydra2/:/config
-      - /home/josiah/Downloads/usenet-complete/:/downloads
+      - /home/josiah/Downloads/usenet-complete/:/data/downloads
     environment:
       PGID: 1000
       PUID: 1000
@@ -71,14 +71,14 @@ services:
       TZ: America/Chicago
     volumes:
       - "/home/josiah/apps/sabnzbd:/config"
-      - "/home/josiah/Downloads/usenet-complete/:/downloads"
-      - "/home/josiah/Downloads/usenet-incomplete/:/incomplete-downloads"
-      - "/home/josiah/Downloads/usenet-watched/:/watched-folder"      
-      - "/media/usenet/tv:/tv"
-      - "/media/usenet/audio/:/music"
-      - "/media/usenet/movies/:/movies"
-      - "/media/usenet/itunes-synology/iTunes Media/Automatically Add to iTunes.localized/:/itunes"
-      - "/media/usenet/book-library/books/:/books"
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/home/josiah/Downloads/usenet-incomplete/:/data/incomplete-downloads"
+      - "/home/josiah/Downloads/usenet-watched/:/data/watched-folder"      
+      - "/media/usenet/tv:/data/tv"
+      - "/media/usenet/audio/:/data/music"
+      - "/media/usenet/movies/:/data/movies"
+      - "/media/usenet/itunes-synology/iTunes Media/Automatically Add to iTunes.localized/:/data/itunes"
+      - "/media/usenet/book-library/yet-to-be-added:/data/books"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-sabnzbd.loadbalancer.server.port=8080"
@@ -95,8 +95,8 @@ services:
       TZ: America/Chicago
     volumes:
       - "/home/josiah/apps/sonarr:/config"
-      - "/home/josiah/Downloads/usenet-complete/:/downloads"
-      - "/media/usenet/tv/:/tv"
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/media/usenet/tv/:/data/tv"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-sonarr.loadbalancer.server.port=8989"
@@ -115,8 +115,8 @@ services:
       TZ: America/Chicago
     volumes:
       - "/home/josiah/apps/lidarr:/config"
-      - "/home/josiah/Downloads/usenet-complete/:/downloads"
-      - "/media/usenet/audio/:/music"
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/media/usenet/audio/:/data/music"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-lidarr.loadbalancer.server.port=8686"
@@ -135,8 +135,8 @@ services:
       TZ: America/Chicago
     volumes:
       - "/home/josiah/apps/radarr:/config"
-      - "/home/josiah/Downloads/usenet-complete/:/downloads"
-      - "/media/usenet/movies/:/movies"
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/media/usenet/movies/:/data/movies"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-radarr.loadbalancer.server.port=7878"
@@ -213,10 +213,10 @@ services:
       PGID: 1000
       TZ: America/Chicago      
     volumes:
-      - "/home/josiah/apps/readarr/config:/path/to/data:/config"
-      - "/media/usenet/audiobooks:/data/audiobooks"
-      - "/media/usenet/book-library/readarr:/data/books" # not ready
-      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/home/josiah/apps/readarr/config:/config"
+      - "/media/usenet/audiobooks:/media/usenet/book-library/readarr/audiobooks"
+      - "/media/usenet/book-library/readarr:/media/usenet/book-library/readarr" # not ready
+      - "/home/josiah/Downloads/usenet-complete/:/media/downloads"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-readarr.loadbalancer.server.port=8787"
