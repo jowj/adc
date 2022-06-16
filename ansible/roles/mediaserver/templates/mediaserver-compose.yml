@@ -204,6 +204,28 @@ services:
       - "traefik.http.routers.mediaserver-audiobookshelf.service=mediaserver-audiobookshelf"
       - "traefik.http.routers.mediaserver-audiobookshelf.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-audiobookshelf.tls=true"
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago      
+    volumes:
+      - "/home/josiah/apps/readarr/config:/path/to/data:/config"
+      - "/media/usenet/audiobooks:/data/audiobooks"
+      - "/media/usenet/book-library/readarr:/data/books" # not ready
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-readarr.loadbalancer.server.port=8787"
+      - "traefik.http.routers.mediaserver-readarr.service=mediaserver-readarr"
+      - "traefik.http.routers.mediaserver-readarr.rule=Host(`readarr.services.jowj.net`)"
+      - "traefik.http.routers.mediaserver-readarr.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-readarr.tls=true"                        
+    networks:
+      - pubnet    
         
 volumes:
   traefik_acme:
