@@ -1,0 +1,1 @@
+sys_packages: [ 'curl', 'vim', 'git', 'emacs', 'build-essential', 'mosh', 'python', 'python3-pip', 'docker', 'ca-certificates', 'curl', 'gnupg', 'lsb-release', 'docker-ce', 'docker-ce-cli', 'containerd.io', 'docker-compose-plugin', 'tailscale']

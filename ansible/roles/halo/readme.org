@@ -1,0 +1,6 @@
+* halo
+halo hosts my shared services for my tailnet. right now thats just
+- smokeping
+- oversearr
+
+

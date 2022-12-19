@@ -1,0 +1,213 @@
+*** Targets ***
+
+probe = FPing
+
+menu = Top
+title = work Latency Grapher
+remark = Welcome to the SmokePing website of WORKS Company. \
+         Here you will learn all about the latency of our network.
+
++ HomeNet 
+menu = HomeNet
+title = HomeNet
+
+++ hatchery
+menu = hatchery
+title = hatchery
+host = hatchery.home.jowj.net
+
+++ hoyden
+menu = hoyden
+title = hoyden
+host = 192.168.1.20
+
+++ synology-as-1
+menu = syn-nas
+title = syn-nas 
+host = storage.home.jowj.net
+
+++ sainthood
+menu = sainthood
+title = sainthood
+host = sainthood.home.jowj.net
+
++ Services
+menu = Services
+title = Services
+
+++ sonarr
+menu = sonarr
+title = sonarr
+host = sonarr.services.jowj.net
+
+++ readarr
+menu = readarr
+title = readarr
+host = readarr.services.jowj.net
+
+++ lidarr
+menu = lidarr
+title = lidarr
+host = lidarr.services.jowj.net
+
+++ radarr
+menu = radarr
+title = radarr
+host = radarr.services.jowj.net
+
+++ sabnzb
+menu = sabnzbd
+title = sabnzbd
+host = sab.services.jowj.net
+
++ AwfulNet
+menu = AwfulNet
+title = AwfulNet
+
+++ matrix
+menu = matrix
+title = matrix.awful.club
+host = matrix.awful.club
+
+++ awful1
+menu = awful1
+title = awful1
+host = awful-1.awful.club
+
+
++ InternetSites
+
+menu = Internet Sites
+title = Internet Sites
+
+++ GoogleSearch
+menu = Google
+title = google.com
+host = google.com
+
+++ GoogleSearchIpv6
+menu = Google
+probe = FPing6
+title = ipv6.google.com
+host = ipv6.google.com
+
+++ linuxserverio
+menu = linuxserver.io
+title = linuxserver.io
+host = linuxserver.io
+
++ USA
+
+menu = North America
+title = North American Connectivity
+
+++ MIT
+
+menu = MIT
+title = Massachusetts Institute of Technology Webserver
+host = web.mit.edu
+
+++ OSUOSL
+
+menu = Oregon State University Open Source Lab
+title = Oregon State University Open Source Lab
+host = osuosl.org
+
++ DNS
+menu = DNS
+title = DNS
+
+++ GoogleDNS1
+menu = Google DNS 1
+title = Google DNS 8.8.8.8
+host = 8.8.8.8
+
+++ GoogleDNS2
+menu = Google DNS 2
+title = Google DNS 8.8.4.4
+host = 8.8.4.4
+
+++ OpenDNS1
+menu = OpenDNS1
+title = OpenDNS1
+host = 208.67.222.222
+
+++ OpenDNS2
+menu = OpenDNS2
+title = OpenDNS2
+host = 208.67.220.220
+
+++ CloudflareDNS1
+menu = Cloudflare DNS 1
+title = Cloudflare DNS 1.1.1.1
+host = 1.1.1.1
+
+++ CloudflareDNS2
+menu = Cloudflare DNS 2
+title = Cloudflare DNS 1.0.0.1
+host = 1.0.0.1
+
+++ L3-1
+menu = Level3 DNS 1
+title = Level3 DNS 4.2.2.1
+host = 4.2.2.1
+
+++ L3-2
+menu = Level3 DNS 2
+title = Level3 DNS 4.2.2.2
+host = 4.2.2.2
+
+++ Quad9
+menu = Quad9
+title = Quad9 DNS 9.9.9.9
+host = 9.9.9.9
+
++ DNSProbes
+menu = DNS Probes
+title = DNS Probes
+probe = DNS
+
+++ GoogleDNS1
+menu = Google DNS 1
+title = Google DNS 8.8.8.8
+host = 8.8.8.8
+
+++ GoogleDNS2
+menu = Google DNS 2
+title = Google DNS 8.8.4.4
+host = 8.8.4.4
+
+++ OpenDNS1
+menu = OpenDNS1
+title = OpenDNS1
+host = 208.67.222.222
+
+++ OpenDNS2
+menu = OpenDNS2
+title = OpenDNS2
+host = 208.67.220.220
+
+++ CloudflareDNS1
+menu = Cloudflare DNS 1
+title = Cloudflare DNS 1.1.1.1
+host = 1.1.1.1
+
+++ CloudflareDNS2
+menu = Cloudflare DNS 2
+title = Cloudflare DNS 1.0.0.1
+host = 1.0.0.1
+
+++ L3-1
+menu = Level3 DNS 1
+title = Level3 DNS 4.2.2.1
+host = 4.2.2.1
+
+++ L3-2
+menu = Level3 DNS 2
+title = Level3 DNS 4.2.2.2
+host = 4.2.2.2
+
+++ Quad9
+menu = Quad9
+title = Quad9 DNS 9.9.9.9
+host = 9.9.9.9

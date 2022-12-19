@@ -1,0 +1,54 @@
+version: '3'
+
+networks:
+  gitea:
+    external: false
+  pubnet:
+    external: false
+
+volumes:
+  traefik_acme:
+  traefik_logs:
+    
+services:      
+  traefik:
+    image: "traefik:v2.2"
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DO_AUTH_TOKEN: "{{ DO_AUTH_TOKEN }}"
+    networks:
+      pubnet:
+    volumes:
+      - "/home/josiah/apps/letsencrypt/:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/home/josiah/apps/traefik.yml:/etc/traefik/traefik.yml"
+      - traefik_logs:/log
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.edge.rule=hostregexp(`{host:.+}`)"      
+      - "traefik.http.routers.edge.entrypoints=web"
+      - "traefik.http.routers.edge.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+  smokeping:
+    image: lscr.io/linuxserver/smokeping:latest
+    networks:
+      pubnet:
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/josiah/apps/smokeping/config/:/config
+      - /home/josiah/apps/smokeping/data:/data
+    restart: unless-stopped
+    labels:
+      # global rules
+      - "traefik.enable=true"
+      # the web ui
+      - "traefik.http.routers.freshrss.rule=Host(`monitor.awful.club`)"      
+      - "traefik.http.routers.freshrss.entrypoints=websecure"
+      - "traefik.http.routers.freshrss.tls=true"      
+      - "traefik.http.routers.freshrss.tls.certresolver=awful-letsencrypt"      

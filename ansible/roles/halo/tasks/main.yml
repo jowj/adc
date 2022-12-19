@@ -1,0 +1,73 @@
+---
+# deploy a halo host
+
+# boot strap server
+- name: Install aptitude using apt
+  apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+- name: Install required system packages for docker install
+  apt: name={{ item }} state=latest update_cache=yes
+  loop: [ 'apt-transport-https', 'ca-certificates', 'software-properties-common']
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Add tailscale GPG apt Key
+  apt_key:
+    url: https://pkgs.tailscale.com/stable/debian/bullseye.noarmor.gpg
+    state: present
+
+- name: Add tailscsale Repository
+  apt_repository:
+    repo: deb https://pkgs.tailscale.com/stable/debian bullseye main
+    state: present    
+
+- name: Update apt
+  apt: update_cache=yes
+
+- name: Install required system packages
+  apt: name={{ sys_packages }} state=latest
+
+- name: add 'josiah' to docker group
+  user:
+    name='josiah'
+    groups=docker
+    append=yes
+
+- name: install python packages
+  pip:
+    name: ["jsondiff", "docker"]
+
+# init new swarm, set up 
+- name: Init a new swarm with default parameters
+  docker_swarm:
+    state: present
+    advertise_addr: "100.108.51.49"
+
+- name: ensure the app folders exist
+  file: state=directory path={{ item }} owner=josiah group=josiah mode=0700
+  loop: [ '/home/josiah/apps/smokeping/',  '/home/josiah/apps/smokeping/config/', '/home/josiah/apps/letsencrypt/',  '/home/josiah/apps/smokeping/config/', '/home/josiah/apps/smokeping/data' ]
+
+- name: copy over awful-All config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0777
+  with_items:
+    - {src: 'halo-compose.yml', dest: '/home/josiah/apps/halo-compose.yml'}
+    - {src: 'traefik.yml', dest: '/home/josiah/apps/traefik.yml'}
+    - {src: 'Targets', dest: '/home/josiah/apps/smokeping/config/Targets'}    
+
+- name: Deploy halo stack
+  docker_stack:
+    state: present
+    name: halo
+    compose:
+      - /home/josiah/apps/halo-compose.yml

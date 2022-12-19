@@ -1,0 +1,16 @@
+---
+
+- name: init droplet
+  hosts: halo
+  tasks:
+    - debug: msg="Deploying droplet config to cloud server"
+  roles:
+    - { name: droplets, tags: ['init']}
+
+- name: deploy the halo stack
+  hosts: halo
+  remote_user: "{{ remote_user }}"
+  tasks:
+    - debug: msg="Deploying halo stack to cloud server"
+  roles:
+    - { name: halo, tags: ['halo'] }
