@@ -225,7 +225,28 @@ services:
       - "traefik.http.routers.mediaserver-readarr.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-readarr.tls=true"                        
     networks:
-      - pubnet    
+      - pubnet
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago      
+    volumes:
+      - "/home/josiah/apps/bazarr/config:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/media/downloads"
+      - "/media/usenet/tv/:/media/tv"
+      - "/media/usenet/movies/:/media/movies"      
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-bazarr.loadbalancer.server.port=6767"
+      - "traefik.http.routers.mediaserver-bazarr.service=mediaserver-bazarr"
+      - "traefik.http.routers.mediaserver-bazarr.rule=Host(`bazarr.services.jowj.net`)"
+      - "traefik.http.routers.mediaserver-bazarr.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-bazarr.tls=true"
+    networks:
+      - pubnet      
         
 volumes:
   traefik_acme:
@@ -234,4 +255,4 @@ volumes:
 
 networks:
   pubnet:
-    driver: overlay    
+    driver: overlay
