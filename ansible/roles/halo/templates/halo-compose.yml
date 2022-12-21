@@ -52,7 +52,29 @@ services:
       # global rules
       - "traefik.enable=true"
       # the web ui
-      - "traefik.http.routers.freshrss.rule=Host(`monitor.awful.club`)"      
-      - "traefik.http.routers.freshrss.entrypoints=websecure"
-      - "traefik.http.routers.freshrss.tls=true"      
-      - "traefik.http.routers.freshrss.tls.certresolver=awful-letsencrypt"      
+      - "traefik.http.routers.smokeping.rule=Host(`monitor.awful.club`)"      
+      - "traefik.http.routers.smokeping.entrypoints=websecure"
+      - "traefik.http.routers.smokeping.tls=true"      
+      - "traefik.http.routers.smokeping.tls.certresolver=awful-letsencrypt"      
+
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    networks:
+      pubnet:
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/josiah/apps/overseerr/config/:/config      
+    restart: unless-stopped
+    labels:
+      # global rules
+      - "traefik.enable=true"
+      # the web ui
+      - "traefik.http.routers.overseerr.rule=Host(`requests.awful.club`)"      
+      - "traefik.http.routers.overseerr.entrypoints=websecure"
+      - "traefik.http.routers.overseerr.tls=true"      
+      - "traefik.http.routers.overseerr.tls.certresolver=awful-letsencrypt"
+      - "traefik.http.routers.overseerr.service=overseerr-web-svc"      
+      - "traefik.http.services.overseerr-web-svc.loadbalancer.server.port=5055"      
