@@ -43,7 +43,7 @@ services:
         
 
   hydra2:
-    image: linuxserver/hydra2:latest
+    image: linuxserver/nzbhydra2:latest
     networks:
       - pubnet
     volumes:
