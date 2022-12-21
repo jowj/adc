@@ -15,6 +15,12 @@ entryPoints:
   websecure:
     address: ":443"
 
+log:
+  level: debug
+  format: common
+accessLog:
+  format: common
+
 providers:
   docker:
     watch: true

@@ -1,8 +1,6 @@
 version: '3'
 
 networks:
-  gitea:
-    external: false
   pubnet:
     external: false
 
@@ -11,7 +9,7 @@ volumes:
   traefik_logs:
     
 services:      
-  traefik:
+  justice:
     image: "traefik:v2.2"
     ports:
       - "80:80"
@@ -23,7 +21,7 @@ services:
     volumes:
       - "/home/josiah/apps/letsencrypt/:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/home/josiah/apps/traefik.yml:/etc/traefik/traefik.yml"
+      - "/home/josiah/apps/traefik/traefik.yml:/etc/traefik/traefik.yml"
       - traefik_logs:/log
     labels:
       - "traefik.enable=true"
@@ -31,6 +29,12 @@ services:
       - "traefik.http.routers.edge.entrypoints=web"
       - "traefik.http.routers.edge.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      
 
   smokeping:
     image: lscr.io/linuxserver/smokeping:latest

@@ -53,7 +53,7 @@
 
 - name: ensure the app folders exist
   file: state=directory path={{ item }} owner=josiah group=josiah mode=0700
-  loop: [ '/home/josiah/apps/smokeping/',  '/home/josiah/apps/smokeping/config/', '/home/josiah/apps/letsencrypt/',  '/home/josiah/apps/smokeping/config/', '/home/josiah/apps/smokeping/data' ]
+  loop: [ '/home/josiah/apps/smokeping/', '/home/josiah/apps/letsencrypt/',  '/home/josiah/apps/smokeping/config/', '/home/josiah/apps/smokeping/data', '/home/josiah/apps/overseerr/config/' ]
 
 - name: copy over awful-All config files
   template:
@@ -62,8 +62,23 @@
     mode: 0777
   with_items:
     - {src: 'halo-compose.yml', dest: '/home/josiah/apps/halo-compose.yml'}
-    - {src: 'traefik.yml', dest: '/home/josiah/apps/traefik.yml'}
-    - {src: 'Targets', dest: '/home/josiah/apps/smokeping/config/Targets'}    
+    - {src: 'traefik.yml', dest: '/home/josiah/apps/traefik/traefik.yml'}
+    - {src: 'Targets', dest: '/home/josiah/apps/smokeping/config/Targets'}
+
+
+# you have to force remove the whole stack for some changes to take effect
+# I have no idea which ones, but this solved a problem for me with traefik conifgs + multi networks.
+- name: Remove the mediaserver stack
+  block:
+    - name: Remove the mediaserver stack
+      docker_stack:
+        state: absent
+        name: mediaserver
+        compose:
+          - /home/josiah/apps/halo/halo-compose.yml
+    - name: Pause so the network gets deleted too
+      pause:
+        seconds: 15    
 
 - name: Deploy halo stack
   docker_stack:
