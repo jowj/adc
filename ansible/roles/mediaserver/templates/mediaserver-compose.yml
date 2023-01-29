@@ -246,7 +246,41 @@ services:
       - "traefik.http.routers.mediaserver-bazarr.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-bazarr.tls=true"
     networks:
+      - pubnet
+
+  stash:
+    image: git.awful.club/packages/hoard:latest
+    ## If you intend to use stash's DLNA functionality uncomment the below network mode and comment out the above ports section
+    # network_mode: host
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "2m"
+    environment:
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+      ## Adjust below to change default port (9999)
+      # - STASH_PORT=9999
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ vault_stash_config }}:/root/.stash"
+      - "{{ vault_stash_data }}:/data"
+      - "{{ vault_stash_metadata }}:/metadata"
+      - "{{ vault_stash_cache }}:/cache"
+      - "{{ vault_stash_generated }}:/generated"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-hoard.loadbalancer.server.port=9999"
+      - "traefik.http.routers.mediaserver-hoard.service=mediaserver-hoard"
+      - "traefik.http.routers.mediaserver-hoard.rule=Host(`hoard.services.jowj.net`)"
+      - "traefik.http.routers.mediaserver-hoard.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-hoard.tls=true"
+    networks:
       - pubnet      
+
         
 volumes:
   traefik_acme:
