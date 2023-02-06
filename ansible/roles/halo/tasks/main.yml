@@ -53,7 +53,7 @@
 
 - name: ensure the app folders exist
   file: state=directory path={{ item }} owner=josiah group=josiah mode=0700
-  loop: [ '/home/josiah/apps/smokeping/', '/home/josiah/apps/letsencrypt/',  '/home/josiah/apps/smokeping/config/', '/home/josiah/apps/smokeping/data', '/home/josiah/apps/overseerr/config/' ]
+  loop: [ '/home/josiah/apps/smokeping/', '/home/josiah/apps/letsencrypt/',  '/home/josiah/apps/smokeping/config/', '/home/josiah/apps/smokeping/data', '/home/josiah/apps/overseerr/config/', '/home/josiah/apps/drone/' ]
 
 - name: copy over awful-All config files
   template:
@@ -68,12 +68,12 @@
 
 # you have to force remove the whole stack for some changes to take effect
 # I have no idea which ones, but this solved a problem for me with traefik conifgs + multi networks.
-- name: Remove the mediaserver stack
+- name: Remove the halo stack
   block:
-    - name: Remove the mediaserver stack
+    - name: Remove the halo stack
       docker_stack:
         state: absent
-        name: mediaserver
+        name: halo
         compose:
           - /home/josiah/apps/halo/halo-compose.yml
     - name: Pause so the network gets deleted too
