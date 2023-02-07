@@ -6,18 +6,20 @@ steps:
   
 - name: Pull secret image and upload an updated copy to my package repo.
   image: alpine
-  environment:
-    USERNAME:
+  auth_config: 
+    username:
       from_secret: gitea-user
-    PASSWORD:
+    password:
       from_secret: gitea-key
-    IMAGE:
+  environment:
+    image:
       from_secret: secret-image
+    
   commands:
     - apk add docker
     - docker login git.awful.club
     - docker pull $IMAGE
-    - docker image tag {{ secret image name }} {{git.awful.club/packages/my_new_package}}
+    - docker image tag $image git.awful.club/packages/hoard
     - docker image push
 
 
