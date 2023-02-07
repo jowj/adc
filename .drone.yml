@@ -15,7 +15,12 @@ steps:
       from_secret: secret-image
   commands:
     - apk add docker
-    - echo $PASSWORD | docker login git.awful.club -u $USERNAME -p --password-stdin
+    - docker login git.awful.club
     - docker pull $IMAGE
     - docker image tag {{ secret image name }} {{git.awful.club/packages/my_new_package}}
     - docker image push
+
+
+image_pull_secrets:
+- containerregistry-login
+  
