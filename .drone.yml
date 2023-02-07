@@ -20,6 +20,8 @@ steps:
       from_secret: secret-image
   commands:
     - apk add docker
+    - echo $USERNAME
+    - echo "God I hope this works"
     - docker login --username=$USERNAME --password=$PASSWORD git.awful.club
     - docker pull $IMAGE
     - docker image tag {{ secret image name }} {{git.awful.club/packages/my_new_package}}
