@@ -18,8 +18,3 @@ steps:
       - docker image tag $SECRET_IMAGE git.awful.club/packages/hoard
       - docker push git.awful.club/packages/hoard
 
-trigger:
-  branch:
-    - master
-  event:
-    - push
