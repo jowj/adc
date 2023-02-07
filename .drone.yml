@@ -1,28 +1,27 @@
 kind: pipeline
+name: default
 type: docker
-name: Update image
 
 steps:
-  
-- name: Pull secret image and upload an updated copy to my package repo.
-  image: alpine
-  auth_config: 
-    username:
-      from_secret: gitea-user
-    password:
-      from_secret: gitea-key
-  environment:
+  - name: build
     image:
       from_secret: secret-image
-    
-  commands:
-    - apk add docker
-    - docker login git.awful.club
-    - docker pull $IMAGE
-    - docker image tag $image git.awful.club/packages/hoard
-    - docker image push
+    volumes:
+      - name: dockersock
+        path: /var/run
+    environment:
+      DOCKER_PASSWORD:
+        from_secret: gitea-key
+      SECRET_IMAGE:
+        from_secret: secret-image
+    commands:
+      - sleep 5 # give docker enough time to start
+      - echo $DOCKER_PASSWORD | docker login --username jowj --password-stdin git.awful.club
+      - docker image tag $SECRET_IMAGE git.awful.club/packages/hoard
+      - docker push git.awful.club/packages/hoard
 
-
-image_pull_secrets:
-- containerregistry-login
-  
+trigger:
+  branch:
+    - master
+  event:
+    - push
