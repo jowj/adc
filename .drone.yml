@@ -1,0 +1,24 @@
+kind: pipeline
+type: docker
+name: Update image
+
+# run from within a docker container. probably minimal. Debian / alpine/ nixos?
+# pull down the images i'm interested in (list? array?)
+# retag them and upload to my own package registry
+## This requires secrets! I gotta be able to login to my own package repo.
+
+steps:
+- name: greeting
+  image: alpine
+  environment:
+    USERNAME:
+      from_secret: gitea-user
+    PASSWORD:
+      from_secret: gitea-key
+    IMAGE:
+      from_secret: secret-image
+  commands:      
+    - docker login --username=$USERNAME --password=$PASSWORD git.awful.club
+    - docker pull $IMAGE
+    - docker image tag {{ secret image name }} {{git.awful.club/packages/my_new_package}}
+    - docker image push
