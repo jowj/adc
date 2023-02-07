@@ -1,22 +1,20 @@
+---
 kind: pipeline
 name: default
 type: docker
 
 steps:
-  - name: build
-    image:
-      from_secret: secret-image
-    volumes:
-      - name: dockersock
-        path: /var/run
+  - name: retag
+    image: alpine
     environment:
       DOCKER_PASSWORD:
         from_secret: gitea-key
       SECRET_IMAGE:
         from_secret: secret-image
     commands:
-      - sleep 5 # give docker enough time to start
+      - apk add docker
       - echo $DOCKER_PASSWORD | docker login --username jowj --password-stdin git.awful.club
+      - docker pull $SECRET_IMAGE
       - docker image tag $SECRET_IMAGE git.awful.club/packages/hoard
       - docker push git.awful.club/packages/hoard
 
