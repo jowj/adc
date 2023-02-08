@@ -13,6 +13,7 @@ steps:
         from_secret: secret-image
     commands:
       - echo $DOCKER_PASSWORD | docker login --username jowj --password-stdin git.awful.club
+      - sleep 5
       - docker pull $SECRET_IMAGE
       - docker image tag $SECRET_IMAGE git.awful.club/packages/hoard
       - docker push git.awful.club/packages/hoard
