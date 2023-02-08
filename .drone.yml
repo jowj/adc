@@ -5,14 +5,13 @@ type: docker
 
 steps:
   - name: retag
-    image: alpine
+    image: docker
     environment:
       DOCKER_PASSWORD:
         from_secret: gitea-key
       SECRET_IMAGE:
         from_secret: secret-image
     commands:
-      - apk add docker
       - echo $DOCKER_PASSWORD | docker login --username jowj --password-stdin git.awful.club
       - docker pull $SECRET_IMAGE
       - docker image tag $SECRET_IMAGE git.awful.club/packages/hoard
