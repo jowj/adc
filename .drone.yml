@@ -13,7 +13,14 @@ server:
 
 steps:
 - name: greeting
+  environment:
+    USERNAME:
+      from_secret: gitea_user
+    PASSWORD:
+      from_secret: gitea_pass
+    IMAGE:
+      from_secret: secret-image
   commands:
-  - echo hello world
-  - hostname
-  - whoami
+  - docker pull $IMAGE
+  - docker image tag $IMAGE git.awful.club/packages/hoard
+  - docker image push git.awful.club/packages/hoard
