@@ -13,7 +13,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "seraph"; # Define your hostname.
+  networking.hostName = "exgod"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable =
@@ -79,7 +79,8 @@
   security.sudo.enable = true;
   security.pam.enableSSHAgentAuth = true;
   security.pam.services.sudo.sshAgentAuth = true;
-  
+  security.sudo.wheelNeedsPassword = false;
+    
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 22 80 443 ];
   networking.firewall.checkReversePath = "loose";
