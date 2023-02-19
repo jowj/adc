@@ -1,23 +1,40 @@
 {
   description = "Test deployment for my server cluster";
 
-  # For accessing `deploy-rs`'s utility Nix functions
-  inputs.deploy-rs.url = "github:serokell/deploy-rs";
+  inputs = {
+    nixpkgs.url =
+      "github:nixos/nixpkgs/nixos-22.05"; # change this to your desired NixOS version
+    # For accessing `deploy-rs`'s utility Nix functions    
+    deploy-rs.url = "github:serokell/deploy-rs";
+  };
 
   outputs = { self, nixpkgs, deploy-rs }: {
-    nixosConfigurations.seraph = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.exgod = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = [ ../hosts/seraph/configuration.nix ];
+      modules = [ ../hosts/exgod/configuration.nix ];
     };
 
-    deploy.nodes.seraph.profiles.system = {
+    deploy.nodes.exgod = {
+      hostname = "exgod";
       user = "alice";
       sshUser = "alice";
+      magicRollback = false;
       remoteBuild = false;
-      path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.some-random-system;
+      path = deploy-rs.lib.x86_64-linux.activate.nixos
+        self.nixosConfigurations.exgod;
+
+      # This forces ssh to connect over IPv4.
+      sshOpts = [ "-4" ];
+
+      profiles.system = {
+        path = deploy-rs.lib.x86_64-linux.activate.nixos
+          self.nixosConfigurations.exgod;
+      };
     };
 
     # This is highly advised, and will prevent many possible mistakes
-    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+    checks =
+      builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy)
+      deploy-rs.lib;
   };
 }
