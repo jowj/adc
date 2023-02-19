@@ -12,6 +12,9 @@
 
   # clean /tmp on boot.
   boot.cleanTmpDir = true;
+  # Allow any admin to build packages, not just root.
+  ## if you don't set this then your sshUser MUST BE ROOT, or you'll get untrusted sig errors.
+  nix.settings.trusted-users = [ "@wheel" ]; 
 
   # Automatically optimize the Nix store to save space
   # by hard-linking identical files together. These savings

@@ -37,7 +37,7 @@
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
 
-  nix.settings.require-sigs = false;
+  nix.settings.require-sigs = true;
 
   # Configure keymap in X11
   services.xserver.layout = "us";
