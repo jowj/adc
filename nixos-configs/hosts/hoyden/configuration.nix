@@ -76,6 +76,7 @@ in {
     dates = "weekly";
     options = "--delete-older-than 30d";
   };
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # This is probalby not gonna work, but is a rough analogue to what I did before
   # pkgs.writeTextFile {
@@ -116,7 +117,16 @@ in {
     isNormalUser = true;
     extraGroups =
       [ "wheel" "audio" "sound" "video" "docker" "vboxusers" "adbusers" ];
+    # My SSH keys.
+    openssh.authorizedKeys.keys = [
+      # Replace this with your SSH key!
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPAZhFDzl1lbhWJ7MiTV3+Z1EY8M5b4cH/+ju4uo1d91 admin"
+    ];
   };
+
+  # Use my SSH keys for logging in as root.
+  users.users.root.openssh.authorizedKeys.keys =
+    config.users.users.josiah.openssh.authorizedKeys.keys;  
 
   nixpkgs.config.allowUnfree = true;
 
@@ -127,11 +137,16 @@ in {
     packageOverrides = pkgs: {
       unstable = import unstableTarball { config = config.nixpkgs.config; };
     };
+    permittedInsecurePackages = [ 
+      "python2.7-certifi-2021.10.8"
+      "python2.7-pyjwt-1.7.1"]; # required for poetry
   };
 
   environment.systemPackages = with pkgs; [
     # build shit
-    morph
+    morph # ultimately this seems not useful to me; weird errors.
+    nixops
+    deploy-rs
     autoconf
     yarn
     automake
@@ -253,6 +268,12 @@ in {
     openssh.enable = true;
   };
 
+  # Configure ssh auth for sudo/pam
+  security.sudo.enable = true;
+  security.pam.enableSSHAgentAuth = true;
+  security.pam.services.sudo.sshAgentAuth = true;
+  security.sudo.wheelNeedsPassword = false;  
+
   # this works properly
   fileSystems."/home/josiah/network-share/syn-nas/usenet" = {
     device = "192.168.1.221:/volume1/usenet";
@@ -291,3 +312,4 @@ in {
   system.stateVersion = "21.11"; # Did you read the comment?
 
 }
+
