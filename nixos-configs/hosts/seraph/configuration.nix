@@ -9,6 +9,22 @@
     ./hardware-configuration.nix
   ];
 
+  users.users.alice = {
+    isNormalUser = true;
+    shell = pkgs.bash;
+    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    # My SSH keys.
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPAZhFDzl1lbhWJ7MiTV3+Z1EY8M5b4cH/+ju4uo1d91 admin"
+    ];
+    packages = with pkgs; [ emacs vim ];
+  };
+
+  # Use my SSH keys for logging in as root.
+  users.users.root.openssh.authorizedKeys.keys =
+    config.users.users.alice.openssh.authorizedKeys.keys;
+  
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -79,6 +95,7 @@
   security.sudo.enable = true;
   security.pam.enableSSHAgentAuth = true;
   security.pam.services.sudo.sshAgentAuth = true;
+  security.sudo.wheelNeedsPassword = false;
   
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 22 80 443 ];

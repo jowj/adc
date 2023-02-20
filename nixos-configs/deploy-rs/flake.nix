@@ -9,28 +9,31 @@
   };
 
   outputs = { self, nixpkgs, deploy-rs }: {
-    nixosConfigurations.exgod = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.seraph = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules = [ ../hosts/exgod/configuration.nix ];
+      modules = [
+        ../hosts/seraph/configuration.nix
+        ../common/default.nix
+      ];
     };
 
-    deploy.nodes.exgod = {
-      hostname = "exgod";
-      user = "alice";
+    deploy.nodes.seraph = {
+      hostname = "seraph";
+      user = "root";
       sshUser = "alice";
-      magicRollback = false;
+      # magicRollback = false;
       remoteBuild = false;
       path = deploy-rs.lib.x86_64-linux.activate.nixos
-        self.nixosConfigurations.exgod;
+        self.nixosConfigurations.seraph;
 
       # This forces ssh to connect over IPv4.
       sshOpts = [ "-4" ];
 
       profiles.system = {
         path = deploy-rs.lib.x86_64-linux.activate.nixos
-          self.nixosConfigurations.exgod;
+          self.nixosConfigurations.seraph;
       };
-    };
+    };    
 
     # This is highly advised, and will prevent many possible mistakes
     checks =
