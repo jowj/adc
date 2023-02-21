@@ -16,6 +16,20 @@
         ../common/default.nix
       ];
     };
+    nixosConfigurations.demiurge = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ../hosts/demiurge/configuration.nix
+        ../common/default.nix
+      ];
+    };
+    nixosConfigurations.exgod = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ../hosts/exgod/configuration.nix
+        ../common/default.nix
+      ];
+    };
 
     deploy.nodes.seraph = {
       hostname = "seraph";
@@ -33,7 +47,41 @@
         path = deploy-rs.lib.x86_64-linux.activate.nixos
           self.nixosConfigurations.seraph;
       };
-    };    
+    };
+    deploy.nodes.demiurge = {
+      hostname = "demiurge";
+      user = "root";
+      sshUser = "alice";
+      # magicRollback = false;
+      remoteBuild = false;
+      path = deploy-rs.lib.x86_64-linux.activate.nixos
+        self.nixosConfigurations.demiurge;
+
+      # This forces ssh to connect over IPv4.
+      sshOpts = [ "-4" ];
+
+      profiles.system = {
+        path = deploy-rs.lib.x86_64-linux.activate.nixos
+          self.nixosConfigurations.demiurge;
+      };
+    };
+    deploy.nodes.exgod = {
+      hostname = "exgod";
+      user = "root";
+      sshUser = "alice";
+      # magicRollback = false;
+      remoteBuild = false;
+      path = deploy-rs.lib.x86_64-linux.activate.nixos
+        self.nixosConfigurations.exgod;
+
+      # This forces ssh to connect over IPv4.
+      sshOpts = [ "-4" ];
+
+      profiles.system = {
+        path = deploy-rs.lib.x86_64-linux.activate.nixos
+          self.nixosConfigurations.exgod;
+      };
+    };            
 
     # This is highly advised, and will prevent many possible mistakes
     checks =
