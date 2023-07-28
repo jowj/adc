@@ -31,6 +31,32 @@
       ];
     };
 
+    nixosConfigurations.hoyden = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ../hosts/hoyden/configuration.nix
+        ../common/default.nix
+      ];
+    };
+
+    deploy.nodes.hoyden = {
+      hostname = "hoyden";
+      user = "root";
+      sshUser = "josiah";
+      # magicRollback = false;
+      remoteBuild = false;
+      path = deploy-rs.lib.x86_64-linux.activate.nixos
+        self.nixosConfigurations.hoyden;
+
+      # This forces ssh to connect over IPv4.
+      sshOpts = [ "-4" ];
+
+      profiles.system = {
+        path = deploy-rs.lib.x86_64-linux.activate.nixos
+          self.nixosConfigurations.hoyden;
+      };
+    };            
+    
     deploy.nodes.seraph = {
       hostname = "seraph";
       user = "root";

@@ -4,11 +4,7 @@
 
 { config, pkgs, ... }:
 
-let
-  unstableTarball = fetchTarball
-    "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-
-in {
+{
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
@@ -78,26 +74,6 @@ in {
   };
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # This is probalby not gonna work, but is a rough analogue to what I did before
-  # pkgs.writeTextFile {
-  #   name = "plasma-awesome-xsession";
-  #   destination = "/share/xsessions/plasma-awesome.desktop";
-  #   text = ''
-  #   [Desktop Entry]
-  #   Type=XSession
-  #   Exec=env KDEWM=/run/current-system/sw/bin/awesome /run/current-system/sw/bin/startplasma-x11
-  #   DesktopNames=KDE (awesome)
-  #   Name=Plasma (awesome)
-  #   Comment=Plasma by KDE w/awesome
-  #   '';
-  # } // {
-  #   providedSessions = [ "plasma-awesome" ];
-  # }
-
-  # Configure keymap in X11
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
-
   # Enable CUPS to print documents.
   # services.printing.enable = true;
 
@@ -135,7 +111,7 @@ in {
 
   nixpkgs.config = {
     packageOverrides = pkgs: {
-      unstable = import unstableTarball { config = config.nixpkgs.config; };
+      unstable = import attrs.unstableTarball { config = config.nixpkgs.config; };
     };
     permittedInsecurePackages = [ 
       "python2.7-certifi-2021.10.8"
@@ -146,10 +122,11 @@ in {
     # build shit
     morph # ultimately this seems not useful to me; weird errors.
     nixops
-    deploy-rs
+    unstable.deploy-rs
     autoconf
     yarn
     automake
+    direnv
     gnumake
     wget
     gcc-arm-embedded
@@ -286,21 +263,6 @@ in {
     fsType = "nfs";
   };
 
-  # this doens't work right
-  # fileSystems."/home/josiah/network-share/sainthood/homes" = {
-  #   #device = "//sainthood.home.jowj.net/volume3/homes/";
-  #   device = "//sainthood.home.jowj.net//volume3/homes/";
-  #   fsType = "cifs";
-  #   options = let
-  #     # this line prevents hanging on network split
-  #     automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-  #   in ["${automount_opts},credentials=/etc/nixos/smb-secrets"];
-  # };
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
   networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
@@ -312,4 +274,3 @@ in {
   system.stateVersion = "21.11"; # Did you read the comment?
 
 }
-
