@@ -1,0 +1,15 @@
+* Overview
+The TF module of ~ADC~ inits machine creation in ~Bikeshed~, my local proxmox cluster, and configures DNS for my projects. Or at least, that's the goal. Right now i'm mostly just experimenting with it.
+
+The idea is to keep ansible for configuration and use TF for machine creation / API communication.
+
+* Using this
+- Install ~Terraform~
+- Move into the directory related to what you want to work on
+- ~terraform plan~
+- ~terraform apply~
+
+* Stuff to figure out
+- State. Using local tf state is mostly reasonable for a personal project, but since I want it to host more of my infra in general I may need to come up with a better solution. Unfortunately, tf state includes secrets for some fucking reason, and that means I need to be careful about where I put the dumb thing.
+- Importing. Right now, resources exist outside the context of TF, and the story for getting things like DNS moved to TF is fucking awful, somehow? why does this suck so bad.
+
