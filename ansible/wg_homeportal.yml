@@ -1,8 +1,0 @@
----
-
-- name: setup on prem portal wg host.
-  hosts: larva.home.jowj.net
-  tasks:
-    - debug: msg="Deploying wg portal"
-  roles:
-    - { name: home-net, tags: ['home-net'] }

@@ -77,7 +77,6 @@ services:
       - "/media/usenet/tv:/data/tv"
       - "/media/usenet/audio/:/data/music"
       - "/media/usenet/movies/:/data/movies"
-      - "/media/usenet/itunes-synology/iTunes Media/Automatically Add to iTunes.localized/:/data/itunes"
       - "/media/usenet/book-library/yet-to-be-added:/data/books"
     labels:
       - "traefik.enable=true"
