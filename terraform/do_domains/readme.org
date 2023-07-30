@@ -1,0 +1,10 @@
+* Terraform and DigitalOcean domains
+Terraform is a fucking baby about everything and I found this really annoying to work on!! It does seem like it works now, though.
+
+* FAQs
+** Importing from existing resources with terraformer
+I had to run this, post import, in order to get ~terraform plan~ to work, due to a discrepency in how providers are tagged / labelled /somethign?
+
+~terraform state replace-provider -auto-approve "registry.terraform.io/-/digitalocean" "digitalocean/digitalocean"~
+
+
