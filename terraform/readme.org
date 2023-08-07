@@ -1,15 +1,40 @@
 * Overview
-The TF module of ~ADC~ inits machine creation in ~Bikeshed~, my local proxmox cluster, and configures DNS for my projects. Or at least, that's the goal. Right now i'm mostly just experimenting with it.
+The TF module of ~ADC~ handles a few things:
+- inits machine creation in ~Bikeshed~, my local proxmox cluster
+- configures DNS for my projects. 
 
 The idea is to keep ansible for configuration and use TF for machine creation / API communication.
 
-* Using this
+** Using this
 - Install ~Terraform~
 - Move into the directory related to what you want to work on
 - ~terraform plan~
 - ~terraform apply~
 
-* Stuff to figure out
-- State. Using local tf state is mostly reasonable for a personal project, but since I want it to host more of my infra in general I may need to come up with a better solution. Unfortunately, tf state includes secrets for some fucking reason, and that means I need to be careful about where I put the dumb thing.
-- Importing. Right now, resources exist outside the context of TF, and the story for getting things like DNS moved to TF is fucking awful, somehow? why does this suck so bad.
+** State management
+ Using local tf state is mostly reasonable for a personal project, but I wanted to learn TF for enterprise reasons too, so I'm using Digital Ocean Spaces as an s3 compatible storage system. This is an explicit risk!! Sensitive shit can get written to those locations and leak keys or sensitive data to others.
+
+ See the ~Exceptions~ area under secrets for mroe info.
+ 
+** Importing
+If and when you need to import stuff from outside of Terraform, use ~terraformer~:
+https://github.com/GoogleCloudPlatform/terraformer
+
+This is how I got everything in here in the first place!
+
+** Secrets
+secrets are managed via ~pass~, mostly
+
+*** Add secrets
+ ~pass insert <your secret name>~
+
+*** Reference secrets
+~export TF_VAR_DO_PAT=$(pass <your secret name>)~
+
+*** Exceptions (digital ocean spaces access for backend storage):
+  1. Install the awscli tool.
+  2. ~aws configure --profile digitalocean~
+  3. Fill in the fields with your key id and secret
+  4. ~export AWS_PROFILE=digitalocean~
+  5. Boom.
 
