@@ -362,10 +362,6 @@ output "digitalocean_record_tfer--95970760_id" {
   value = "${digitalocean_record.tfer--95970760.id}"
 }
 
-output "digitalocean_record_tfer--96515486_id" {
-  value = "${digitalocean_record.tfer--96515486.id}"
-}
-
 output "digitalocean_record_tfer--97254927_id" {
   value = "${digitalocean_record.tfer--97254927.id}"
 }
