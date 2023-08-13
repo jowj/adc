@@ -177,3 +177,39 @@ resource "digitalocean_record" "tfer--87843681" {
   value    = "192.168.1.211"
   weight   = "0"
 }
+
+resource "digitalocean_record" seraph-dns {
+  domain   = "home.jowj.net"
+  flags    = "0"
+  name     = "seraph"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "A"
+  value    = "100.68.110.113"
+  weight   = "0"
+}
+
+resource "digitalocean_record" exgod-dns {
+  domain   = "home.jowj.net"
+  flags    = "0"
+  name     = "exgod"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "A"
+  value    = "100.98.219.88"
+  weight   = "0"
+}
+
+resource "digitalocean_record" demiurge-dns {
+  domain   = "home.jowj.net"
+  flags    = "0"
+  name     = "demiurge"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "A"
+  value    = "100.108.60.46"
+  weight   = "0"
+}
