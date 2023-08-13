@@ -1,0 +1,60 @@
+---
+# Configure the baseline I want on every debian box
+
+
+# Configure apt
+- name: Install aptitude using apt
+  apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+# Add custom packages to apt.
+- name: Add tailscale GPG apt Key
+  apt_key:
+    url: https://pkgs.tailscale.com/stable/debian/bullseye.noarmor.gpg
+    state: present
+
+- name: Add tailscsale Repository
+  apt_repository:
+    repo: deb https://pkgs.tailscale.com/stable/debian bullseye main
+    state: present    
+
+# Add our packages
+- name: Install required system packages
+  apt: name={{ sys_packages }} state=latest
+
+# Configure sudo
+- name: Make sure we have a 'sudo' group
+  group:
+    name: sudo
+    state: present
+
+- name: Allow sudo group to have passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    validate: '/usr/sbin/visudo -cf %s'
+
+# loop here??
+- name: Create a new regular user with sudo privileges
+  user:
+    name: "{{ item }}"
+    state: present
+    groups: sudo
+    append: true
+    create_home: true
+    shell: /bin/bash
+  loop: "{{ create_users }}"
+
+# loop here
+- name: Set authorized key for remote user
+  authorized_key:
+    user: "{{ item }}"
+    state: present
+    key: "{{ copy_local_key }}"
+  loop: "{{ create_users }}"
+
+- name: Restart sshd
+  service:
+    name: sshd.service
+    state: restarted
