@@ -1,0 +1,13 @@
+* nix configurations
+This folder tracks any nix configuration required. In the past I've experimented with using things like ~deploy-rs~ and ~morph~ for managing nix hosts, but unfortunately nix state of the art is just trash from a UX perspective. I don't recommend any of these things. Instead, I'm moving to naked configuration of a single ~configuration.nix~ file for the immediate future.
+
+** How this works
+
+There is a single folder per host currently in use. Each folder contains about 2 files, ~configuration.nix~ and ~hardware-configuration.nix~. Any changes made to a hosts configuration should go in the appropriate configuration file, saved, and committed. To use the latest version of a file, invoke ~rebuild switch~ with additional arguments, like:
+
+~nixos-rebuild -I nixos-config=path/to/your/configuration.nix~
+
+In our case, to rebuild the local ~hoyden~ configuration, we would run something like:
+
+~nixos-rebuild -I nixos-config=~/Documents/projects/adc/nix-configs/hosts/hoyden/configuration.nix switch~
+
