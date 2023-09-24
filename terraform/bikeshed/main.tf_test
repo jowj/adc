@@ -1,12 +1,3 @@
-terraform {
-    required_providers {
-	proxmox = {
-	    source = "telmate/proxmox"
-	    version = "2.7.4"
-	}
-    }
-}
-
 provider "proxmox" {
     # url is the hostname (FQDN if you have one) for the proxmox host you'd like to connect to to issue the commands. my proxmox host is 'prox-1u'. Add /api2/json at the end for the API
     pm_api_url = "https://192.168.1.230:8006/api2/json"
