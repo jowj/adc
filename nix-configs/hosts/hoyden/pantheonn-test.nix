@@ -61,18 +61,20 @@ in {
     enable = true;
     autoRepeatDelay = 150;
     # autoRepeatInterval = something; # this is configurable so i'm leaving it here, but not sure that i need it.
-    displayManager.sddm.enable = true;
-    desktopManager.plasma5.enable = true;
-    windowManager.awesome = {
-       enable = true;
-       luaModules = with pkgs.luaPackages; [
-         luarocks # is the package manager for Lua modules
-         luadbi-mysql # Database abstraction layer
-       ];
-     };
+    # displayManager.sddm.enable = true;
+    # desktopManager.plasma5.enable = true;
+    displayManager.lightdm.enable = true;    
+     # windowManager.awesome = {
+     #   enable = true;
+     #   luaModules = with pkgs.luaPackages; [
+     #     luarocks # is the package manager for Lua modules
+     #     luadbi-mysql # Database abstraction layer
+     #   ];
+     # };
   };
-
   services.flatpak.enable = true;
+
+  services.xserver.desktopManager.pantheon.enable = true;  
 
   # try and handle some of the dumb long term storage optimiztaion issues with nixos:
   nix.gc = {
@@ -104,7 +106,7 @@ in {
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # enable acker, virtualbox, virtualization shit
+  # enable docker, virtualbox, virtualization shit
   virtualisation.docker.enable = true;
   virtualisation.virtualbox.host.enable = false;
   virtualisation.virtualbox.host.enableExtensionPack = false;
@@ -157,7 +159,7 @@ in {
     konsole
     patchelf
     docker
-    # jlj utils
+    # jlj dev
     # nur.repos.bhipple.talon # this is broken, right now, and there isn't another option to try.
     darktable
     digikam
@@ -168,6 +170,7 @@ in {
     terraformer
     awscli2
     pass
+    gnome.seahorse
     doctl
     python38
     python38Packages.pip
@@ -175,6 +178,7 @@ in {
     nodejs_20
     pipenv
     bitwarden
+    chromium
     magic-wormhole
     firefox
     google-chrome
@@ -191,6 +195,7 @@ in {
     keychain
     os-prober
     lsof
+    wireguard-tools
     tailscale
     fortune
     unstable.youtube-dl
@@ -207,19 +212,23 @@ in {
     bluedevil
     bluez
     gnome.cheese
+    gnome3.gnome-tweaks
+    xdotool # Certain kind of wm intearction is possible here?
+    wmctrl
     # jlj comms
     unstable.element-desktop
     slack
     discord
     konversation
     unstable.signal-desktop
+    newsflash # same maker as feedreader, newer, less features, actively maintained.
     zoom-us
     spectral
+    jitsi-meet-electron
     # jlj de
     syncthingtray
-    # unstable.synology-drive-client
     barrier
-    pinentry
+    pinentry-curses
     acpi
     awesome
     networkmanagerapplet
@@ -227,6 +236,8 @@ in {
     rofi
     i3lock
     vlc
+    unstable.thunderbird
+    birdtray # tray icon for thunderbird
     peruse
     libsForQt5.ark
     # tauon # this is a good music player but it doesn't come bundled proper in nixos; install via flatpak you bitch
@@ -241,20 +252,29 @@ in {
     kde-gtk-config
     libsForQt5.kde-cli-tools
     arc-kde-theme
-    # XFCE stuff
-    xfce.thunar
+    # jlj games
+    lutris
+    vulkan-tools
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
-  programs.gnupg.agent = {
+  # services.dbus.packages = [ pkgs.gcr ];
+  # services.pcscd.enable = true;  
+/*   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = true;
-    pinentryFlavor = "gnome3";
+    pinentryFlavor = "curses";
   };
-
+ */
   programs.adb.enable = true;
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+  };  
 
   # List services that you want to enable:
 
@@ -293,6 +313,17 @@ in {
     options = [ "nfsvers=3" ];
     fsType = "nfs";
   };
+
+  # this doens't work right
+  # fileSystems."/home/josiah/network-share/sainthood/homes" = {
+  #   #device = "//sainthood.home.jowj.net/volume3/homes/";
+  #   device = "//sainthood.home.jowj.net//volume3/homes/";
+  #   fsType = "cifs";
+  #   options = let
+  #     # this line prevents hanging on network split
+  #     automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+  #   in ["${automount_opts},credentials=/etc/nixos/smb-secrets"];
+  # };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];

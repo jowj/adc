@@ -58,21 +58,29 @@ in {
 
   # Enable the X11 windowing system.
   services.xserver = {
-    enable = true;
+    enable = true;   
     autoRepeatDelay = 150;
     # autoRepeatInterval = something; # this is configurable so i'm leaving it here, but not sure that i need it.
-    displayManager.sddm.enable = true;
-    desktopManager.plasma5.enable = true;
+    desktopManager = {
+      xterm.enable = false;
+      xfce = {
+        enable = true;
+        noDesktop = true;
+        enableXfwm = false;
+      };
+    };
+    displayManager.defaultSession = "xfce+awesome";
     windowManager.awesome = {
        enable = true;
        luaModules = with pkgs.luaPackages; [
          luarocks # is the package manager for Lua modules
          luadbi-mysql # Database abstraction layer
        ];
-     };
-  };
-
-  services.flatpak.enable = true;
+     };    
+  }; 
+  
+/*   xdg.portal.enable = true;
+  services.flatpak.enable = true; */
 
   # try and handle some of the dumb long term storage optimiztaion issues with nixos:
   nix.gc = {
@@ -242,7 +250,7 @@ in {
     libsForQt5.kde-cli-tools
     arc-kde-theme
     # XFCE stuff
-    xfce.thunar
+    #xfce.thunar
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
