@@ -22,7 +22,7 @@ resource "proxmox_vm_qemu" "high-sea" {
     disk {
         slot = 0
         # set disk size here. leave it small for testing because expanding the disk takes time.
-        size = "20G"
+        size = "40G"
         type = "scsi"
         storage = "sainthood-cifs"
         iothread = 0
