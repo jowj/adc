@@ -1,7 +1,0 @@
-- name: deploy home services 
-  hosts: mediaserver
-  remote_user: "{{ remote_user }}"
-  tasks:
-    - debug: msg="Deploying home services stack to local server"
-  roles:
-    - { name: home-net, tags: ['home-net'] }
