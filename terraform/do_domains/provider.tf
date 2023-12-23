@@ -15,8 +15,8 @@ terraform {
 	skip_metadata_api_check     = true
 
 	# This is actually not needed, but declaring it here helps me remember where its supposed to live.	
-	shared_credentials_files = ["~/.aws/credentials"]
-	shared_config_files = ["~/.aws/config"]    	
+	#shared_credentials_files = ["~/.aws/credentials"]
+	#shared_config_files = ["~/.aws/config"]    	
     }
     
 }
