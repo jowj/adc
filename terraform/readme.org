@@ -26,6 +26,8 @@ This is how I got everything in here in the first place!
 secrets are managed via ~pass~, mostly
 
 *** Add secrets
+1. install pass
+2. pass init `your gpg id` - make sure you use the right one, jesus FUCK. you want this public key: `98D96C71214AFB7583C03F5EDC798A32AE57BA46`
  ~pass insert <your secret name>~
 
 *** Reference secrets
