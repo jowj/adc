@@ -11,14 +11,6 @@ services:
       - 80:80/tcp
       - 443:443/tcp
       - 8080:8080/tcp  
-      - 32400:32400/tcp
-      - 8324:8324/tcp
-      - 32469:32469/tcp
-      - 1900:1900/udp
-      - 32410:32410/udp
-      - 32412:32412/udp
-      - 32413:32413/udp
-      - 32414:32414/udp      
     volumes:
       - /home/josiah/apps/traefik/acme.json:/acme.json        
       - traefik_logs:/var/log/access.log
@@ -96,35 +88,6 @@ services:
     networks:
       - pubnet      
 
-  plex:
-    image: plexinc/pms-docker
-    environment:
-      - TZ=America/Chicago
-      - PLEX_CLAIM="{{ vault_pms_claim_token }}"
-      - ADVERTISE_IP=http://192.168.1.120:443/
-    hostname: lair
-    volumes:
-      - /home/josiah/apps/pms/config:/config
-      - /home/josiah/apps/pms/transcode:/transcode
-      - /media/usenet:/data      
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.mediaserver-pms.loadbalancer.server.port=32400"
-      - "traefik.http.services.mediaserver-pms.loadbalancer.server.port=8324"
-      - "traefik.http.services.mediaserver-pms.loadbalancer.server.port=32469"
-      - "traefik.http.services.mediaserver-pms.loadbalancer.server.port=1900"
-      - "traefik.http.services.mediaserver-pms.loadbalancer.server.port=32410"
-      - "traefik.http.services.mediaserver-pms.loadbalancer.server.port=32412"
-      - "traefik.http.services.mediaserver-pms.loadbalancer.server.port=32413"
-      - "traefik.http.services.mediaserver-pms.loadbalancer.server.port=32414"
-      - "traefik.http.routers.mediaserver-pms.service=mediaserver-pms"
-      - "traefik.http.routers.mediaserver-pms.rule=Host(`pms.services.jowj.net`)"
-      - "traefik.http.routers.mediaserver-pms.tls.certResolver=mediaserver-resolver"
-      - "traefik.http.routers.mediaserver-pms.tls=true"
-    networks:
-      - pubnet      
-    network_mode: bridge      
-        
 volumes:
   traefik_acme:
   traefik_logs:

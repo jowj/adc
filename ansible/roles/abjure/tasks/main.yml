@@ -63,3 +63,18 @@
     prune: yes
     compose:
       - /home/josiah/apps/abjure/abjure-compose.yml
+
+- name: Install Plex compose file
+  template:
+    src: plex-compose.yml.j2
+    dest: "/home/josiah/apps/plex/plex-compose.yml"
+    owner: "josiah"
+    group: "josiah"
+    mode: "0640"
+
+- name: Deploy Plex with docker-compose
+  docker_compose:
+    project_src: "/home/josiah/apps/plex/"
+    project_name: plex
+    files:
+    - plex-compose.yml

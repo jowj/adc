@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+  plex:
+    image: plexinc/pms-docker:latest
+    environment:
+      - "TZ=America/Chicago"
+      - "PLEX_CLAIM={{ vault_pms_claim_token }}"
+      - "ADVERTISE_IP=http://pms.services.jowj.net:32400/"
+      - "VERSION=docker"
+      - "UMASK_SET=022"
+    hostname: pms
+    volumes:
+      - /home/josiah/apps/plex/config:/config
+      - /home/josiah/apps/plex/transcode:/transcode
+      - /media/usenet:/data
+    devices:
+      - /dev/dri:/dev/dri      
+    network_mode: bridge      
+    ports:
+    # Note that traefik isn't used for these ports - we're just exposing them directly
+{% for port in plex_ports %}
+      - "{{ port.port }}:{{ port.port }}/{{ port.protocol }}"
+{% endfor %}      
+
