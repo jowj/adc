@@ -101,7 +101,7 @@ services:
     environment:
       - TZ=America/Chicago
       - PLEX_CLAIM="{{ vault_pms_claim_token }}"
-      - ADVERTISE_IP=http://192.168.1.120:32400/
+      - ADVERTISE_IP=http://192.168.1.120:443/
     hostname: lair
     volumes:
       - /home/josiah/apps/pms/config:/config
@@ -123,6 +123,7 @@ services:
       - "traefik.http.routers.mediaserver-pms.tls=true"
     networks:
       - pubnet      
+    network_mode: bridge      
         
 volumes:
   traefik_acme:
