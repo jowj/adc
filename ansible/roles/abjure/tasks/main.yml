@@ -33,7 +33,6 @@
     mode: 0777
   with_items:
     - {src: 'abjure-compose.yml', dest: '/home/josiah/apps/abjure/abjure-compose.yml'}
-    - {src: 'pms-compose.yml', dest: '/home/josiah/apps/pms/pms-compose.yml'}
     - {src: 'traefik.yml.j2', dest: '/home/josiah/apps/traefik/traefik.yml'}
 
 - name: Ensure acme.json exists
