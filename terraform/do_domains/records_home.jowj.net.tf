@@ -133,12 +133,12 @@ resource "digitalocean_record" "tfer--87843293" {
 resource "digitalocean_record" "tfer--87843462" {
   domain   = "home.jowj.net"
   flags    = "0"
-  name     = "hatchery"
+  name     = "lair"
   port     = "0"
   priority = "0"
   ttl      = "900"
   type     = "A"
-  value    = "192.168.1.133"
+  value    = "192.168.1.120"
   weight   = "0"
 }
 

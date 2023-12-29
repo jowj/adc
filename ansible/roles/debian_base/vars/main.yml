@@ -1,3 +1,3 @@
 create_users: ['josiah', 'alice']
 copy_local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/home-net.pub') }}"
-sys_packages: [ 'sudo', 'tailscale' ]
+sys_packages: [ 'sudo', 'python3-docker', 'python3-pip','python3-jsondiff', 'python3-yaml', 'docker-ce', 'docker-ce-cli', 'containerd.io', 'docker-buildx-plugin', 'docker-compose-plugin', 'docker-compose' ]

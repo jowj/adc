@@ -249,6 +249,18 @@ resource "digitalocean_record" "tfer--360787392" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "lair.home.jowj.net."
+  weight   = "0"
+}
+
+resource "digitalocean_record" "pms-services-jowj-net" {
+  domain   = "services.jowj.net"
+  flags    = "0"
+  name     = "pms"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "CNAME"
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }

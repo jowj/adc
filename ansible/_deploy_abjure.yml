@@ -1,0 +1,9 @@
+- name: deploy abjure media servers
+  hosts: services
+  remote_user: "{{ remote_user }}"
+  tasks:
+    - debug: msg="Deploying home services stack to local server"
+  roles:
+    - { name: debian_base }
+    #- { name: tailscale }
+    - { name: abjure }

@@ -1,0 +1,80 @@
+---
+# deploy a media server from scratch.
+
+# boot strap server
+
+- name: Update apt
+  apt: update_cache=yes
+
+- name: Init a new swarm with default parameters
+  community.general.docker_swarm:
+    state: present    
+
+# set up abjure specific bullshit.
+- name: ensure traefik config directory exists
+  file: state=directory path=/home/josiah/apps/traefik/ owner=josiah group=josiah mode=0700
+
+- name: ensure abjure config directory exists
+  file: state=directory path=/home/josiah/apps/abjure/ owner=josiah group=josiah mode=0700  
+
+- name: ensure traefik.log exists
+  file: state=file path=/home/josiah/apps/traefik/traefik.log owner=josiah group=josiah mode=0700  
+
+- name: Create deploy configs dir if it does not exist
+  file:
+    path: /home/josiah/deploys/abjure
+    state: directory
+    mode: '0755'
+
+- name: copy over abjure config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0777
+  with_items:
+    - {src: 'abjure-compose.yml', dest: '/home/josiah/apps/abjure/abjure-compose.yml'}
+    - {src: 'traefik.yml.j2', dest: '/home/josiah/apps/traefik/traefik.yml'}
+
+- name: Ensure acme.json exists
+  ansible.builtin.copy:
+    content: ""
+    dest: /home/josiah/apps/traefik/acme.json
+    force: no
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Remove the abjure stack
+  block:
+    - name: Remove the abjure stack
+      docker_stack:
+        state: absent
+        name: abjure
+        compose:
+          - /home/josiah/apps/abjure/abjure-compose.yml
+    - name: Pause so the network gets deleted too
+      pause:
+        seconds: 15
+
+- name: Deploy abjure stack
+  docker_stack:
+    state: present
+    name: abjure
+    prune: yes
+    compose:
+      - /home/josiah/apps/abjure/abjure-compose.yml
+
+- name: Install Plex compose file
+  template:
+    src: plex-compose.yml.j2
+    dest: "/home/josiah/apps/plex/plex-compose.yml"
+    owner: "josiah"
+    group: "josiah"
+    mode: "0640"
+
+- name: Deploy Plex with docker-compose
+  docker_compose:
+    project_src: "/home/josiah/apps/plex/"
+    project_name: plex
+    files:
+    - plex-compose.yml
