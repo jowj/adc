@@ -213,3 +213,18 @@ resource "digitalocean_record" demiurge-dns {
   value    = "100.108.60.46"
   weight   = "0"
 }
+
+
+# this motherfucker is currently set manually. 
+# TODO: Figure out how to do this programmatically
+resource "digitalocean_record" highsea-dns {
+  domain   = "home.jowj.net"
+  flags    = "0"
+  name     = "highsea"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "A"
+  value    = "192.168.1.17"
+  weight   = "0"
+}
