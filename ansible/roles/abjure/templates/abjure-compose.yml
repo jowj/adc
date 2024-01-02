@@ -88,6 +88,27 @@ services:
     networks:
       - pubnet      
 
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - /home/josiah/apps/calibre/:/config
+      - /media/usenet/book-library/readarr/:/books
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mediaserver-calibre.loadbalancer.server.port=8083"
+      - "traefik.http.routers.mediaserver-calibre.service=mediaserver-calibre"
+      - "traefik.http.routers.mediaserver-calibre.rule=Host(`calibre.services.jowj.net`)"
+      - "traefik.http.routers.mediaserver-calibre.tls.certResolver=mediaserver-resolver"
+      - "traefik.http.routers.mediaserver-calibre.tls=true"
+    networks:
+      - pubnet            
+    
 volumes:
   traefik_acme:
   traefik_logs:
