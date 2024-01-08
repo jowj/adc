@@ -10,7 +10,7 @@ services:
     ports:
       - 80:80/tcp
       - 443:443/tcp
-      - 8080:8080/tcp  
+      - 8088:8088/tcp  
     volumes:
       - /home/josiah/apps/traefik/acme.json:/acme.json        
       - traefik_logs:/var/log/access.log
@@ -31,7 +31,7 @@ services:
       - "traefik.http.routers.mediaserver-traefik-api.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-traefik-api.rule=Host(`lair.home.jowj.net`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
       - "traefik.http.routers.mediaserver-traefik-api.service=api@internal"
-      - "traefik.http.services.mediaserver-traefik-api.loadbalancer.server.port=8080"      
+      - "traefik.http.services.mediaserver-traefik-api.loadbalancer.server.port=8088"      
       # - "traefik.http.routers.mediaserver-traefik-api.entrypoints=http"
       - "traefik.http.routers.mediaserver-traefik-api.entrypoints=https"      
       # middleware redirect
@@ -88,17 +88,20 @@ services:
     networks:
       - pubnet      
 
-  calibre-web:
-    image: lscr.io/linuxserver/calibre-web:latest
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
-      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
     volumes:
-      - /home/josiah/apps/calibre/:/config
-      - /media/usenet/book-library/readarr/:/books
+      - /home/josiah/apps/calibre/:/config # this is where the config / metadata db / cache live
+      - /media/usenet/book-library/readarr/:/books # this is the library
+    ports:
+    # don't use traefik for non 443 / 80 ports.
+      - 8080:8080
+      - 8181:8181
+      - 8081:8081
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-calibre.loadbalancer.server.port=8083"
@@ -107,7 +110,7 @@ services:
       - "traefik.http.routers.mediaserver-calibre.tls.certResolver=mediaserver-resolver"
       - "traefik.http.routers.mediaserver-calibre.tls=true"
     networks:
-      - pubnet            
+      - pubnet         
     
 volumes:
   traefik_acme:
