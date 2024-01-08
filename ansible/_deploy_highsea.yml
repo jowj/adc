@@ -1,7 +1,8 @@
-- name: deploy mediaserver
-  hosts: mediaserver
+- name: deploy highsea stack
+  hosts: highsea
   remote_user: "{{ remote_user }}"
   tasks:
     - debug: msg="Deploying mediaserver stack to local server"
   roles:
-    - { name: mediaserver, tags: ['mediaserver'] }
+#    - { name: debian_base }
+    - { name: highsea }

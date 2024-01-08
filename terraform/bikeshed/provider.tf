@@ -20,8 +20,8 @@ terraform {
 
         # This is actually not needed, but declaring it here helps me remember where its supposed to live.	
         # You gotta comment these out when initing the terraform backend? for some reason.
-        shared_credentials_files = ["~/.aws/credentials"]
-        shared_config_files = ["~/.aws/config"]    	
+        #shared_credentials_files = ["~/.aws/credentials"]
+        #shared_config_files = ["~/.aws/config"]    	
     }
 }
 

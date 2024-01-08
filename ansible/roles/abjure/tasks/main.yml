@@ -20,9 +20,9 @@
 - name: ensure traefik.log exists
   file: state=file path=/home/josiah/apps/traefik/traefik.log owner=josiah group=josiah mode=0700  
 
-- name: Create deploy configs dir if it does not exist
+- name: Create calibre config dir
   file:
-    path: /home/josiah/deploys/abjure
+    path: /home/josiah/apps/calibre
     state: directory
     mode: '0755'
 

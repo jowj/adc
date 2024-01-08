@@ -6,6 +6,7 @@ provider "registry.terraform.io/digitalocean/digitalocean" {
   constraints = "~> 2.29.0"
   hashes = [
     "h1:OLSxMaqLOUl6DjQ3vz14odCyMCcLA63ltBNPgrIQHG4=",
+    "h1:mJrr4YaOsB7bWfCSJZneiXB6JMnVNnFxYRmQ8vKaOSQ=",
     "zh:0af0a1a2de818c5dc8ee7ad4dc4731452848e84cfa0c1ce514af1c7aad15c53c",
     "zh:27229f3162b4142be48554f56227265982f3b74e4c79fa5d2528c8a3912d1e19",
     "zh:31d6e73bfe12231fa0ab3bbeef0e4aa9822a2008ae2a1a8b22557bdada4af7a3",
@@ -30,6 +31,7 @@ provider "registry.terraform.io/telmate/proxmox" {
   constraints = "2.7.4"
   hashes = [
     "h1:ivNrl7WU2BJwIKmB1lLr70+GtXBCfzW+K5tvNpYy454=",
+    "h1:lgfUuXLdyY2Uf5mO7eJNfJC/fsoUDyBsCpxA/rbs3Z4=",
     "zh:3c2163b167d1e342e1683015cd08c70838d1c631b8e374ac6f86ca2c41271a8c",
     "zh:453596419e07cd0c41f5f58dd7775664fa685de403e9776197b1502e79bf3814",
     "zh:492045cf7859bc31a57730b876dcc29d902a24d543a30a67f34b0ee2b4a71a33",

@@ -46,30 +46,6 @@ resource "digitalocean_record" "tfer--273019966" {
   weight   = "0"
 }
 
-resource "digitalocean_record" "tfer--273019998" {
-  domain   = "services.jowj.net"
-  flags    = "0"
-  name     = "tubesync"
-  port     = "0"
-  priority = "0"
-  ttl      = "900"
-  type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
-  weight   = "0"
-}
-
-resource "digitalocean_record" "tfer--273024307" {
-  domain   = "services.jowj.net"
-  flags    = "0"
-  name     = "watchtower"
-  port     = "0"
-  priority = "0"
-  ttl      = "900"
-  type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
-  weight   = "0"
-}
-
 resource "digitalocean_record" "tfer--273196064" {
   domain   = "services.jowj.net"
   flags    = "0"
@@ -78,7 +54,7 @@ resource "digitalocean_record" "tfer--273196064" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "highsea.home.jowj.net."
   weight   = "0"
 }
 
@@ -140,7 +116,7 @@ resource "digitalocean_record" "tfer--282780675" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "highsea.home.jowj.net."
   weight   = "0"
 }
 
@@ -152,7 +128,7 @@ resource "digitalocean_record" "tfer--282785060" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "highsea.home.jowj.net."
   weight   = "0"
 }
 
@@ -164,7 +140,7 @@ resource "digitalocean_record" "tfer--282785080" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "highsea.home.jowj.net."
   weight   = "0"
 }
 
@@ -176,7 +152,7 @@ resource "digitalocean_record" "tfer--282785089" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "highsea.home.jowj.net."
   weight   = "0"
 }
 
@@ -188,31 +164,7 @@ resource "digitalocean_record" "tfer--282785137" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
-  weight   = "0"
-}
-
-resource "digitalocean_record" "tfer--289972404" {
-  domain   = "services.jowj.net"
-  flags    = "0"
-  name     = "requests"
-  port     = "0"
-  priority = "0"
-  ttl      = "900"
-  type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
-  weight   = "0"
-}
-
-resource "digitalocean_record" "tfer--318001321" {
-  domain   = "services.jowj.net"
-  flags    = "0"
-  name     = "audiobookshelf"
-  port     = "0"
-  priority = "0"
-  ttl      = "900"
-  type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "highsea.home.jowj.net."
   weight   = "0"
 }
 
@@ -224,7 +176,7 @@ resource "digitalocean_record" "tfer--318333757" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "highsea.home.jowj.net."
   weight   = "0"
 }
 
@@ -236,7 +188,7 @@ resource "digitalocean_record" "tfer--326222435" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "hatchery.home.jowj.net."
+  value    = "highsea.home.jowj.net."
   weight   = "0"
 }
 
@@ -257,6 +209,18 @@ resource "digitalocean_record" "pms-services-jowj-net" {
   domain   = "services.jowj.net"
   flags    = "0"
   name     = "pms"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "CNAME"
+  value    = "lair.home.jowj.net."
+  weight   = "0"
+}
+
+resource "digitalocean_record" "calibre-services-jowj-net" {
+  domain   = "services.jowj.net"
+  flags    = "0"
+  name     = "calibre"
   port     = "0"
   priority = "0"
   ttl      = "900"

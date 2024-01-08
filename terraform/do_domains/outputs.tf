@@ -66,10 +66,6 @@ output "digitalocean_record_tfer--273019966_id" {
   value = "${digitalocean_record.tfer--273019966.id}"
 }
 
-output "digitalocean_record_tfer--273019998_id" {
-  value = "${digitalocean_record.tfer--273019998.id}"
-}
-
 output "digitalocean_record_tfer--273021791_id" {
   value = "${digitalocean_record.tfer--273021791.id}"
 }
@@ -80,10 +76,6 @@ output "digitalocean_record_tfer--273021801_id" {
 
 output "digitalocean_record_tfer--273021839_id" {
   value = "${digitalocean_record.tfer--273021839.id}"
-}
-
-output "digitalocean_record_tfer--273024307_id" {
-  value = "${digitalocean_record.tfer--273024307.id}"
 }
 
 output "digitalocean_record_tfer--273196064_id" {
@@ -128,14 +120,6 @@ output "digitalocean_record_tfer--282785089_id" {
 
 output "digitalocean_record_tfer--282785137_id" {
   value = "${digitalocean_record.tfer--282785137.id}"
-}
-
-output "digitalocean_record_tfer--289972404_id" {
-  value = "${digitalocean_record.tfer--289972404.id}"
-}
-
-output "digitalocean_record_tfer--318001321_id" {
-  value = "${digitalocean_record.tfer--318001321.id}"
 }
 
 output "digitalocean_record_tfer--318333757_id" {

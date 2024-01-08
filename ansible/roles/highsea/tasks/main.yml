@@ -30,52 +30,51 @@
     name='josiah'
     groups=docker
     append=yes
+    
+# TODO: Partition, detect PV, add new disk to LVM.
+
+- name: Mount usenet volume
+  ansible.posix.mount:
+    src: storage.home.jowj.net:/volume1/usenet
+    path: /media/usenet
+    opts: rw,sync,hard
+    state: mounted
+    fstype: nfs
 
 - name: Init a new swarm with default parameters
   community.general.docker_swarm:
     state: present    
 
 # set up mediaserver specific bullshit.
-- name: ensure traefik config directory exists
-  file: state=directory path=/home/josiah/apps/traefik/ owner=josiah group=josiah mode=0700
+- name: ensure app dir exists
+  file: 
+    path: /home/josiah/apps/  
+    state: directory 
+    recurse: yes
+    owner: josiah
+    group: josiah
 
-- name: ensure the webdav-docker repo exists
-  git:
-    repo: 'https://git.awful.club/hosted/webdav-docker.git'
-    dest: /home/josiah/apps/webdav-docker/
-    version: master
-
-- name: build jlj-webdav image
-  community.general.docker_image:    
-    name: jlj-webdav
-    build: 
-      path: /home/josiah/apps/webdav-docker/latest
-      dockerfile: Dockerfile
-    source: build
-
-- name: ensure mediaserver config directory exists
-  file: state=directory path=/home/josiah/apps/mediaserver/ owner=josiah group=josiah mode=0700  
-
-- name: ensure traefik.log exists
-  file: state=file path=/home/josiah/apps/traefik/traefik.log owner=josiah group=josiah mode=0700  
-
-- name: allow for pretty json errors
-  pip:
-    name: jsondiff
-    
-- name: Create deploy configs dir if it does not exist
-  file:
-    path: /home/josiah/deploys/mediaserver
+- name: ensure app config directory exists
+  file: 
+    path: /home/josiah/apps/{{ item }}
     state: directory
-    mode: '0755'
+    recurse: yes
+    owner: josiah
+    group: josiah
+  loop: [ 'traefik', 'hydra2', 'sabnzbd', 'readarr', 'radarr', 'lidarr', 'sonarr', 'bazarr', 'highsea' ]
 
-- name: copy over mediaserver config files
+# TODO: Figure out why this doesn't actually create the log if its not present?
+- name: ensure traefik.log exists
+  file: 
+    state: file 
+    path: /home/josiah/apps/traefik/traefik.log  
+    
+- name: copy over highsea config files
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    mode: 0777
   with_items:
-    - {src: 'mediaserver-compose.yml', dest: '/home/josiah/apps/mediaserver/mediaserver-compose.yml'}
+    - {src: 'highsea-compose.yml', dest: '/home/josiah/apps/highsea/highsea-compose.yml'}
     - {src: 'traefik.yml.j2', dest: '/home/josiah/apps/traefik/traefik.yml'}
 
 - name: Ensure acme.json exists
@@ -88,22 +87,22 @@
     state: file
     mode: '0600'
 
-- name: Remove the mediaserver stack
+- name: Remove the highsea stack
   block:
-    - name: Remove the mediaserver stack
+    - name: Remove the highsea stack
       docker_stack:
         state: absent
-        name: mediaserver
+        name: highsea
         compose:
-          - /home/josiah/apps/mediaserver/mediaserver-compose.yml
+          - /home/josiah/apps/highsea/highsea-compose.yml
     - name: Pause so the network gets deleted too
       pause:
         seconds: 15
 
-- name: Deploy mediaserver stack
+- name: Deploy highsea stack
   docker_stack:
     state: present
-    name: mediaserver
+    name: highsea
     prune: yes
     compose:
-      - /home/josiah/apps/mediaserver/mediaserver-compose.yml
+      - /home/josiah/apps/highsea/highsea-compose.yml
