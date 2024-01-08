@@ -33,15 +33,6 @@
     
 # TODO: Partition, detect PV, add new disk to LVM.
 
-# Mount remote storage under ~/apps
-- name: Mount an NFS volume
-  ansible.posix.mount:
-    src: sainthood.home.jowj.net:/volume1/bikeshed_workloads/highsea-apps/
-    path: /home/josiah/backups
-    opts: rw,sync,hard
-    state: mounted
-    fstype: nfs
-
 - name: Mount usenet volume
   ansible.posix.mount:
     src: storage.home.jowj.net:/volume1/usenet

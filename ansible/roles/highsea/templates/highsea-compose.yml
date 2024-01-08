@@ -167,7 +167,7 @@ services:
       - "/home/josiah/apps/readarr:/config"
       - "/media/usenet/audiobooks:/media/usenet/book-library/readarr/audiobooks"
       - "/media/usenet/book-library/readarr:/media/usenet/book-library/readarr" # not ready
-      - "/home/josiah/Downloads/usenet-complete/:/media/downloads"
+      - "/home/josiah/Downloads/usenet-complete/books:/data/downloads/books"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.highsea-readarr.loadbalancer.server.port=8787"
