@@ -1,14 +1,6 @@
-provider "proxmox" {
-    # url is the hostname (FQDN if you have one) for the proxmox host you'd like to connect to to issue the commands.
-    pm_api_url = "https://192.168.1.247:8006/api2/json"
-    pm_api_token_id = var.PM_API_TOKEN_ID
-    pm_api_token_secret = var.PM_API_TOKEN_SECRET
-    pm_tls_insecure = true
-}
-
-resource "proxmox_vm_qemu" "high-sea" {
-    name = "high-sea" 
-    target_node = var.high-sea-host
+resource "proxmox_vm_qemu" "testchat01" {
+    name = "testchat01" 
+    target_node = "exgod"
     clone = var.template_name
     # basic VM settings here. agent refers to guest agent
     agent = 1
@@ -16,14 +8,13 @@ resource "proxmox_vm_qemu" "high-sea" {
     cores = 2
     sockets = 1
     cpu = "host"
-    memory = 4096
+    memory = 2048
     scsihw = "virtio-scsi-pci"
     bootdisk = "scsi0"
     ciuser    = "alice"
     sshkeys  = <<-EOT
             ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPAZhFDzl1lbhWJ7MiTV3+Z1EY8M5b4cH/+ju4uo1d91 admin@home.jowj.net
-        EOT
-
+        EOT    
 
     # This is our OS disk    
     disk {
