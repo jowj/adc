@@ -28,7 +28,7 @@
     mode: 0700
     recurse: yes
   with_items:
-   [ '/home/josiah/volumes/app/mattermost/config', '/home/josiah/volumes/app/mattermost/data', '/home/josiah/volumes/app/mattermost/logs', '/home/josiah/volumes/app/mattermost/plugins', '/home/josiah/volumes/app/mattermost/client/plugins', '/home/josiah/volumes/app/mattermost/bleve-indexes' ]
+   [ '/home/josiah/mattermost/volumes/app/mattermost/config', '/home/josiah/mattermost/volumes/app/mattermost/data', '/home/josiah/mattermost/volumes/app/mattermost/logs', '/home/josiah/mattermost/volumes/app/mattermost/plugins', '/home/josiah/mattermost/volumes/app/mattermost/client/plugins', '/home/josiah/mattermost/volumes/app/mattermost/bleve-indexes' ]
 
 - name: Deploy mattermost with compose
   docker_compose:
@@ -36,5 +36,5 @@
     project_name: mm
     files:
     - docker-compose.yml
-    - docker-compose.without-nginx.yml
-    #- docker-compose.nginx.yml
+    # - docker-compose.without-nginx.yml
+    - docker-compose.nginx.yml

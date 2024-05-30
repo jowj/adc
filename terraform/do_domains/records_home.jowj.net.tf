@@ -233,14 +233,3 @@ resource "digitalocean_record" highsea-dns {
 # this motherfucker is currently set manually. 
 # TODO: Figure out how to do this programmatically
 # Especailly because getting the output of tailscale is difficult??
-resource "digitalocean_record" mattermost-dns {
-  domain   = "home.jowj.net"
-  flags    = "0"
-  name     = "mattermost"
-  port     = "0"
-  priority = "0"
-  ttl      = "900"
-  type     = "A"
-  value    = "100.101.221.122"
-  weight   = "0"
-}

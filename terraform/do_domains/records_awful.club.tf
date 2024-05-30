@@ -406,3 +406,15 @@ resource "digitalocean_record" "tfer--98495666" {
   value    = "134.209.53.112"
   weight   = "0"
 }
+
+resource "digitalocean_record" mattermost-dns {
+  domain   = "awful.club"
+  flags    = "0"
+  name     = "mattermost"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "A"
+  value    = "104.248.79.77"
+  weight   = "0"
+}
