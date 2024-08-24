@@ -59,11 +59,11 @@
     dest: "{{ item.dest }}"
     mode: 0644
   with_items:
-    - {src: 'favicon.ico', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img'}
-    - {src: 'favicon-16x16.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img'}
-    - {src: 'favicon-32x32.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img'}
-    - {src: 'purple-bat-nobg.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img/gitea-lg.png'}
-    - {src: 'purple-bat-nobg.svg', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/img/logo.svg'}
+    - {src: 'favicon.svg', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/assets/img'}
+    - {src: 'favicon-16x16.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/assets/img'}
+    - {src: 'favicon-32x32.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/assets/img'}
+    - {src: 'purple-bat-nobg.png', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/assets/img/gitea-lg.png'}
+    - {src: 'purple-bat-nobg.svg', dest: '/mnt/volume_sfo2_01/gitea/gitea/public/assets/img/logo.svg'}
 
 - name: Deploy awful stack
   docker_stack:
