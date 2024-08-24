@@ -30,7 +30,7 @@ resource "digitalocean_record" "tfer--271237190" {
   priority = "0"
   ttl      = "900"
   type     = "A"
-  value    = "192.168.1.213"
+  value    = "100.79.124.119"
   weight   = "0"
 }
 
