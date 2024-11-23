@@ -225,3 +225,11 @@ resource "digitalocean_record" "tfer--97254927" {
   value    = "134.209.53.112"
   weight   = "0"
 }
+
+resource "digitalocean_record" "bsky" {
+  domain   = "jowj.net"
+  name     = "_atproto"
+  ttl      = "900"
+  type     = "TXT"
+  value    = "did=did:plc:ee22poqz5ydma4tvlyb7h4lm"
+}
