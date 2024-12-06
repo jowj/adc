@@ -13,3 +13,7 @@ resource "digitalocean_domain" "tfer--jowj-002E-net" {
 resource "digitalocean_domain" "tfer--services-002E-jowj-002E-net" {
   name = "services.jowj.net"
 }
+
+resource "digitalocean_domain" "halo-jowj-net" {
+  name = "halo.jowj.net"
+}

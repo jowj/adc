@@ -214,22 +214,59 @@ resource "digitalocean_record" "tfer--95790425" {
   weight   = "0"
 }
 
-resource "digitalocean_record" "tfer--97254927" {
-  domain   = "jowj.net"
-  flags    = "0"
-  name     = "@"
-  port     = "0"
-  priority = "0"
-  ttl      = "900"
-  type     = "A"
-  value    = "134.209.53.112"
-  weight   = "0"
-}
 
 resource "digitalocean_record" "bsky" {
-  domain   = "jowj.net"
-  name     = "_atproto"
-  ttl      = "900"
-  type     = "TXT"
-  value    = "did=did:plc:ee22poqz5ydma4tvlyb7h4lm"
+  domain = "jowj.net"
+  name   = "_atproto"
+  ttl    = "900"
+  type   = "TXT"
+  value  = "did=did:plc:ee22poqz5ydma4tvlyb7h4lm"
 }
+
+# For moving to AWS
+# resource "digitalocean_record" "halo-ns-1" {
+#   domain   = "jowj.net"
+#   flags    = "0"
+#   name     = "halo"
+#   port     = "0"
+#   priority = "0"
+#   ttl      = "900"
+#   type     = "NS"
+#   value    = "ns-1570.awsdns-04.co.uk."
+#   weight   = "0"
+# }
+
+# resource "digitalocean_record" "halo-ns-2" {
+#   domain   = "jowj.net"
+#   flags    = "0"
+#   name     = "halo"
+#   port     = "0"
+#   priority = "0"
+#   ttl      = "900"
+#   type     = "NS"
+#   value    = "ns-654.awsdns-17.net."
+#   weight   = "0"
+# }
+# resource "digitalocean_record" "halo-ns-3" {
+#   domain   = "jowj.net"
+#   flags    = "0"
+#   name     = "halo"
+#   port     = "0"
+#   priority = "0"
+#   ttl      = "900"
+#   type     = "NS"
+#   value    = "ns-346.awsdns-43.com."
+#   weight   = "0"
+# }
+
+# resource "digitalocean_record" "halo-ns-4" {
+#   domain   = "jowj.net"
+#   flags    = "0"
+#   name     = "halo"
+#   port     = "0"
+#   priority = "0"
+#   ttl      = "900"
+#   type     = "NS"
+#   value    = "ns-1125.awsdns-12.org."
+#   weight   = "0"
+# }
