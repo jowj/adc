@@ -1,7 +1,0 @@
-* awful-1
-this shit does too much. I should probably break it out a bit.
-
-** things to note
-i have gitea shit set up on a single network so that it can be isolated from the rest of my services. the traefik container ALSO must have access to that instance or it won't be able to forward data to the gt server.
-
-real fucking confused there for like 30 minutes.
