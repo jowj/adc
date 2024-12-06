@@ -10,6 +10,10 @@ variable "high-sea-host" {
     default = "seraph"
 }
 
+variable "archon-host" {
+    default = "exgod"
+}
+
 variable "PM_API_TOKEN_ID" {
     description = "API Token ID for proxmox management."
     type        = string
