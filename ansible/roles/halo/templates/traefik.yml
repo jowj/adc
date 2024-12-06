@@ -1,43 +1,36 @@
-# defaultEntryPoints must be at the top
-# because it should not be in any table below
-defaultEntryPoints: ["http", "https"]
+log:
+  level: DEBUG
 
-global:
-  checkNewVersion: true
-  sendAnonymousUsage: true
 api:
-  dashboard: false
-  debug: true
-  insecure: false
+  insecure: true
+
 entryPoints:
   web:
     address: ":80"
   websecure:
     address: ":443"
-
-log:
-  level: debug
-  format: common
-accessLog:
-  format: common
+  git-ssh:
+    address: ":222"
 
 providers:
-  docker:
+  swarm:
+    exposedByDefault: false
     watch: true
-    swarmMode: false
-    endpoint: "unix:///var/run/docker.sock"
-    exposedbydefault: false
+
 certificatesResolvers:
-  awful-letsencrypt:
+  halo-resolver:
     acme:
-      email: "admin@awful.club"
+      email: "admin@home.jowj.net"
       storage: "/letsencrypt/acme.json"
-      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      caServer: "https://acme.zerossl.com/v2/DV90"
+      eab:
+        kid: "{{ VAULT_EAB_KID }}"
+        hmacEncoded: "{{ VAULT_EAB_HMACENCODED }}"
+
       dnsChallenge:
         provider: "digitalocean"
-log:
-  filePath: "/log/traefik.log"
-  level: DEBUG
-accessLog:
-  filePath: "/log/access.log"
-  bufferingSize: 100
+        resolvers:
+          - 1.1.1.1
+          - 8.8.8.8
+        delayBeforeCheck: 60

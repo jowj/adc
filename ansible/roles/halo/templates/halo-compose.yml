@@ -1,127 +1,99 @@
-version: '3'
-
-networks:
-  pubnet:
-    external: false
+---
+version: "3.7"
 
 volumes:
-  traefik_acme:
   traefik_logs:
-    
-services:      
-  justice:
-    image: "traefik:v2.2"
+
+services:
+  traefik:
+    image: "traefik:v3.2"
     ports:
       - "80:80"
       - "443:443"
+      - "222:222"
+      - "8080:8080"
     environment:
-      DO_AUTH_TOKEN: "{{ DO_AUTH_TOKEN }}"
-    networks:
-      pubnet:
+      DO_AUTH_TOKEN: "{{  DO_AUTH_TOKEN  }}"
     volumes:
-      - "/home/josiah/apps/letsencrypt/:/letsencrypt"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/home/josiah/apps/traefik/traefik.yml:/etc/traefik/traefik.yml"
-      - traefik_logs:/log
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.edge.rule=hostregexp(`{host:.+}`)"      
-      - "traefik.http.routers.edge.entrypoints=web"
-      - "traefik.http.routers.edge.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - /home/josiah/apps/letsencrypt/acme.json:/letsencrypt/acme.json
+      - traefik_logs:/var/log/access.log
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/josiah/apps/traefik/traefik.yml:/traefik.yml
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+
     deploy:
       mode: global
-      placement:
-        constraints:
-          - node.role == manager
-      
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.traefik-svc.loadbalancer.server.port=8080"
 
-  smokeping:
-    image: lscr.io/linuxserver/smokeping:latest
-    networks:
-      pubnet:
+  whoami:
+    image: "traefik/whoami"
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.whoami.rule=Host(`whoami.halo.jowj.net`)"
+        - "traefik.http.routers.whoami.entrypoints=websecure"
+        - "traefik.http.routers.whoami.tls.certresolver=halo-resolver"
+        - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"
+
+  freshrss:
+    image: linuxserver/freshrss
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=America/Chicago
+      - TZ=Europe/London
     volumes:
-      - /home/josiah/apps/smokeping/config/:/config
-      - /home/josiah/apps/smokeping/data:/data
-    restart: unless-stopped
-    labels:
-      # global rules
-      - "traefik.enable=true"
-      # the web ui
-      - "traefik.http.routers.smokeping.rule=Host(`monitor.awful.club`)"      
-      - "traefik.http.routers.smokeping.entrypoints=websecure"
-      - "traefik.http.routers.smokeping.tls=true"      
-      - "traefik.http.routers.smokeping.tls.certresolver=awful-letsencrypt"      
+      - /home/josiah/apps/freshrss:/config
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.freshrss-svc.loadbalancer.server.port=80"
+        - "traefik.http.routers.freshrss-rt.rule=Host(`rss.halo.jowj.net`)"
+        - "traefik.http.routers.freshrss-rt.entrypoints=websecure"
+        - "traefik.http.routers.freshrss-rt.tls.certresolver=halo-resolver"
 
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
-    networks:
-      pubnet:
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - /home/josiah/apps/overseerr/config/:/config      
+      - /home/josiah/apps/overseerr/config/:/config
     restart: unless-stopped
-    labels:
-      # global rules
-      - "traefik.enable=true"
-      # the web ui
-      - "traefik.http.routers.overseerr.rule=Host(`requests.awful.club`)"      
-      - "traefik.http.routers.overseerr.entrypoints=websecure"
-      - "traefik.http.routers.overseerr.tls=true"      
-      - "traefik.http.routers.overseerr.tls.certresolver=awful-letsencrypt"
-      - "traefik.http.routers.overseerr.service=overseerr-web-svc"      
-      - "traefik.http.services.overseerr-web-svc.loadbalancer.server.port=5055"
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.overseerr-svc.loadbalancer.server.port=5055"
+        - "traefik.http.routers.overseerr-rt.rule=Host(`requests.halo.jowj.net`)"
+        - "traefik.http.routers.overseerr-rt.entrypoints=websecure"
+        - "traefik.http.routers.overseerr-rt.tls.certresolver=halo-resolver"
 
-  drone:
-    image: 'drone/drone:2'
-    networks:
-      pubnet:    
+  gitea:
+    image: gitea/gitea:1.22.4
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
     volumes:
-      - '/home/josiah/apps/drone:/data'
-    environment:
-      - "DRONE_GITEA_SERVER=https://git.awful.club"
-      - "DRONE_GITEA_CLIENT_ID={{ vault_drone_client_id}}"
-      - "DRONE_GITEA_CLIENT_SECRET={{ vault_drone_client_secret }}"
-      - "DRONE_RPC_SECRET={{ vault_drone_rpc_secret }}"
-      - "DRONE_SERVER_HOST=drone.awful.club"
-      - "DRONE_SERVER_PROTO=https"
-    labels:
-      # global rules
-      - "traefik.enable=true"
-      # the web ui
-      - "traefik.http.routers.drone.rule=Host(`drone.awful.club`)"      
-      - "traefik.http.routers.drone.entrypoints=websecure"
-      - "traefik.http.routers.drone.tls=true"      
-      - "traefik.http.routers.drone.tls.certresolver=awful-letsencrypt"
-      - "traefik.http.routers.drone.service=drone-web-svc"
-      - "traefik.http.services.drone-web-svc.loadbalancer.server.port=80"
+      - /home/josiah/apps/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.gitea-svc.loadbalancer.server.port=3000"
+        - "traefik.http.routers.gitea-rt.rule=Host(`git.halo.jowj.net`)"
+        - "traefik.http.routers.gitea-rt.entrypoints=websecure"
+        - "traefik.http.routers.gitea-rt.tls.certresolver=halo-resolver"
 
-  # drone-runner-docker:
-  #   image: 'drone/drone-runner-docker:1'          
-  #   ports:
-  #     - '3000:3000'
-  #   volumes:
-  #     - '/var/run/docker.sock:/var/run/docker.sock'
-  #   environment:
-  #     - "DRONE_RPC_PROTO=https"
-  #     - "DRONE_RPC_HOST=drone.awful.club"
-  #     - "DRONE_RPC_SECRET={{ vault_drone_rpc_secret }}"
-  #     - "DRONE_RUNNER_CAPACITY=2"
-  #     - "DRONE_RUNNER_NAME=my-first-runner"
-
-  drone-runner-ssh:
-    image: drone/drone-runner-ssh          
-    environment:
-      - "DRONE_RPC_PROTO=https"
-      - "DRONE_RPC_HOST=drone.awful.club"
-      - "DRONE_RPC_SECRET={{ vault_drone_rpc_secret }}"            
-    ports:
-      - '3000:3000'
-
+        # handle ssh
+        - "traefik.tcp.routers.gitea-ssh.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.gitea-ssh.entrypoints=git-ssh"
+        - "traefik.tcp.services.gitea-ssh-svc.loadbalancer.server.port=22"

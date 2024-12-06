@@ -1,0 +1,9 @@
+- name: deploy misc services
+  hosts: halo
+  remote_user: "{{ remote_user }}"
+  tasks:
+    - debug: msg="Deploying misc services stack to local server"
+  roles:
+    # - { name: debian_base }
+    # - { name: tailscale }
+    - { name: halo }
