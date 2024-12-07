@@ -1,0 +1,46 @@
+---
+# deploy a DNS redirect
+
+# init new swarm, set up
+- name: Init a new swarm with default parameters
+  docker_swarm:
+    state: present
+    advertise_addr: 10.46.0.7
+
+- name: ensure the app folders exist
+  file: state=directory path={{ item }} owner=alice group=alice mode=0700
+  loop: ["/home/josiah/apps/letsencrypt/", "/home/josiah/apps/traefik/"]
+
+- name: copy over all dns config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0777
+  with_items:
+    - { src: "compose.yml", dest: "/home/josiah/apps/dns-compose.yml" }
+    - { src: "traefik.yml", dest: "/home/josiah/apps/traefik/traefik.yml" }
+
+# you have to force remove the whole stack for some changes to take effect
+# I have no idea which ones, but this solved a problem for me with traefik conifgs + multi networks.
+- name: Remove the dns stack
+  block:
+    - name: Remove the dns stack
+      docker_stack:
+        state: absent
+        name: dns
+        compose:
+          - /home/josiah/apps/dns/dns-compose.yml
+
+    - name: Delete a network
+      docker_network:
+        name: dns_pubnet
+        state: absent
+        force: yes
+      ignore_errors: true
+
+- name: Deploy dns stack
+  docker_stack:
+    state: present
+    name: dns
+    compose:
+      - /home/josiah/apps/dns-compose.yml

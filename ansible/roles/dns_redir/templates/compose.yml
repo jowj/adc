@@ -1,0 +1,41 @@
+---
+version: "3.7"
+
+volumes:
+  traefik_logs:
+
+services:
+  traefik:
+    image: "traefik:v3.2"
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DO_AUTH_TOKEN: "{{  DO_AUTH_TOKEN  }}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/josiah/apps/traefik/traefik.yml:/traefik.yml
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+
+    deploy:
+      mode: global
+      labels:
+        - "traefik.enable=true"
+        # Dummy service (required for redirection)
+        - "traefik.http.services.redirect-service.loadbalancer.server.port=80"
+        # HTTP router
+        - "traefik.http.routers.redirect-jowj.rule=Host(`jowj.net`)"
+        - "traefik.http.routers.redirect-jowj.entrypoints=web"
+        - "traefik.http.routers.redirect-jowj.service=redirect-service"
+        - "traefik.http.routers.redirect-jowj.middlewares=redirect-to-me"
+        # HTTPS router
+        - "traefik.http.routers.redirect-jowj-secure.rule=Host(`jowj.net`)"
+        - "traefik.http.routers.redirect-jowj-secure.entrypoints=websecure"
+        - "traefik.http.routers.redirect-jowj-secure.service=redirect-service"
+        - "traefik.http.routers.redirect-jowj-secure.middlewares=redirect-to-me"
+        # Redirect middleware
+        - "traefik.http.middlewares.redirect-to-me.redirectregex.regex=^https?://jowj\\.net/(.*)"
+        - "traefik.http.middlewares.redirect-to-me.redirectregex.replacement=https://me.jowj.net/$${1}"
+        - "traefik.http.middlewares.redirect-to-me.redirectregex.permanent=true"

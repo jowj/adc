@@ -1,0 +1,9 @@
+- name: deploy dns
+  hosts: util
+  remote_user: "root"
+  tasks:
+    - debug: msg="Deploying dns services stack to util server"
+  roles:
+    # - { name: debian_base }
+    # - { name: tailscale }
+    - { name: dns_redir }

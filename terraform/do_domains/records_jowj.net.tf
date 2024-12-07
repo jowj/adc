@@ -223,6 +223,14 @@ resource "digitalocean_record" "bsky" {
   value  = "did=did:plc:ee22poqz5ydma4tvlyb7h4lm"
 }
 
+resource "digitalocean_record" "jowj-redir" {
+  domain = "jowj.net"
+  name   = "@"
+  ttl    = "900"
+  type   = "A"
+  value  = "64.225.41.192"
+}
+
 # For moving to AWS
 # resource "digitalocean_record" "halo-ns-1" {
 #   domain   = "jowj.net"
