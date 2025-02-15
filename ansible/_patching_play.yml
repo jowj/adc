@@ -1,0 +1,10 @@
+- name: Patch all servers
+  hosts:
+    - home
+    - halo
+    - util
+  remote_user: "{{ remote_user }}"
+  tasks:
+    - debug: msg="Pathing stuff."
+  roles:
+    - { name: updater }

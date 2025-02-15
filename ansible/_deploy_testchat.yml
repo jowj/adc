@@ -1,9 +1,0 @@
-- name: deploy mattermost
-  hosts: mattermost-trial
-  remote_user: "{{ remote_user }}"
-  tasks:
-    - debug: msg="Deploying mediaserver stack to local server"
-  roles:
-    # - { name: debian_base }
-    # - { name: tailscale }
-    - { name: mattermost }
