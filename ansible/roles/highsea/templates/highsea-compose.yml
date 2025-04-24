@@ -1,23 +1,23 @@
 ---
-version: '3.7'
+version: "3.7"
 
 services:
   traefik:
-    image: traefik:2.5    
+    image: traefik:2.5
     networks:
-      - pubnet    
+      - pubnet
     command: --web --docker --docker.swarmmode --docker.watch --docker.domain="services.jowj.net" --providers.docker.network=pubnet --logLevel=DEBUG
     ports:
       - 80:80/tcp
       - 443:443/tcp
-      - 8080:8080/tcp  
+      - 8080:8080/tcp
     volumes:
-      - /home/josiah/apps/traefik/acme.json:/acme.json        
+      - /home/josiah/apps/traefik/acme.json:/acme.json
       - traefik_logs:/var/log/access.log
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/josiah/apps/traefik/traefik.yml:/traefik.yml
     deploy:
-      mode: global      
+      mode: global
       placement:
         constraints:
           - node.role == manager
@@ -26,14 +26,14 @@ services:
     labels:
       # Dashboard shit I stole from Micah:
       # WARNING: A TRAILING SLASH IS MANDATORY IN THE BROWSER
-      # e.g. https://example.com/dashboard/, not merely /dashboard      
-      - "traefik.enable=true"    
+      # e.g. https://example.com/dashboard/, not merely /dashboard
+      - "traefik.enable=true"
       - "traefik.http.routers.highsea-traefik-api.tls.certResolver=highsea-resolver"
       - "traefik.http.routers.highsea-traefik-api.rule=Host(`highsea.home.jowj.net`)&&(PathPrefix(`/api`)||PathPrefix(`/dashboard`)||PathPrefix(`/debug`))"
       - "traefik.http.routers.highsea-traefik-api.service=api@internal"
-      - "traefik.http.services.highsea-traefik-api.loadbalancer.server.port=8080"      
+      - "traefik.http.services.highsea-traefik-api.loadbalancer.server.port=8080"
       # - "traefik.http.routers.highsea-traefik-api.entrypoints=http"
-      - "traefik.http.routers.highsea-traefik-api.entrypoints=https"      
+      - "traefik.http.routers.highsea-traefik-api.entrypoints=https"
       # middleware redirect
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       # global redirect to https
@@ -50,9 +50,9 @@ services:
       - "traefik.http.routers.highsea-whoami.rule=Host(`whoami.services.jowj.net`)"
       - "traefik.http.routers.highsea-whoami.service=highsea-whoami"
       - "traefik.http.services.highsea-whoami.loadbalancer.server.port=80"
-      - "traefik.http.routers.highsea-whoami.tls.certResolver=highsea-resolver"        
-      - "traefik.http.routers.highsea-whoami.tls=true"      
-        
+      - "traefik.http.routers.highsea-whoami.tls.certResolver=highsea-resolver"
+      - "traefik.http.routers.highsea-whoami.tls=true"
+
   hydra2:
     image: linuxserver/nzbhydra2:latest
     networks:
@@ -69,13 +69,13 @@ services:
       - "traefik.http.services.highsea-hydra2.loadbalancer.server.port=5076"
       - "traefik.http.routers.highsea-hydra2.service=highsea-hydra2"
       - "traefik.http.routers.highsea-hydra2.rule=Host(`hydra.services.jowj.net`)"
-      - "traefik.http.routers.highsea-hydra2.tls.certResolver=highsea-resolver"        
+      - "traefik.http.routers.highsea-hydra2.tls.certResolver=highsea-resolver"
       - "traefik.http.routers.highsea-hydra2.tls=true"
 
   sabnzb:
     image: "linuxserver/sabnzbd"
     networks:
-      - pubnet    
+      - pubnet
     environment:
       PUID: 1000
       PGID: 1000
@@ -84,7 +84,7 @@ services:
       - "/home/josiah/apps/sabnzbd:/config"
       - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
       - "/home/josiah/Downloads/usenet-incomplete/:/data/incomplete-downloads"
-      - "/home/josiah/Downloads/usenet-watched/:/data/watched-folder"      
+      - "/home/josiah/Downloads/usenet-watched/:/data/watched-folder"
       - "/media/usenet/tv:/data/tv"
       - "/media/usenet/audio/:/data/music"
       - "/media/usenet/movies/:/data/movies"
@@ -107,16 +107,17 @@ services:
       - "/home/josiah/apps/sonarr:/config"
       - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
       - "/media/usenet/tv/:/data/tv"
+      - "/media/usenet/tv-anime/:/data/anime"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.highsea-sonarr.loadbalancer.server.port=8989"
       - "traefik.http.routers.highsea-sonarr.service=highsea-sonarr"
       - "traefik.http.routers.highsea-sonarr.rule=Host(`sonarr.services.jowj.net`)"
       - "traefik.http.routers.highsea-sonarr.tls.certResolver=highsea-resolver"
-      - "traefik.http.routers.highsea-sonarr.tls=true"        
+      - "traefik.http.routers.highsea-sonarr.tls=true"
     networks:
       - pubnet
-      
+
   lidarr:
     image: "linuxserver/lidarr"
     environment:
@@ -133,7 +134,7 @@ services:
       - "traefik.http.routers.highsea-lidarr.service=highsea-lidarr"
       - "traefik.http.routers.highsea-lidarr.rule=Host(`lidarr.services.jowj.net`)"
       - "traefik.http.routers.highsea-lidarr.tls.certResolver=highsea-resolver"
-      - "traefik.http.routers.highsea-lidarr.tls=true"                
+      - "traefik.http.routers.highsea-lidarr.tls=true"
     networks:
       - pubnet
 
@@ -153,7 +154,7 @@ services:
       - "traefik.http.routers.highsea-radarr.service=highsea-radarr"
       - "traefik.http.routers.highsea-radarr.rule=Host(`radarr.services.jowj.net`)"
       - "traefik.http.routers.highsea-radarr.tls.certResolver=highsea-resolver"
-      - "traefik.http.routers.highsea-radarr.tls=true"                        
+      - "traefik.http.routers.highsea-radarr.tls=true"
     networks:
       - pubnet
 
@@ -162,7 +163,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: America/Chicago      
+      TZ: America/Chicago
     volumes:
       - "/home/josiah/apps/readarr:/config"
       - "/media/usenet/audiobooks:/media/usenet/book-library/readarr/audiobooks"
@@ -174,7 +175,7 @@ services:
       - "traefik.http.routers.highsea-readarr.service=highsea-readarr"
       - "traefik.http.routers.highsea-readarr.rule=Host(`readarr.services.jowj.net`)"
       - "traefik.http.routers.highsea-readarr.tls.certResolver=highsea-resolver"
-      - "traefik.http.routers.highsea-readarr.tls=true"                        
+      - "traefik.http.routers.highsea-readarr.tls=true"
     networks:
       - pubnet
 
@@ -183,12 +184,12 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: America/Chicago      
+      TZ: America/Chicago
     volumes:
       - "/home/josiah/apps/bazarr:/config"
       - "/home/josiah/Downloads/usenet-complete/:/media/downloads"
       - "/media/usenet/tv/:/media/tv"
-      - "/media/usenet/movies/:/media/movies"      
+      - "/media/usenet/movies/:/media/movies"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.highsea-bazarr.loadbalancer.server.port=6767"
@@ -198,7 +199,7 @@ services:
       - "traefik.http.routers.highsea-bazarr.tls=true"
     networks:
       - pubnet
-        
+
 volumes:
   traefik_acme:
   traefik_logs:
