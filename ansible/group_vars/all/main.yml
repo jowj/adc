@@ -2,17 +2,11 @@
 
 global_acmedns_ssh_client_pubkey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJkuNfpGFXrTiIE4KU8jU57VltMiMXapDcDEd3vWQcEm acmedns@jowj.net
 
-global_syslog_host: syslog.home.jowj.net
-global_syslog_netsys_port: "514"
-global_syslog_netcons_port: "5514"
-global_syslog_nettemp_port: "5515"
-
 remote_user: josiah
 gather_facts: True
 source_os: nixos
 become: yes
 create_user: josiah
-ansible_become_pass: "{{ vault_ansible_become_pass }}"
 
 # all of this is stolen from mrled, because fuck this is way better than what i was doing.
 # Wireguard docs
@@ -23,54 +17,20 @@ ansible_become_pass: "{{ vault_ansible_become_pass }}"
 # - wg genkey | tee privatekey | wg pubkey > publickey
 # - save the privkey in the vault and the pubkey here
 # - Delete the privatekey and publickey files
-wireguard_vpn_network: 10.200.219.0/24
-wireguard_server_privkey: "{{ vault_wireguard_server_privkey }}"
-wireguard_server_pubkey: e49UyNg/kqPETyT9K6nqIYjtTwlR8hY8Brm/P66xnmo=
-wireguard_server_offset: 1
-wireguard_clients:
-  - name: matrix
-    offset: 10
-    privkey: "{{ vault_wireguard_client_privkey_matrix }}"
-    pubkey: lNoFqmeHfSDb/VB0mutpFzb4cZELOjSVOYQCLEfQIRU=
-  - name: pvl
-    offset: 11
-    privkey: "{{ vault_wireguard_client_privkey_pvl }}"
-    pubkey: l/j+UXtrxTqqTTjxjgheQ3B2QppZWs07na4GypZw9GM=
-  - name: ling8
-    offset: 12
-    privkey: "{{ vault_wireguard_client_privkey_ling8 }}"
-    pubkey: YqGQE6yUz6rjBFRWgZyj5mPEaGavxrmO/cclO5o+VBQ=
-  - name: larva
-    offset: 13
-    privkey: "{{ vault_wireguard_client_privkey_hatchery }}"
-    pubkey: kguQg0CvB7N1fJDO8i0Nj4C1cUKUsawfHyArwiaGxis=
-  - name: frisket
-    offset: 14
-    privkey: "{{ vault_wireguard_client_privkey_frisket }}"
-    pubkey: z5ogJTRX4K5evGOntpkIVopZFUVeTzAOaBtRS0K71TU=
-# mojos
-slack_bot_token: "{{ VAULT_SLACK_BOT_TOKEN }}"
-
 
 # GITEA shit.
 GITEA_USER_UID: 1000
 GITEA_USER_GID: 1000
 GITEA_DB_TYPE: postgres
 GITEA_DB_HOST: db:5432
-GITEA_DB_NAME: "{{ VAULT_GITEA_DB_NAME }}"
-GITEA_DB_USER: "{{ VAULT_GITEA_DB_USER }}"
-GITEA_DB_PASSWD: "{{ VAULT_GITEA_DB_PASSWD }}"
+GITEA_DB_NAME: "{{ lookup('community.general.onepassword', 'gitea-db', field='name', vault='Ansible') }}"
+GITEA_DB_USER: "{{ lookup('community.general.onepassword', 'gitea-db', field='user', vault='Ansible') }}"
+GITEA_DB_PASSWD: "{{ lookup('community.general.onepassword', 'gitea-db', field='password', vault='Ansible') }}"
 
-GITEA_POSTGRES_USER: "{{ VAULT_GITEA_POSTGRES_USER }}"
-GITEA_POSTGRES_PASSWORD: "{{ VAULT_GITEA_POSTGRES_PASSWORD }}"
-GITEA_POSTGRES_DB: "{{ VAULT_GITEA_POSTGRES_DB }}"
+GITEA_POSTGRES_USER: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='user', vault='Ansible') }}"
+GITEA_POSTGRES_PASSWORD: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='password', vault='Ansible') }}"
+GITEA_POSTGRES_DB: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='db', vault='Ansible') }}"
 
 # DO shit
-DO_AUTH_TOKEN: "{{ VAULT_DO_AUTH_TOKEN }}"
+DO_AUTH_TOKEN: "{{ lookup('community.general.onepassword', 'do-auth-token', vault='Ansible') }}"
 
-# Syslog shit
-sysloghost_share_mountpoint: /syslog/
-
-sysloghost_netsys_port: "{{ global_syslog_netsys_port }}"
-sysloghost_netcons_port: "{{ global_syslog_netcons_port }}"
-sysloghost_nettemp_port: "{{ global_syslog_nettemp_port }}"

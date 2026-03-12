@@ -1,5 +1,5 @@
 ---
-tailscale_auth_key: "{{ vault_tailscale_auth_key }}"
+tailscale_auth_key: "{{ lookup('community.general.onepassword', 'tailscale-auth-key', vault='Ansible') }}"
 # note that ^ expires every 90 days right now, I think
 # far from ideal
 

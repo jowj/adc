@@ -71,11 +71,11 @@ services:
       # - STASH_PORT=9999
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - "{{ vault_stash_config }}:/root/.stash"
-      - "{{ vault_stash_data }}:/data"
-      - "{{ vault_stash_metadata }}:/metadata"
-      - "{{ vault_stash_cache }}:/cache"
-      - "{{ vault_stash_generated }}:/generated"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='config', vault='Ansible') }}:/root/.stash"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='data', vault='Ansible') }}:/data"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='metadata', vault='Ansible') }}:/metadata"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='cache', vault='Ansible') }}:/cache"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='generated', vault='Ansible') }}:/generated"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-hoard.loadbalancer.server.port=9999"
@@ -93,7 +93,7 @@ services:
     extra_hosts:
       - "hoard.services.jowj.net:host-gateway"
     volumes:
-      - "{{ vault_stash_config }}vr:/config"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='config', vault='Ansible') }}vr:/config"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mediaserver-hoardvr.loadbalancer.server.port=9666"
