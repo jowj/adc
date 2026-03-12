@@ -189,6 +189,7 @@ services:
       - "/home/josiah/apps/bazarr:/config"
       - "/home/josiah/Downloads/usenet-complete/:/media/downloads"
       - "/media/usenet/tv/:/media/tv"
+      - "/media/usenet/tv-anime/:/media/anime"
       - "/media/usenet/movies/:/media/movies"
     labels:
       - "traefik.enable=true"

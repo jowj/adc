@@ -126,7 +126,7 @@ resource "digitalocean_record" "tfer--87843293" {
   priority = "0"
   ttl      = "900"
   type     = "A"
-  value    = "192.168.1.221"
+  value    = "192.168.0.139"
   weight   = "0"
 }
 
@@ -178,7 +178,7 @@ resource "digitalocean_record" "tfer--87843681" {
   weight   = "0"
 }
 
-resource "digitalocean_record" seraph-dns {
+resource "digitalocean_record" "seraph-dns" {
   domain   = "home.jowj.net"
   flags    = "0"
   name     = "seraph"
@@ -190,7 +190,7 @@ resource "digitalocean_record" seraph-dns {
   weight   = "0"
 }
 
-resource "digitalocean_record" exgod-dns {
+resource "digitalocean_record" "exgod-dns" {
   domain   = "home.jowj.net"
   flags    = "0"
   name     = "exgod"
@@ -202,7 +202,7 @@ resource "digitalocean_record" exgod-dns {
   weight   = "0"
 }
 
-resource "digitalocean_record" demiurge-dns {
+resource "digitalocean_record" "demiurge-dns" {
   domain   = "home.jowj.net"
   flags    = "0"
   name     = "demiurge"
@@ -215,10 +215,10 @@ resource "digitalocean_record" demiurge-dns {
 }
 
 
-# this motherfucker is currently set manually. 
+# this motherfucker is currently set manually.
 # TODO: Figure out how to do this programmatically
 # Especailly because getting the output of tailscale is difficult??
-resource "digitalocean_record" highsea-dns {
+resource "digitalocean_record" "highsea-dns" {
   domain   = "home.jowj.net"
   flags    = "0"
   name     = "highsea"
@@ -230,11 +230,11 @@ resource "digitalocean_record" highsea-dns {
   weight   = "0"
 }
 
-# this motherfucker is currently set manually. 
+# this motherfucker is currently set manually.
 # TODO: Figure out how to do this programmatically
 # Especailly because getting the output of tailscale is difficult??
 
-resource "digitalocean_record" archon-dns {
+resource "digitalocean_record" "archon-dns" {
   domain   = "home.jowj.net"
   flags    = "0"
   name     = "archon"

@@ -193,6 +193,18 @@ resource "digitalocean_record" "tfer--326222435" {
 }
 
 
+resource "digitalocean_record" "hoardvr" {
+  domain   = "services.jowj.net"
+  flags    = "0"
+  name     = "hoardvr"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "CNAME"
+  value    = "lair.home.jowj.net."
+  weight   = "0"
+}
+
 resource "digitalocean_record" "tfer--360787392" {
   domain   = "services.jowj.net"
   flags    = "0"

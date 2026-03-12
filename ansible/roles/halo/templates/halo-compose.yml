@@ -58,6 +58,8 @@ services:
         - "traefik.http.routers.freshrss-rt.tls.certresolver=halo-resolver"
 
   overseerr:
+    # REMEMBER THAT UNTIL I FIX ENTRYPOINTS / MIDDLEWARE REDIRS, YOU MUST HAVE HTTPS://
+    # IN YOUR URL BAR OR IT WON'T LOAD. God I can't believe I forgot.
     image: lscr.io/linuxserver/overseerr:latest
     environment:
       - PUID=1000
@@ -65,7 +67,6 @@ services:
       - TZ=America/Chicago
     volumes:
       - /home/josiah/apps/overseerr/config/:/config
-    restart: unless-stopped
     deploy:
       replicas: 1
       labels:

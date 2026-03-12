@@ -4,6 +4,4 @@
   tasks:
     - debug: msg="Deploying home services stack to local server"
   roles:
-    - { name: debian_base }
-    #- { name: tailscale }
     - { name: abjure }
