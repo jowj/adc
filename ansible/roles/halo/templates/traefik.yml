@@ -25,8 +25,8 @@ certificatesResolvers:
       # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       caServer: "https://acme.zerossl.com/v2/DV90"
       eab:
-        kid: "{{ lookup('community.general.onepassword', 'zerossl-eab', field='kid', vault='Ansible') }}"
-        hmacEncoded: "{{ lookup('community.general.onepassword', 'zerossl-eab', field='hmacEncoded', vault='Ansible') }}"
+        kid: "{{ lookup('community.general.onepassword', 'zerossl-eab', field='kid', vault='ansible') }}"
+        hmacEncoded: "{{ lookup('community.general.onepassword', 'zerossl-eab', field='hmacEncoded', vault='ansible') }}"
 
       dnsChallenge:
         provider: "digitalocean"

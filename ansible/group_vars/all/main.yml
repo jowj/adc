@@ -23,14 +23,14 @@ GITEA_USER_UID: 1000
 GITEA_USER_GID: 1000
 GITEA_DB_TYPE: postgres
 GITEA_DB_HOST: db:5432
-GITEA_DB_NAME: "{{ lookup('community.general.onepassword', 'gitea-db', field='name', vault='Ansible') }}"
-GITEA_DB_USER: "{{ lookup('community.general.onepassword', 'gitea-db', field='user', vault='Ansible') }}"
-GITEA_DB_PASSWD: "{{ lookup('community.general.onepassword', 'gitea-db', field='password', vault='Ansible') }}"
+GITEA_DB_NAME: "{{ lookup('community.general.onepassword', 'gitea-db', field='name', vault='ansible') }}"
+GITEA_DB_USER: "{{ lookup('community.general.onepassword', 'gitea-db', field='user', vault='ansible') }}"
+GITEA_DB_PASSWD: "{{ lookup('community.general.onepassword', 'gitea-db', field='password', vault='ansible') }}"
 
-GITEA_POSTGRES_USER: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='user', vault='Ansible') }}"
-GITEA_POSTGRES_PASSWORD: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='password', vault='Ansible') }}"
-GITEA_POSTGRES_DB: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='db', vault='Ansible') }}"
+GITEA_POSTGRES_USER: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='user', vault='ansible') }}"
+GITEA_POSTGRES_PASSWORD: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='password', vault='ansible') }}"
+GITEA_POSTGRES_DB: "{{ lookup('community.general.onepassword', 'gitea-postgres', field='db', vault='ansible') }}"
 
 # DO shit
-DO_AUTH_TOKEN: "{{ lookup('community.general.onepassword', 'do-auth-token', vault='Ansible') }}"
+DO_AUTH_TOKEN: "{{ lookup('community.general.onepassword', 'do-auth-token', vault='ansible') }}"
 
