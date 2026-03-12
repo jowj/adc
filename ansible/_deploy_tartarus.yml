@@ -1,0 +1,12 @@
+- name: deploy tartarus exit node
+  hosts: tartarus
+  remote_user: "{{ remote_user }}"
+  tasks:
+    - debug: msg="Deploying tailscale exit node to tartarus"
+  roles:
+    - { name: debian_base }
+    - { name: tailscale }
+  vars:
+    tailscale_extra_args: "--advertise-exit-node"
+    copy_local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/digitalocean.pub') }}"
+    sys_packages: ['sudo']
