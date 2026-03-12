@@ -1,35 +1,37 @@
 ---
-  
-- name: Add Tailscale repository key (ubuntu)
-  apt_key:
-    url: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release }}.gpg"
-    state: present
+
+- name: Download Tailscale signing key (ubuntu)
+  get_url:
+    url: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release }}.noarmor.gpg"
+    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    mode: '0644'
   become: true
   when: ansible_distribution == "Ubuntu"
 
 - name: Add Tailscale repository (ubuntu)
   apt_repository:
-    repo: "deb https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
+    repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
     filename: tailscale
     state: present
   become: true
   when: ansible_distribution == "Ubuntu"
 
-- name: Add Tailscale repository key (debian)
-  apt_key:
-    url: "https://pkgs.tailscale.com/stable/debian/{{ ansible_distribution_release }}.gpg"
-    state: present
+- name: Download Tailscale signing key (debian)
+  get_url:
+    url: "https://pkgs.tailscale.com/stable/debian/{{ ansible_distribution_release }}.noarmor.gpg"
+    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    mode: '0644'
   become: true
   when: ansible_distribution == "Debian"
 
 - name: Add Tailscale repository (debian)
   apt_repository:
-    repo: "deb https://pkgs.tailscale.com/stable/debian {{ ansible_distribution_release }} main"
+    repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian {{ ansible_distribution_release }} main"
     filename: tailscale
     state: present
   become: true
   when: ansible_distribution == "Debian"
-  
+
 - name: Install packages
   apt:
     name:
@@ -38,6 +40,6 @@
   become: true
 
 - name: Connect machine to your Tailscale network
-  command: tailscale up -authkey {{ tailscale_auth_key }}
+  command: tailscale up --authkey {{ tailscale_auth_key }} {{ tailscale_extra_args }}
   changed_when: no
   become: true
