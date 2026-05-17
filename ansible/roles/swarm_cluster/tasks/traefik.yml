@@ -1,0 +1,39 @@
+---
+# Deploy unified traefik to the swarm. Run only on manager.
+
+- name: Ensure traefik directory exists
+  file:
+    state: directory
+    path: /home/josiah/apps/traefik
+    owner: josiah
+    group: josiah
+    mode: "0700"
+
+- name: Ensure acme.json exists with correct permissions
+  ansible.builtin.copy:
+    content: ""
+    dest: /home/josiah/apps/traefik/acme.json
+    force: no
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Deploy unified traefik config
+  template:
+    src: "{{ playbook_dir }}/roles/swarm_cluster/templates/traefik.yml"
+    dest: /home/josiah/apps/traefik/traefik.yml
+    mode: "0644"
+
+- name: Deploy traefik compose file
+  template:
+    src: "{{ playbook_dir }}/roles/swarm_cluster/templates/traefik-compose.yml"
+    dest: /home/josiah/apps/traefik/traefik-compose.yml
+    mode: "0644"
+
+- name: Deploy traefik stack
+  docker_stack:
+    state: present
+    name: traefik
+    prune: yes
+    compose:
+      - /home/josiah/apps/traefik/traefik-compose.yml

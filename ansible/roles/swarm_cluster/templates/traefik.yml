@@ -1,0 +1,49 @@
+log:
+  level: INFO
+
+api:
+  insecure: true
+  dashboard: true
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+  git-ssh:
+    address: ":222"
+
+providers:
+  swarm:
+    exposedByDefault: false
+    watch: true
+    network: traefik-public
+
+# Multiple cert resolvers for different domains/providers.
+# services.jowj.net and home.jowj.net use Let's Encrypt + DigitalOcean DNS.
+# halo.jowj.net uses ZeroSSL + DigitalOcean DNS.
+certificatesResolvers:
+  services-resolver:
+    acme:
+      email: "admin@home.jowj.net"
+      storage: "/letsencrypt/acme.json"
+      dnsChallenge:
+        provider: "digitalocean"
+        resolvers:
+          - "1.1.1.1"
+          - "8.8.8.8"
+
+  halo-resolver:
+    acme:
+      email: "admin@home.jowj.net"
+      storage: "/letsencrypt/acme.json"
+      caServer: "https://acme.zerossl.com/v2/DV90"
+      eab:
+        kid: "{{ lookup('community.general.onepassword', 'zerossl-eab', field='kid', vault='ansible') }}"
+        hmacEncoded: "{{ lookup('community.general.onepassword', 'zerossl-eab', field='hmacEncoded', vault='ansible') }}"
+      dnsChallenge:
+        provider: "digitalocean"
+        resolvers:
+          - "1.1.1.1"
+          - "8.8.8.8"
+        delayBeforeCheck: 60

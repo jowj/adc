@@ -1,0 +1,60 @@
+---
+# Unified traefik instance for the swarm cluster.
+# Deployed as its own stack so it's independent of application stacks.
+version: "3.7"
+
+services:
+  traefik:
+    image: "traefik:v3.2"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "222:222"
+      - "8088:8080"
+    environment:
+      DO_AUTH_TOKEN: "{{ DO_AUTH_TOKEN }}"
+    volumes:
+      - /home/josiah/apps/traefik/acme.json:/letsencrypt/acme.json
+      - traefik_logs:/var/log/traefik
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/josiah/apps/traefik/traefik.yml:/traefik.yml
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+        # HTTPS redirect middleware
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+        # Global HTTP->HTTPS redirect
+        - "traefik.http.routers.http-catchall.rule=HostRegexp(`.+`)"
+        - "traefik.http.routers.http-catchall.entrypoints=web"
+        - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+
+  whoami:
+    image: "traefik/whoami"
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.whoami.rule=Host(`whoami.services.jowj.net`)"
+        - "traefik.http.routers.whoami.entrypoints=websecure"
+        - "traefik.http.routers.whoami.tls.certresolver=services-resolver"
+        - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"
+
+volumes:
+  traefik_logs:
+
+networks:
+  default:
+    driver: overlay
+    name: traefik-public
+    attachable: true
+    driver_opts:
+      com.docker.network.driver.mtu: "1230"

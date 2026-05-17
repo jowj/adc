@@ -1,0 +1,12 @@
+---
+# swarm_cluster role — cluster formation is handled by _cluster_init.yml playbook
+# (multi-play orchestration: manager init → worker join → label → traefik).
+#
+# This entrypoint deploys/updates traefik only. Useful for config changes:
+#   ansible-playbook -i inventory/hosts.yml _cluster_deploy_stacks.yml --tags traefik
+#
+# For full cluster rebuild, use _cluster_init.yml instead.
+
+- name: Deploy unified traefik
+  include_tasks: traefik.yml
+  tags: [traefik]
