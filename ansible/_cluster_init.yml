@@ -1,0 +1,103 @@
+---
+# Playbook: Initialize the on-premise Docker Swarm cluster.
+#
+# This forms a single swarm with lair as manager and highsea/archon as workers.
+# Run with: ansible-playbook -i inventory/hosts.yml _cluster_init.yml
+#
+# IMPORTANT: This will cause workers to leave their existing solo swarms.
+# Any running stacks on workers will be stopped. Redeploy stacks after this completes.
+
+- name: Initialize swarm manager
+  hosts: swarm_managers
+  become: yes
+  tasks:
+    - name: Remove all stacks before swarm teardown
+      shell: |
+        for stack in $(docker stack ls --format '{% raw %}{{.Name}}{% endraw %}'); do
+          docker stack rm "$stack" 2>/dev/null || true
+        done
+      changed_when: false
+      ignore_errors: true
+
+    - name: Wait for stack resources to release
+      pause:
+        seconds: 15
+
+    - name: Leave existing swarm completely
+      shell: docker swarm leave --force
+      ignore_errors: true
+
+    - name: Initialize fresh swarm with correct advertise and data-path addresses
+      shell: >
+        docker swarm init
+        --advertise-addr {{ swarm_advertise_addr }}
+        --data-path-addr {{ swarm_advertise_addr }}
+      register: swarm_init_result
+
+    - name: Get swarm info including join tokens
+      community.general.docker_swarm_info:
+      register: swarm_info
+
+    - name: Store join token as fact
+      set_fact:
+        swarm_join_token: "{{ swarm_info.swarm_facts.JoinTokens.Worker }}"
+        swarm_manager_addr: "{{ swarm_advertise_addr }}:2377"
+
+- name: Join workers to swarm
+  hosts: swarm_workers
+  become: yes
+  tasks:
+    - name: Leave existing swarm
+      community.general.docker_swarm:
+        state: absent
+        force: true
+      ignore_errors: true
+
+    - name: Pause for swarm state to settle
+      pause:
+        seconds: 5
+
+    - name: Join the cluster
+      community.general.docker_swarm:
+        state: join
+        advertise_addr: "{{ swarm_advertise_addr }}"
+        join_token: "{{ hostvars[groups['swarm_managers'][0]].swarm_join_token }}"
+        remote_addrs:
+          - "{{ hostvars[groups['swarm_managers'][0]].swarm_manager_addr }}"
+
+- name: Gather node IDs from all swarm hosts
+  hosts: swarm
+  become: yes
+  tasks:
+    - name: Get this node's swarm ID
+      shell: docker info --format '{% raw %}{{.Swarm.NodeID}}{% endraw %}'
+      register: node_id_result
+      changed_when: false
+
+    - name: Store node ID as fact
+      set_fact:
+        swarm_node_id: "{{ node_id_result.stdout }}"
+
+- name: Clean up stale nodes, label, and deploy traefik
+  hosts: swarm_managers
+  become: yes
+  tasks:
+    - name: Remove stale/down nodes from swarm
+      shell: |
+        docker node ls --format '{% raw %}{{.ID}} {{.Status}}{% endraw %}' | \
+        awk '$2 == "Down" {print $1}' | \
+        xargs -r docker node rm --force
+      changed_when: false
+      ignore_errors: true
+
+    - name: Apply node labels using node IDs
+      community.general.docker_node:
+        hostname: "{{ hostvars[item].swarm_node_id }}"
+        labels: "{{ hostvars[item].swarm_node_labels }}"
+      loop: "{{ groups['swarm'] }}"
+      when:
+        - hostvars[item].swarm_node_labels is defined
+        - hostvars[item].swarm_node_id is defined
+
+    - name: Deploy unified traefik
+      include_tasks: roles/swarm_cluster/tasks/traefik.yml

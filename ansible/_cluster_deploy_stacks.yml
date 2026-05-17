@@ -1,0 +1,12 @@
+---
+# Deploy all application stacks to the unified swarm.
+#
+# Idempotent — swarm only updates services whose compose definition changed.
+# Safe to run repeatedly. Run with:
+#   ansible-playbook -i inventory/hosts.yml _cluster_deploy_stacks.yml
+
+- name: Deploy application stacks
+  hosts: swarm_managers
+  become: yes
+  roles:
+    - swarm_stacks
