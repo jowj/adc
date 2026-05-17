@@ -2,30 +2,35 @@
 ## install dependencies
 ansible-galaxy collection install -r requirements.yml
 
-##  run a play
-~ansible-playbook -i hosts.yml all.yml --ask-vault-pass --ask-become-pass~
+## form the swarm cluster
+ansible-playbook -i inventory/hosts.yml _cluster_init.yml
 
-# instructions on specific roles
-## abjure
-Abjure is the media server and related configuration stack.
+## deploy application stacks
+ansible-playbook -i inventory/hosts.yml _cluster_deploy_stacks.yml
+
+# roles
+
+## swarm_cluster
+Cluster formation and traefik deployment. Manages the on-premise Docker Swarm (lair as manager, highsea + archon as workers) over Tailscale. Handles swarm init, worker join, node labeling, and a unified traefik v3.2 ingress.
+
+`_cluster_init.yml` is destructive (full teardown/rebuild). Use sparingly.
+
+## swarm_stacks
+Deploys application stacks (abjure, highsea, halo) to the swarm. Idempotent. Swarm diffs the compose files and only updates changed services.
+
+`_cluster_deploy_stacks.yml` is safe to run repeatedly.
 
 ## debian_base
-This is the base role that should be pulled in basically everywhere.
+Base role for system setup: Docker install, users, SSH config, packages.
 
 ## dns_redir
-This handles jowj.net redirects for my blog.
-
-## halo
-deploys services for private consumption of friends.
-
-## highsea
-*arr stack and related configs.
-
-## shoggoth
-WIP, observability plays.
+Traefik-based redirect for jowj.net on util01 (cloud). Independent of the on-prem swarm.
 
 ## tailscale
-Installs tailscale and joins my tailnet. nodes require manual approval by a tailnet admin ( me ) from an approved signing node.
+Installs tailscale and joins the tailnet. Nodes require manual approval by a tailnet admin from an approved signing node.
 
 ## updater
-I'm not sure if I actually should be using shit this way, but this is how i've updated hosts.
+Runs apt package updates.
+
+## shoggoth
+WIP, observability.
