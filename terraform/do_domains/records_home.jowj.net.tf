@@ -138,7 +138,7 @@ resource "digitalocean_record" "tfer--87843462" {
   priority = "0"
   ttl      = "900"
   type     = "A"
-  value    = "192.168.1.120"
+  value    = "100.88.115.23"
   weight   = "0"
 }
 
@@ -226,7 +226,7 @@ resource "digitalocean_record" "highsea-dns" {
   priority = "0"
   ttl      = "900"
   type     = "A"
-  value    = "100.72.101.61"
+  value    = "100.114.237.23"
   weight   = "0"
 }
 

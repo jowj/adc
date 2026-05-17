@@ -6,7 +6,7 @@ resource "digitalocean_record" "requests-halo-jowj-net" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "archon.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -19,7 +19,7 @@ resource "digitalocean_record" "git-halo-jowj-net" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "archon.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -31,7 +31,7 @@ resource "digitalocean_record" "rss-halo-jowj-net" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "archon.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -43,6 +43,6 @@ resource "digitalocean_record" "whoami-halo-jowj-net" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "archon.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }

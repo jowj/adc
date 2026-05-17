@@ -54,7 +54,7 @@ resource "digitalocean_record" "tfer--273196064" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "highsea.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -116,7 +116,7 @@ resource "digitalocean_record" "tfer--282780675" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "highsea.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -128,7 +128,7 @@ resource "digitalocean_record" "tfer--282785060" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "highsea.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -140,7 +140,7 @@ resource "digitalocean_record" "tfer--282785080" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "highsea.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -152,7 +152,7 @@ resource "digitalocean_record" "tfer--282785089" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "highsea.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -164,7 +164,7 @@ resource "digitalocean_record" "tfer--282785137" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "highsea.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -176,7 +176,7 @@ resource "digitalocean_record" "tfer--318333757" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "highsea.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
@@ -188,7 +188,7 @@ resource "digitalocean_record" "tfer--326222435" {
   priority = "0"
   ttl      = "900"
   type     = "CNAME"
-  value    = "highsea.home.jowj.net."
+  value    = "lair.home.jowj.net."
   weight   = "0"
 }
 
