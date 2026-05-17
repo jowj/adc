@@ -1,0 +1,88 @@
+---
+# abjure stack — media serving. Pinned to services node (lair).
+version: "3.7"
+
+services:
+  stash:
+    image: stashapp/stash:latest
+    networks:
+      - traefik-public
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "2m"
+    environment:
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='config', vault='ansible') }}:/root/.stash"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='data', vault='ansible') }}:/data"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='metadata', vault='ansible') }}:/metadata"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='cache', vault='ansible') }}:/cache"
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='generated', vault='ansible') }}:/generated"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == services
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.mediaserver-hoard.loadbalancer.server.port=9999"
+        - "traefik.http.routers.mediaserver-hoard.rule=Host(`hoard.services.jowj.net`)"
+        - "traefik.http.routers.mediaserver-hoard.entrypoints=websecure"
+        - "traefik.http.routers.mediaserver-hoard.tls.certresolver=services-resolver"
+
+  stash-vr:
+    image: ofl0w/stash-vr:latest
+    networks:
+      - traefik-public
+    extra_hosts:
+      - "hoard.services.jowj.net:host-gateway"
+    volumes:
+      - "{{ lookup('community.general.onepassword', 'stash-paths', field='config', vault='ansible') }}vr:/config"
+    environment:
+      STASH_GRAPHQL_URL: "https://hoard.services.jowj.net/graphql"
+      FORCE_HTTPS: "true"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == services
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.mediaserver-hoardvr.loadbalancer.server.port=9666"
+        - "traefik.http.routers.mediaserver-hoardvr.rule=Host(`hoardvr.services.jowj.net`)"
+        - "traefik.http.routers.mediaserver-hoardvr.entrypoints=websecure"
+        - "traefik.http.routers.mediaserver-hoardvr.tls.certresolver=services-resolver"
+
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    networks:
+      - traefik-public
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /home/josiah/apps/calibre/:/config
+      - /media/usenet/book-library/readarr/:/books
+    ports:
+      # Non-HTTP ports still need direct publish
+      - 8181:8181
+      - 8081:8081
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == services
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.mediaserver-calibre.loadbalancer.server.port=8083"
+        - "traefik.http.routers.mediaserver-calibre.rule=Host(`calibre.services.jowj.net`)"
+        - "traefik.http.routers.mediaserver-calibre.entrypoints=websecure"
+        - "traefik.http.routers.mediaserver-calibre.tls.certresolver=services-resolver"
+
+networks:
+  traefik-public:
+    external: true

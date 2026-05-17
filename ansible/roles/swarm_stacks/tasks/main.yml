@@ -1,0 +1,49 @@
+---
+# Deploy all application stacks to the swarm.
+# Idempotent — swarm diffs compose state and only updates changed services.
+
+- name: Ensure app directories exist
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: josiah
+    group: josiah
+    mode: "0700"
+  loop:
+    - /home/josiah/apps/abjure
+    - /home/josiah/apps/highsea
+    - /home/josiah/apps/halo
+
+- name: Copy stack compose files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - { src: "abjure-compose.yml", dest: "/home/josiah/apps/abjure/abjure-compose.yml" }
+    - { src: "highsea-compose.yml", dest: "/home/josiah/apps/highsea/highsea-compose.yml" }
+    - { src: "halo-compose.yml", dest: "/home/josiah/apps/halo/halo-compose.yml" }
+
+- name: Deploy abjure stack
+  docker_stack:
+    state: present
+    name: abjure
+    prune: yes
+    compose:
+      - /home/josiah/apps/abjure/abjure-compose.yml
+
+- name: Deploy highsea stack
+  docker_stack:
+    state: present
+    name: highsea
+    prune: yes
+    compose:
+      - /home/josiah/apps/highsea/highsea-compose.yml
+
+- name: Deploy halo stack
+  docker_stack:
+    state: present
+    name: halo
+    prune: yes
+    compose:
+      - /home/josiah/apps/halo/halo-compose.yml

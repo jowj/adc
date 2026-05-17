@@ -1,0 +1,178 @@
+---
+# highsea stack — *arr suite. Pinned to the media node (NFS mounts).
+# Traefik is provided by the shared 'traefik' stack; services just need labels.
+version: "3.7"
+
+services:
+  hydra2:
+    image: linuxserver/nzbhydra2:latest
+    networks:
+      - traefik-public
+    volumes:
+      - /home/josiah/apps/hydra2/:/config
+      - /home/josiah/Downloads/usenet-complete/:/data/downloads
+    environment:
+      PGID: 1000
+      PUID: 1000
+      TZ: America/Chicago
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == media
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.highsea-hydra2.loadbalancer.server.port=5076"
+        - "traefik.http.routers.highsea-hydra2.rule=Host(`hydra.services.jowj.net`)"
+        - "traefik.http.routers.highsea-hydra2.entrypoints=websecure"
+        - "traefik.http.routers.highsea-hydra2.tls.certresolver=services-resolver"
+
+  sabnzb:
+    image: "linuxserver/sabnzbd"
+    networks:
+      - traefik-public
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/sabnzbd:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/home/josiah/Downloads/usenet-incomplete/:/data/incomplete-downloads"
+      - "/home/josiah/Downloads/usenet-watched/:/data/watched-folder"
+      - "/media/usenet/tv:/data/tv"
+      - "/media/usenet/audio/:/data/music"
+      - "/media/usenet/movies/:/data/movies"
+      - "/media/usenet/book-library/yet-to-be-added:/data/books"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == media
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.highsea-sabnzbd.loadbalancer.server.port=8080"
+        - "traefik.http.routers.highsea-sabnzbd.rule=Host(`sab.services.jowj.net`)"
+        - "traefik.http.routers.highsea-sabnzbd.entrypoints=websecure"
+        - "traefik.http.routers.highsea-sabnzbd.tls.certresolver=services-resolver"
+
+  sonarr:
+    image: "linuxserver/sonarr"
+    networks:
+      - traefik-public
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/sonarr:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/media/usenet/tv/:/data/tv"
+      - "/media/usenet/tv-anime/:/data/anime"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == media
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.highsea-sonarr.loadbalancer.server.port=8989"
+        - "traefik.http.routers.highsea-sonarr.rule=Host(`sonarr.services.jowj.net`)"
+        - "traefik.http.routers.highsea-sonarr.entrypoints=websecure"
+        - "traefik.http.routers.highsea-sonarr.tls.certresolver=services-resolver"
+
+  lidarr:
+    image: "linuxserver/lidarr"
+    networks:
+      - traefik-public
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/lidarr:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/media/usenet/audio/:/data/music"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == media
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.highsea-lidarr.loadbalancer.server.port=8686"
+        - "traefik.http.routers.highsea-lidarr.rule=Host(`lidarr.services.jowj.net`)"
+        - "traefik.http.routers.highsea-lidarr.entrypoints=websecure"
+        - "traefik.http.routers.highsea-lidarr.tls.certresolver=services-resolver"
+
+  radarr:
+    image: "linuxserver/radarr"
+    networks:
+      - traefik-public
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/radarr:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/data/downloads"
+      - "/media/usenet/movies/:/data/movies"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == media
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.highsea-radarr.loadbalancer.server.port=7878"
+        - "traefik.http.routers.highsea-radarr.rule=Host(`radarr.services.jowj.net`)"
+        - "traefik.http.routers.highsea-radarr.entrypoints=websecure"
+        - "traefik.http.routers.highsea-radarr.tls.certresolver=services-resolver"
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:0.4.18-develop
+    networks:
+      - traefik-public
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/readarr:/config"
+      - "/media/usenet/audiobooks:/media/usenet/book-library/readarr/audiobooks"
+      - "/media/usenet/book-library/readarr:/media/usenet/book-library/readarr"
+      - "/home/josiah/Downloads/usenet-complete/books:/data/downloads/books"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == media
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.highsea-readarr.loadbalancer.server.port=8787"
+        - "traefik.http.routers.highsea-readarr.rule=Host(`readarr.services.jowj.net`)"
+        - "traefik.http.routers.highsea-readarr.entrypoints=websecure"
+        - "traefik.http.routers.highsea-readarr.tls.certresolver=services-resolver"
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    networks:
+      - traefik-public
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Chicago
+    volumes:
+      - "/home/josiah/apps/bazarr:/config"
+      - "/home/josiah/Downloads/usenet-complete/:/media/downloads"
+      - "/media/usenet/tv/:/media/tv"
+      - "/media/usenet/tv-anime/:/media/anime"
+      - "/media/usenet/movies/:/media/movies"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role == media
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.highsea-bazarr.loadbalancer.server.port=6767"
+        - "traefik.http.routers.highsea-bazarr.rule=Host(`bazarr.services.jowj.net`)"
+        - "traefik.http.routers.highsea-bazarr.entrypoints=websecure"
+        - "traefik.http.routers.highsea-bazarr.tls.certresolver=services-resolver"
+
+networks:
+  traefik-public:
+    external: true

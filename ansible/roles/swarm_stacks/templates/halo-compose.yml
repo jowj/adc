@@ -1,0 +1,79 @@
+---
+# halo stack — shared services for friends. Pinned to halo node.
+version: "3.7"
+
+services:
+  freshrss:
+    image: linuxserver/freshrss
+    networks:
+      - traefik-public
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/josiah/apps/freshrss:/config
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == halo
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.freshrss-svc.loadbalancer.server.port=80"
+        - "traefik.http.routers.freshrss-rt.rule=Host(`rss.halo.jowj.net`)"
+        - "traefik.http.routers.freshrss-rt.entrypoints=websecure"
+        - "traefik.http.routers.freshrss-rt.tls.certresolver=halo-resolver"
+
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    networks:
+      - traefik-public
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /home/josiah/apps/overseerr/config/:/config
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == halo
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.overseerr-svc.loadbalancer.server.port=5055"
+        - "traefik.http.routers.overseerr-rt.rule=Host(`requests.halo.jowj.net`)"
+        - "traefik.http.routers.overseerr-rt.entrypoints=websecure"
+        - "traefik.http.routers.overseerr-rt.tls.certresolver=halo-resolver"
+
+  gitea:
+    image: gitea/gitea:1.22.4
+    networks:
+      - traefik-public
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    volumes:
+      - /home/josiah/apps/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role == halo
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.gitea-svc.loadbalancer.server.port=3000"
+        - "traefik.http.routers.gitea-rt.rule=Host(`git.halo.jowj.net`)"
+        - "traefik.http.routers.gitea-rt.entrypoints=websecure"
+        - "traefik.http.routers.gitea-rt.tls.certresolver=halo-resolver"
+        # SSH for git
+        - "traefik.tcp.routers.gitea-ssh.rule=HostSNI(`*`)"
+        - "traefik.tcp.routers.gitea-ssh.entrypoints=git-ssh"
+        - "traefik.tcp.services.gitea-ssh-svc.loadbalancer.server.port=22"
+
+networks:
+  traefik-public:
+    external: true
