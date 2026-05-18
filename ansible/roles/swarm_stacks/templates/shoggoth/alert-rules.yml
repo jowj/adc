@@ -1,0 +1,140 @@
+{% raw %}
+groups:
+  - name: node_health
+    rules:
+      - alert: NodeDown
+        expr: up{job="node-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node {{ $labels.instance }} is unreachable"
+
+      - alert: HighDiskUsage
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk usage above 90% on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage above 90% on {{ $labels.instance }}"
+
+      - alert: HighCpuUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage above 90% on {{ $labels.instance }}"
+
+  - name: container_health
+    rules:
+      # Catches containers that recently died (metric still in Prometheus but stale)
+      - alert: ContainerDying
+        expr: time() - max by (container_label_com_docker_swarm_service_name) (container_last_seen{container_label_com_docker_swarm_service_name=~".*(sonarr|radarr|lidarr|sabnzb|plex|grafana|freshrss|overseerr|gitea|stash|calibre|readarr|bazarr|hydra2).*"}) > 120
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.container_label_com_docker_swarm_service_name }} is down"
+
+      # Catches containers that have been gone long enough for metrics to vanish
+      - alert: SwarmServiceMissing
+        expr: absent(container_last_seen{container_label_com_docker_swarm_service_name=~".*bazarr.*"})
+        for: 5m
+        labels:
+          severity: critical
+          service: bazarr
+        annotations:
+          summary: "bazarr has no running container"
+
+      - alert: SwarmServiceMissing
+        expr: absent(container_last_seen{container_label_com_docker_swarm_service_name=~".*sonarr.*"})
+        for: 5m
+        labels:
+          severity: critical
+          service: sonarr
+        annotations:
+          summary: "sonarr has no running container"
+
+      - alert: SwarmServiceMissing
+        expr: absent(container_last_seen{container_label_com_docker_swarm_service_name=~".*radarr.*"})
+        for: 5m
+        labels:
+          severity: critical
+          service: radarr
+        annotations:
+          summary: "radarr has no running container"
+
+      - alert: SwarmServiceMissing
+        expr: absent(container_last_seen{container_label_com_docker_swarm_service_name=~".*lidarr.*"})
+        for: 5m
+        labels:
+          severity: critical
+          service: lidarr
+        annotations:
+          summary: "lidarr has no running container"
+
+      - alert: SwarmServiceMissing
+        expr: absent(container_last_seen{container_label_com_docker_swarm_service_name=~".*sabnzb.*"})
+        for: 5m
+        labels:
+          severity: critical
+          service: sabnzbd
+        annotations:
+          summary: "sabnzbd has no running container"
+
+      - alert: SwarmServiceMissing
+        expr: absent(container_last_seen{container_label_com_docker_swarm_service_name=~".*freshrss.*"})
+        for: 5m
+        labels:
+          severity: critical
+          service: freshrss
+        annotations:
+          summary: "freshrss has no running container"
+
+      - alert: SwarmServiceMissing
+        expr: absent(container_last_seen{container_label_com_docker_swarm_service_name=~".*overseerr.*"})
+        for: 5m
+        labels:
+          severity: critical
+          service: overseerr
+        annotations:
+          summary: "overseerr has no running container"
+
+      - alert: SwarmServiceMissing
+        expr: absent(container_last_seen{container_label_com_docker_swarm_service_name=~".*gitea.*"})
+        for: 5m
+        labels:
+          severity: critical
+          service: gitea
+        annotations:
+          summary: "gitea has no running container"
+
+  - name: scrape_health
+    rules:
+      - alert: ScrapeTargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Scrape target {{ $labels.job }}/{{ $labels.instance }} is down"
+
+  - name: nfs_health
+    rules:
+      - alert: NfsMountReadOnly
+        expr: node_filesystem_readonly{mountpoint=~"/media/.*"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "NFS mount {{ $labels.mountpoint }} is read-only on {{ $labels.instance }}"
+{% endraw %}

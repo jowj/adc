@@ -5,6 +5,26 @@
 # Safe to run repeatedly. Run with:
 #   ansible-playbook -i inventory/hosts.yml _cluster_deploy_stacks.yml
 
+- name: Set up NFS mounts on all swarm nodes
+  hosts: swarm
+  become: yes
+  tasks:
+    - name: Ensure NFS mount directory exists
+      shell: mkdir -p /media/observability
+      changed_when: false
+
+    - name: Add observability NFS mount to fstab
+      ansible.posix.mount:
+        src: "sainthood.home.jowj.net:/volume4/obs"
+        path: /media/observability
+        fstype: nfs
+        opts: "rw,hard,intr,rsize=8192,wsize=8192,timeo=14,_netdev,bg"
+        state: present
+
+    - name: Mount observability NFS
+      shell: mountpoint -q /media/observability || mount /media/observability
+      changed_when: false
+
 - name: Deploy application stacks
   hosts: swarm_managers
   become: yes

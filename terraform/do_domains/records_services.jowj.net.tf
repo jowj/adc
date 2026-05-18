@@ -240,3 +240,15 @@ resource "digitalocean_record" "calibre-services-jowj-net" {
   value    = "lair.home.jowj.net."
   weight   = "0"
 }
+
+resource "digitalocean_record" "grafana-services-jowj-net" {
+  domain   = "services.jowj.net"
+  flags    = "0"
+  name     = "grafana"
+  port     = "0"
+  priority = "0"
+  ttl      = "900"
+  type     = "CNAME"
+  value    = "lair.home.jowj.net."
+  weight   = "0"
+}

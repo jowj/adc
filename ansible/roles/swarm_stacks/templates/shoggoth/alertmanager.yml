@@ -1,0 +1,18 @@
+{% raw %}
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'mattermost'
+
+receivers:
+  - name: 'mattermost'
+    slack_configs:
+      - api_url: '{% endraw %}{{ lookup("community.general.onepassword", "mattermost-webhook", field="url", vault="ansible") }}{% raw %}'
+        send_resolved: true
+        text: '{{ .Status | toUpper }}: {{ range .Alerts }}{{ .Annotations.summary }} {{ end }}'
+{% endraw %}

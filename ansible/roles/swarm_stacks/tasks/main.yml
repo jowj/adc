@@ -13,6 +13,36 @@
     - /home/josiah/apps/abjure
     - /home/josiah/apps/highsea
     - /home/josiah/apps/halo
+    - /home/josiah/apps/shoggoth
+
+- name: Ensure shoggoth config directories exist on NFS
+  shell: mkdir -p {{ item }}
+  loop:
+    - /media/observability/prometheus
+    - /media/observability/prometheus-config
+    - /media/observability/alertmanager
+    - /media/observability/alertmanager-config
+    - /media/observability/grafana
+    - /media/observability/grafana-provisioning/datasources
+    - /media/observability/grafana-provisioning/dashboards
+    - /media/observability/loki
+    - /media/observability/loki-config
+    - /media/observability/promtail-config
+  changed_when: false
+
+- name: Copy shoggoth config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - { src: "shoggoth/prometheus.yml", dest: "/media/observability/prometheus-config/prometheus.yml" }
+    - { src: "shoggoth/alert-rules.yml", dest: "/media/observability/prometheus-config/alert-rules.yml" }
+    - { src: "shoggoth/alertmanager.yml", dest: "/media/observability/alertmanager-config/alertmanager.yml" }
+    - { src: "shoggoth/loki.yml", dest: "/media/observability/loki-config/loki.yml" }
+    - { src: "shoggoth/promtail.yml", dest: "/media/observability/promtail-config/promtail.yml" }
+    - { src: "shoggoth/grafana-datasources.yml", dest: "/media/observability/grafana-provisioning/datasources/datasources.yml" }
+    - { src: "shoggoth/grafana-dashboard-provider.yml", dest: "/media/observability/grafana-provisioning/dashboards/provider.yml" }
 
 - name: Copy stack compose files
   template:
@@ -23,6 +53,7 @@
     - { src: "abjure-compose.yml", dest: "/home/josiah/apps/abjure/abjure-compose.yml" }
     - { src: "highsea-compose.yml", dest: "/home/josiah/apps/highsea/highsea-compose.yml" }
     - { src: "halo-compose.yml", dest: "/home/josiah/apps/halo/halo-compose.yml" }
+    - { src: "shoggoth-compose.yml", dest: "/home/josiah/apps/shoggoth/shoggoth-compose.yml" }
 
 - name: Deploy abjure stack
   docker_stack:
@@ -47,3 +78,11 @@
     prune: yes
     compose:
       - /home/josiah/apps/halo/halo-compose.yml
+
+- name: Deploy shoggoth stack
+  docker_stack:
+    state: present
+    name: shoggoth
+    prune: yes
+    compose:
+      - /home/josiah/apps/shoggoth/shoggoth-compose.yml
