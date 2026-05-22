@@ -1,0 +1,143 @@
+---
+# Migrate /media/usenet from the old synology (storage.home.jowj.net)
+# to the new synology (sainthood.home.jowj.net:/volume4/usenet).
+#
+# Strategy:
+#   1. Preflight — confirm new export is reachable from media nodes.
+#   2. Drain stacks that hold the mount (abjure on lair, highsea on high-sea).
+#   3. Unmount old NFS, rewrite fstab, mount new NFS.
+#   4. Spot-check contents.
+#   5. Redeploy abjure + highsea.
+#
+# Affected hosts: lair, highsea.home.jowj.net. archon (halo) does not mount /media/usenet.
+#
+# Run with:
+#   ansible-playbook -i inventory/hosts.yml _migrate_usenet_nfs.yml
+#
+# Rollback: re-run with -e usenet_nfs_src=storage.home.jowj.net:/<old-path>
+
+- name: Preflight — verify new NFS export is reachable
+  hosts: lair:highsea.home.jowj.net
+  become: yes
+  gather_facts: no
+  vars:
+    usenet_nfs_src: "sainthood.home.jowj.net:/volume4/usenet"
+  tasks:
+    - name: Probe new NFS exports via showmount
+      command: showmount -e sainthood.home.jowj.net
+      register: showmount_result
+      changed_when: false
+
+    - name: Confirm /volume4/usenet is exported
+      assert:
+        that: "'/volume4/usenet' in showmount_result.stdout"
+        fail_msg: "sainthood.home.jowj.net does not export /volume4/usenet"
+
+- name: Drain stacks that consume /media/usenet
+  hosts: swarm_managers
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Remove abjure stack
+      command: docker stack rm abjure
+      register: rm_abjure
+      changed_when: "'Removing' in rm_abjure.stdout"
+
+    - name: Remove highsea stack
+      command: docker stack rm highsea
+      register: rm_highsea
+      changed_when: "'Removing' in rm_highsea.stdout"
+
+    - name: Wait for abjure + highsea services to fully exit
+      shell: |
+        abjure=$(docker service ls --filter label=com.docker.stack.namespace=abjure -q | wc -l)
+        highsea=$(docker service ls --filter label=com.docker.stack.namespace=highsea -q | wc -l)
+        echo $((abjure + highsea))
+      register: service_count
+      retries: 30
+      delay: 2
+      until: service_count.stdout | int == 0
+      changed_when: false
+
+- name: Swap /media/usenet NFS mount on media nodes
+  hosts: lair:highsea.home.jowj.net
+  become: yes
+  gather_facts: no
+  vars:
+    usenet_nfs_src: "sainthood.home.jowj.net:/volume4/usenet"
+  tasks:
+    - name: Check whether /media/usenet is currently a mountpoint
+      command: mountpoint -q /media/usenet
+      register: usenet_is_mounted
+      failed_when: false
+      changed_when: false
+
+    - name: Check whether anything still holds /media/usenet open
+      # Only meaningful when /media/usenet is actually a mountpoint — otherwise
+      # fuser -m reports every process on the underlying (root) filesystem.
+      command: fuser -m /media/usenet
+      register: fuser_check
+      failed_when: false
+      changed_when: false
+      when: usenet_is_mounted.rc == 0
+
+    - name: Abort if /media/usenet is still in use
+      fail:
+        msg: "Process still holds /media/usenet open (fuser rc={{ fuser_check.rc }}): {{ fuser_check.stdout }} {{ fuser_check.stderr }}"
+      when:
+        - usenet_is_mounted.rc == 0
+        - fuser_check.rc == 0
+        - fuser_check.stdout | trim | length > 0
+
+    - name: Remove existing /media/usenet mount (unmount + drop fstab entry)
+      ansible.posix.mount:
+        path: /media/usenet
+        state: absent
+
+    - name: Ensure /media/usenet mountpoint exists
+      file:
+        path: /media/usenet
+        state: directory
+        mode: "0755"
+
+    - name: Add new usenet NFS mount to fstab
+      ansible.posix.mount:
+        src: "{{ usenet_nfs_src }}"
+        path: /media/usenet
+        fstype: nfs
+        opts: "rw,hard,intr,rsize=8192,wsize=8192,timeo=14,_netdev,bg"
+        state: present
+
+    - name: Mount new usenet NFS
+      shell: mountpoint -q /media/usenet || mount /media/usenet
+      changed_when: false
+
+    - name: Spot-check — list top-level contents of new mount
+      command: ls /media/usenet
+      register: usenet_ls
+      changed_when: false
+
+    - name: Show new mount contents
+      debug:
+        var: usenet_ls.stdout_lines
+
+- name: Redeploy abjure + highsea stacks
+  hosts: swarm_managers
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Deploy abjure stack
+      docker_stack:
+        state: present
+        name: abjure
+        prune: yes
+        compose:
+          - /home/josiah/apps/abjure/abjure-compose.yml
+
+    - name: Deploy highsea stack
+      docker_stack:
+        state: present
+        name: highsea
+        prune: yes
+        compose:
+          - /home/josiah/apps/highsea/highsea-compose.yml

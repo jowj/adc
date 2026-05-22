@@ -5,11 +5,11 @@
 # Safe to run repeatedly. Run with:
 #   ansible-playbook -i inventory/hosts.yml _cluster_deploy_stacks.yml
 
-- name: Set up NFS mounts on all swarm nodes
+- name: Set up observability NFS mount on all swarm nodes
   hosts: swarm
   become: yes
   tasks:
-    - name: Ensure NFS mount directory exists
+    - name: Ensure observability NFS mount directory exists
       shell: mkdir -p /media/observability
       changed_when: false
 
@@ -23,6 +23,28 @@
 
     - name: Mount observability NFS
       shell: mountpoint -q /media/observability || mount /media/observability
+      changed_when: false
+
+- name: Set up usenet NFS mount on media-consuming nodes
+  # lair (abjure stack) and high-sea (highsea stack) bind-mount /media/usenet
+  # into containers. archon (halo) does not.
+  hosts: lair:highsea.home.jowj.net
+  become: yes
+  tasks:
+    - name: Ensure usenet NFS mount directory exists
+      shell: mkdir -p /media/usenet
+      changed_when: false
+
+    - name: Add usenet NFS mount to fstab
+      ansible.posix.mount:
+        src: "sainthood.home.jowj.net:/volume4/usenet"
+        path: /media/usenet
+        fstype: nfs
+        opts: "rw,hard,intr,rsize=8192,wsize=8192,timeo=14,_netdev,bg"
+        state: present
+
+    - name: Mount usenet NFS
+      shell: mountpoint -q /media/usenet || mount /media/usenet
       changed_when: false
 
 - name: Deploy application stacks
