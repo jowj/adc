@@ -8,8 +8,14 @@
 # services; swarm only restarts a service when the tag resolves to a new digest.
 #
 # Opt a service in with the deploy label `shepherd.autodeploy=true`. Services
-# pinned to a specific version (gitea, readarr, shoggoth, traefik) are left out
-# on purpose: bump those by hand.
+# pinned to a specific version (gitea, readarr, prometheus, alertmanager,
+# grafana, loki, promtail) are left out on purpose: bump those by hand.
+#
+# Each update/rollback is posted to Mattermost through the apprise sidecar.
+#
+# Every update leaves the previous image behind, so image-prune runs on every
+# node and drops images unused for 3+ days (lair's root disk filled to 100%
+# in Oct 2026 with ~15GB of stale images).
 version: "3.7"
 
 services:
@@ -22,6 +28,7 @@ services:
       # Roll a service back if its updated task fails to start.
       - ROLLBACK_ON_FAILURE=true
       - VERBOSE=true
+      - APPRISE_SIDECAR_URL=notify:5000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     logging:
@@ -36,3 +43,33 @@ services:
           - node.role == manager
       labels:
         - "shepherd.autodeploy=true"
+
+  notify:
+    image: mazzolino/apprise-microservice:latest
+    environment:
+      # Apprise form of the Mattermost incoming webhook: mmosts://host/token
+      - "NOTIFICATION_URLS={{ lookup('community.general.onepassword', 'mattermost-webhook', field='url', vault='ansible') | regex_replace('^https://([^/]+)/hooks/(.+)$', 'mmosts://\\1/\\2') }}"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "shepherd.autodeploy=true"
+
+  image-prune:
+    image: docker:cli
+    command: ["sh", "-c", "while true; do date; docker image prune -af --filter until=72h; sleep 86400; done"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "2"
+        max-size: "1m"
+    deploy:
+      mode: global
+      labels:
+        - "shepherd.autodeploy=true"
+      resources:
+        limits:
+          memory: 64M
