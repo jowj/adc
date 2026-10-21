@@ -1,0 +1,38 @@
+---
+# shepherd stack — automatic image updates for swarm services.
+#
+# Swarm pins a service to the image digest it resolved at deploy time and
+# never re-pulls, so a `:latest` tag silently goes stale (that's how Plex sat
+# on a vulnerable build until it was compromised in Oct 2026). Shepherd
+# periodically runs `docker service update --image <tag>` on opted-in
+# services; swarm only restarts a service when the tag resolves to a new digest.
+#
+# Opt a service in with the deploy label `shepherd.autodeploy=true`. Services
+# pinned to a specific version (gitea, readarr, shoggoth, traefik) are left out
+# on purpose: bump those by hand.
+version: "3.7"
+
+services:
+  shepherd:
+    image: containrrr/shepherd:latest
+    environment:
+      - TZ=America/Chicago
+      - SLEEP_TIME=6h
+      - FILTER_SERVICES=label=shepherd.autodeploy=true
+      # Roll a service back if its updated task fails to start.
+      - ROLLBACK_ON_FAILURE=true
+      - VERBOSE=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "2m"
+    deploy:
+      placement:
+        constraints:
+          # Service updates have to be issued from a manager.
+          - node.role == manager
+      labels:
+        - "shepherd.autodeploy=true"

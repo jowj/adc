@@ -29,6 +29,7 @@ services:
         constraints:
           - node.labels.role == services
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.mediaserver-hoard.loadbalancer.server.port=9999"
         - "traefik.http.routers.mediaserver-hoard.rule=Host(`hoard.services.jowj.net`)"
@@ -51,6 +52,7 @@ services:
         constraints:
           - node.labels.role == services
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.mediaserver-hoardvr.loadbalancer.server.port=9666"
         - "traefik.http.routers.mediaserver-hoardvr.rule=Host(`hoardvr.services.jowj.net`)"
@@ -77,6 +79,7 @@ services:
         constraints:
           - node.labels.role == services
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.mediaserver-calibre.loadbalancer.server.port=8083"
         - "traefik.http.routers.mediaserver-calibre.rule=Host(`calibre.services.jowj.net`)"
@@ -84,6 +87,9 @@ services:
         - "traefik.http.routers.mediaserver-calibre.tls.certresolver=services-resolver"
 
   plex:
+    # Tracks :latest and is kept current by the shepherd stack (label below).
+    # Swarm alone never re-pulls a tag, which is how we sat on a Plex2Shell-
+    # vulnerable build until it got compromised in Oct 2026.
     image: plexinc/pms-docker:latest
     environment:
       - TZ=America/Chicago
@@ -96,6 +102,9 @@ services:
       - /home/josiah/apps/plex/config:/config
       - /home/josiah/apps/plex/transcode:/transcode
       - /media/usenet:/data
+    # NOTE: swarm ignores this `devices:` key (and `privileged:`), so Plex has no
+    # GPU access here and transcodes on CPU. HW transcode requires running Plex
+    # outside swarm (docker run --device /dev/dri). Left in swarm intentionally.
     devices:
       - /dev/dri:/dev/dri
     ports:
@@ -139,6 +148,8 @@ services:
       placement:
         constraints:
           - node.labels.role == services
+      labels:
+        - "shepherd.autodeploy=true"
 
 networks:
   traefik-public:
