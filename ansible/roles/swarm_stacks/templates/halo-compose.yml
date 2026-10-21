@@ -50,7 +50,9 @@ services:
         - "traefik.http.routers.overseerr-rt.tls.certresolver=halo-resolver"
 
   gitea:
-    image: gitea/gitea:1.22.4
+    # Floats on the 1.27 minor so shepherd applies patch releases. Minor bumps
+    # run one-way DB migrations: back up first and bump the tag by hand.
+    image: gitea/gitea:1.27
     networks:
       - traefik-public
     environment:
@@ -66,6 +68,7 @@ services:
         constraints:
           - node.labels.role == halo
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.gitea-svc.loadbalancer.server.port=3000"
         - "traefik.http.routers.gitea-rt.rule=Host(`git.halo.jowj.net`)"

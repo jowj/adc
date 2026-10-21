@@ -1,0 +1,13 @@
+---
+# Redeploy only the traefik stack (config or image changes).
+#
+# Non-destructive, unlike _cluster_init.yml, which tears the swarm down first.
+# Run with:
+#   ansible-playbook -i inventory/hosts.yml _cluster_deploy_traefik.yml
+
+- name: Deploy unified traefik
+  hosts: swarm_managers
+  become: yes
+  tasks:
+    - name: Deploy traefik stack
+      include_tasks: roles/swarm_cluster/tasks/traefik.yml

@@ -6,10 +6,16 @@ api:
   dashboard: true
 
 entryPoints:
+  # aliasHeadersStrategy: strip headers that alias a managed one (X_Forwarded_For,
+  # X.Forwarded.For) so clients can't spoof them to CGI/PHP-style backends.
   web:
     address: ":80"
+    http:
+      aliasHeadersStrategy: delete
   websecure:
     address: ":443"
+    http:
+      aliasHeadersStrategy: delete
   git-ssh:
     address: ":222"
 
@@ -46,4 +52,5 @@ certificatesResolvers:
         resolvers:
           - "1.1.1.1"
           - "8.8.8.8"
-        delayBeforeCheck: 60
+        propagation:
+          delayBeforeChecks: 60s

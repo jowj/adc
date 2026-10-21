@@ -5,7 +5,8 @@ version: "3.7"
 
 services:
   traefik:
-    image: "traefik:v3.2"
+    # Floats on v3 and is kept current by shepherd; a failed start rolls back.
+    image: "traefik:v3"
     ports:
       - "80:80"
       - "443:443"
@@ -27,6 +28,7 @@ services:
         constraints:
           - node.role == manager
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
         # HTTPS redirect middleware
@@ -42,6 +44,7 @@ services:
     deploy:
       replicas: 1
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.routers.whoami.rule=Host(`whoami.services.jowj.net`)"
         - "traefik.http.routers.whoami.entrypoints=websecure"

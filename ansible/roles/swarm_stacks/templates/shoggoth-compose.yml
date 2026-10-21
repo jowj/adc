@@ -1,11 +1,13 @@
 ---
 # shoggoth stack — observability. Persistent services pinned to halo node (archon).
 # Global agents (node-exporter, cadvisor, promtail) run on every swarm node.
+# Stateless agents (node-exporter, cadvisor) auto-update via shepherd; the
+# stateful services are pinned and bumped deliberately.
 version: "3.7"
 
 services:
   prometheus:
-    image: prom/prometheus:v2.53.0
+    image: prom/prometheus:v3.15.0
     networks:
       - traefik-public
     user: "1000"
@@ -26,7 +28,7 @@ services:
           - node.labels.role == halo
 
   alertmanager:
-    image: prom/alertmanager:v0.27.0
+    image: prom/alertmanager:v0.34.1
     networks:
       - traefik-public
     user: "1000"
@@ -43,7 +45,7 @@ services:
           - node.labels.role == halo
 
   grafana:
-    image: grafana/grafana:11.1.0
+    image: grafana/grafana:13.2.4
     networks:
       - traefik-public
     user: "1000"
@@ -68,7 +70,7 @@ services:
         - "traefik.http.routers.shoggoth-grafana.tls.certresolver=services-resolver"
 
   loki:
-    image: grafana/loki:3.1.0
+    image: grafana/loki:3.7.9
     networks:
       - traefik-public
     user: "1000"
@@ -84,7 +86,7 @@ services:
           - node.labels.role == halo
 
   node-exporter:
-    image: prom/node-exporter:v1.8.1
+    image: prom/node-exporter:latest
     networks:
       - traefik-public
     command:
@@ -98,12 +100,14 @@ services:
       - /:/rootfs:ro
     deploy:
       mode: global
+      labels:
+        - "shepherd.autodeploy=true"
       resources:
         limits:
           memory: 128M
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    image: gcr.io/cadvisor/cadvisor:latest
     networks:
       - traefik-public
     volumes:
@@ -113,12 +117,14 @@ services:
       - /var/lib/docker:/var/lib/docker:ro
     deploy:
       mode: global
+      labels:
+        - "shepherd.autodeploy=true"
       resources:
         limits:
           memory: 128M
 
   promtail:
-    image: grafana/promtail:3.1.0
+    image: grafana/promtail:3.6.11
     networks:
       - traefik-public
     command:
