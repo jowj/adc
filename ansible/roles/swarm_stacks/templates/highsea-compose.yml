@@ -20,6 +20,7 @@ services:
         constraints:
           - node.labels.role == media
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.highsea-hydra2.loadbalancer.server.port=5076"
         - "traefik.http.routers.highsea-hydra2.rule=Host(`hydra.services.jowj.net`)"
@@ -48,6 +49,7 @@ services:
         constraints:
           - node.labels.role == media
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.highsea-sabnzbd.loadbalancer.server.port=8080"
         - "traefik.http.routers.highsea-sabnzbd.rule=Host(`sab.services.jowj.net`)"
@@ -72,6 +74,7 @@ services:
         constraints:
           - node.labels.role == media
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.highsea-sonarr.loadbalancer.server.port=8989"
         - "traefik.http.routers.highsea-sonarr.rule=Host(`sonarr.services.jowj.net`)"
@@ -95,6 +98,7 @@ services:
         constraints:
           - node.labels.role == media
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.highsea-lidarr.loadbalancer.server.port=8686"
         - "traefik.http.routers.highsea-lidarr.rule=Host(`lidarr.services.jowj.net`)"
@@ -118,6 +122,7 @@ services:
         constraints:
           - node.labels.role == media
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.highsea-radarr.loadbalancer.server.port=7878"
         - "traefik.http.routers.highsea-radarr.rule=Host(`radarr.services.jowj.net`)"
@@ -167,6 +172,7 @@ services:
         constraints:
           - node.labels.role == media
       labels:
+        - "shepherd.autodeploy=true"
         - "traefik.enable=true"
         - "traefik.http.services.highsea-bazarr.loadbalancer.server.port=6767"
         - "traefik.http.routers.highsea-bazarr.rule=Host(`bazarr.services.jowj.net`)"

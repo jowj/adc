@@ -14,6 +14,7 @@
     - /home/josiah/apps/highsea
     - /home/josiah/apps/halo
     - /home/josiah/apps/shoggoth
+    - /home/josiah/apps/shepherd
 
 - name: Ensure shoggoth config directories exist on NFS
   shell: mkdir -p {{ item }}
@@ -54,6 +55,7 @@
     - { src: "highsea-compose.yml", dest: "/home/josiah/apps/highsea/highsea-compose.yml" }
     - { src: "halo-compose.yml", dest: "/home/josiah/apps/halo/halo-compose.yml" }
     - { src: "shoggoth-compose.yml", dest: "/home/josiah/apps/shoggoth/shoggoth-compose.yml" }
+    - { src: "shepherd-compose.yml", dest: "/home/josiah/apps/shepherd/shepherd-compose.yml" }
 
 - name: Deploy abjure stack
   docker_stack:
@@ -86,3 +88,11 @@
     prune: yes
     compose:
       - /home/josiah/apps/shoggoth/shoggoth-compose.yml
+
+- name: Deploy shepherd stack
+  docker_stack:
+    state: present
+    name: shepherd
+    prune: yes
+    compose:
+      - /home/josiah/apps/shepherd/shepherd-compose.yml
