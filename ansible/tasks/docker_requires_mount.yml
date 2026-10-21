@@ -1,0 +1,42 @@
+---
+# Make docker.service wait for an NFS mount before starting.
+#
+# Docker resolves a bind mount at container start. On boot, dockerd came up
+# before the /media/* NFS mounts landed, so swarm tasks that started in that
+# window bind-mounted the *empty underlying directory* and kept that view for
+# the life of the container (2026-07-27: plex on lair started 6s before
+# media-usenet.mount went active and served an empty library).
+#
+# RequiresMountsFor pulls in both After= and Requires= on the generated .mount
+# unit, so docker starts only once the share is really mounted, and refuses to
+# start at all if it never mounts — better than silently serving empty binds.
+#
+# Callers set:
+#   dropin_name  — drop-in filename stem (numbered so they order predictably)
+#   dropin_mount — absolute path of the mount to depend on
+#
+# Drop-ins accumulate, so each mount gets its own file and nodes only depend on
+# the mounts they actually have.
+
+- name: Ensure docker.service drop-in directory exists
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: "0755"
+
+- name: Install docker.service mount ordering drop-in
+  copy:
+    dest: "/etc/systemd/system/docker.service.d/{{ dropin_name }}.conf"
+    mode: "0644"
+    content: |
+      # Managed by ansible (_cluster_deploy_stacks.yml)
+      [Unit]
+      RequiresMountsFor={{ dropin_mount }}
+  register: dropin
+
+- name: Reload systemd so the new ordering applies
+  # Deliberately no docker restart: that would bounce every container on the
+  # node, and the ordering only matters at boot anyway.
+  systemd:
+    daemon_reload: yes
+  when: dropin.changed

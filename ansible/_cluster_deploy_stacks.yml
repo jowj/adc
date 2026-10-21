@@ -18,12 +18,25 @@
         src: "sainthood.home.jowj.net:/volume4/obs"
         path: /media/observability
         fstype: nfs
-        opts: "rw,hard,intr,rsize=8192,wsize=8192,timeo=14,_netdev,bg"
+        # No `bg`: a backgrounded mount returns success immediately, so the
+        # .mount unit goes active before the share is actually there and
+        # docker's ordering dependency below buys nothing. `nofail` keeps a
+        # dead NAS from blocking boot. docker Requires= this mount, so if it
+        # gives up docker never starts and nothing retries it: retry= and
+        # mount-timeout are long enough to ride out the NAS booting slower
+        # than the nodes after a power cut.
+        opts: "rw,hard,rsize=8192,wsize=8192,timeo=14,_netdev,nofail,retry=10,x-systemd.mount-timeout=10min"
         state: present
 
     - name: Mount observability NFS
       shell: mountpoint -q /media/observability || mount /media/observability
       changed_when: false
+
+    - name: Order docker after the observability mount
+      include_tasks: tasks/docker_requires_mount.yml
+      vars:
+        dropin_name: 10-media-observability-mount
+        dropin_mount: /media/observability
 
 - name: Set up usenet NFS mount on media-consuming nodes
   # lair (abjure stack) and high-sea (highsea stack) bind-mount /media/usenet
@@ -40,12 +53,18 @@
         src: "sainthood.home.jowj.net:/volume4/usenet"
         path: /media/usenet
         fstype: nfs
-        opts: "rw,hard,intr,rsize=8192,wsize=8192,timeo=14,_netdev,bg"
+        opts: "rw,hard,rsize=8192,wsize=8192,timeo=14,_netdev,nofail,retry=10,x-systemd.mount-timeout=10min"
         state: present
 
     - name: Mount usenet NFS
       shell: mountpoint -q /media/usenet || mount /media/usenet
       changed_when: false
+
+    - name: Order docker after the usenet mount
+      include_tasks: tasks/docker_requires_mount.yml
+      vars:
+        dropin_name: 20-media-usenet-mount
+        dropin_mount: /media/usenet
 
 - name: Deploy application stacks
   hosts: swarm_managers
